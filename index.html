@@ -6,37 +6,115 @@
   <title>CarReviews</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 16px; }
-    h1 { color: #1a3c6e; }
-    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin: 10px 0; }
-    .status { padding: 8px; border-radius: 6px; background: #eef; }
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 0 16px 40px; background:#f5f7fa; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #ddd; }
+    h1 { color:#1a3c6e; margin:0; }
+    .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:14px; margin:10px 0; }
+    .box { max-width:360px; margin:30px auto; }
+    input { width:100%; padding:10px; margin:6px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:6px; }
+    button { padding:10px 16px; border:0; border-radius:6px; background:#1a3c6e; color:#fff; cursor:pointer; }
+    button.link { background:none; color:#1a3c6e; text-decoration:underline; padding:4px; }
+    .msg { padding:8px; border-radius:6px; margin:8px 0; display:none; }
+    .err { background:#fde8e8; color:#a00; }
+    .ok  { background:#e6f7e9; color:#0a6a22; }
+    .hidden { display:none; }
   </style>
 </head>
 <body>
-  <h1>🚗 CarReviews</h1>
-  <div id="status" class="status">Connecting to Supabase...</div>
-  <h2>Companies</h2>
-  <div id="companies"></div>
+  <header>
+    <h1>🚗 CarReviews</h1>
+    <div id="userbar"></div>
+  </header>
+
+  <div id="authView" class="box card">
+    <h2 id="authTitle">Log in</h2>
+    <div id="msg" class="msg"></div>
+    <div id="nameWrap" class="hidden">
+      <input id="fullName" type="text" placeholder="Full name">
+    </div>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password (min 6 chars)">
+    <button id="authBtn">Log in</button>
+    <p><button id="toggleBtn" class="link">No account? Sign up</button></p>
+  </div>
+
+  <div id="mainView" class="hidden">
+    <h2>Companies</h2>
+    <div id="companies"></div>
+  </div>
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let isSignup = false;
+    const $ = id => document.getElementById(id);
+
+    function showMsg(text, ok) {
+      const m = $('msg');
+      m.textContent = text;
+      m.className = 'msg ' + (ok ? 'ok' : 'err');
+      m.style.display = 'block';
+    }
+
+    function setMode(signup) {
+      isSignup = signup;
+      $('authTitle').textContent = signup ? 'Sign up' : 'Log in';
+      $('authBtn').textContent = signup ? 'Sign up' : 'Log in';
+      $('toggleBtn').textContent = signup ? 'Have an account? Log in' : 'No account? Sign up';
+      $('nameWrap').classList.toggle('hidden', !signup);
+      $('msg').style.display = 'none';
+    }
+
+    $('toggleBtn').onclick = () => setMode(!isSignup);
+
+    $('authBtn').onclick = async () => {
+      const email = $('email').value.trim();
+      const password = $('password').value;
+      if (!email || password.length < 6) return showMsg('Enter email and a password of 6+ characters', false);
+
+      if (isSignup) {
+        const full_name = $('fullName').value.trim();
+        const { data, error } = await sb.auth.signUp({
+          email, password, options: { data: { full_name } }
+        });
+        if (error) return showMsg(error.message, false);
+        if (data.session) { showMsg('Account created ✅', true); }
+        else { showMsg('Account created. Check your email to confirm, then log in.', true); setMode(false); }
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) return showMsg(error.message, false);
+      }
+    };
+
+    async function logout() { await sb.auth.signOut(); }
+
     async function loadCompanies() {
       const { data, error } = await sb.from('companies').select('*');
-      const status = document.getElementById('status');
-      if (error) {
-        status.textContent = 'Error: ' + error.message;
-        return;
-      }
-      status.textContent = 'Connected ✅';
-      const box = document.getElementById('companies');
+      const box = $('companies');
+      if (error) { box.innerHTML = '<div class="card">Error: ' + error.message + '</div>'; return; }
       box.innerHTML = data.length
         ? data.map(c => `<div class="card">${c.name ?? JSON.stringify(c)}</div>`).join('')
         : '<p>No companies yet.</p>';
     }
-    loadCompanies();
+
+    function render(session) {
+      if (session) {
+        $('authView').classList.add('hidden');
+        $('mainView').classList.remove('hidden');
+        $('userbar').innerHTML = `${session.user.email} <button id="logoutBtn">Log out</button>`;
+        $('logoutBtn').onclick = logout;
+        loadCompanies();
+      } else {
+        $('authView').classList.remove('hidden');
+        $('mainView').classList.add('hidden');
+        $('userbar').innerHTML = '';
+      }
+    }
+
+    sb.auth.onAuthStateChange((_event, session) => render(session));
+    sb.auth.getSession().then(({ data }) => render(data.session));
   </script>
 </body>
 </html>
