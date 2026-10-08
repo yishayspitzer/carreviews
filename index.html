@@ -15,6 +15,7 @@
     .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:14px; margin:10px 0; }
     .box { max-width:360px; margin:30px auto; }
     input, textarea { width:100%; padding:10px; margin:6px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:6px; font-family:inherit; }
+textarea { resize: vertical; max-width: 100%; min-height: 70px; }
     .pwwrap { position:relative; }
     .pwwrap input { padding-right:70px; }
     .pwwrap button { position:absolute; right:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:#1a3c6e; }
@@ -236,8 +237,7 @@
         <div class="rev">
           <span class="stars">${stars((r.punctuality + r.price + r.service + r.cleanliness + r.driving) / 5)}</span>
           <span class="meta">${new Date(r.created_at).toLocaleDateString()}</span>
-          ${r.comment ? `<div>${esc(r.comment)}</div>` : ''}
-          <div class="cats">${CATS.map(([k, label]) => `${label}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
+${r.comment ? `<div><b>Other issue:</b> ${esc(r.comment)}</div>` : ''}          <div class="cats">${CATS.map(([k, label]) => `${label}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
         </div>`).join('') : '<p class="meta">No reviews yet. Be the first!</p>';
 
       el.innerHTML = `
@@ -245,8 +245,7 @@
         <h4>${mine ? 'Edit your review' : 'Write a review'} (anonymous)</h4>
         <div id="revMsg" class="msg"></div>
         ${form}
-        <textarea id="revComment" rows="3" placeholder="Comment (optional)">${esc(draft.comment || '')}</textarea>
-        <button id="submitReview" data-company="${companyId}">${mine ? 'Update review' : 'Submit review'}</button>
+<textarea id="revComment" rows="3" placeholder="Other issue">${esc(draft.comment || '')}</textarea>        <button id="submitReview" data-company="${companyId}">${mine ? 'Update review' : 'Submit review'}</button>
         <h4>All reviews (${data.length})</h4>${list}`;
     }
 
