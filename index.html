@@ -22,12 +22,13 @@
     button { padding:10px 16px; border:0; border-radius:6px; background:#1a3c6e; color:#fff; cursor:pointer; }
     button.link { background:none; color:#1a3c6e; text-decoration:underline; padding:4px; }
     button.gold { background:#e8a317; }
-    button.danger { background:#c0392b; margin-left:8px; }
+    button.danger { background:#c0392b; }
     .msg { padding:8px; border-radius:6px; margin:8px 0; display:none; }
     .err { background:#fde8e8; color:#a00; }
     .ok  { background:#e6f7e9; color:#0a6a22; }
     .hidden { display:none; }
     .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
     .cname { font-weight:bold; color:#1a3c6e; font-size:18px; }
     .meta { color:#555; font-size:14px; margin-top:4px; }
     .stars { color:#e8a317; letter-spacing:2px; font-size:18px; }
@@ -109,7 +110,7 @@
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
+    const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const CATS = [
@@ -122,25 +123,12 @@
 
     let isSignup = false;
     let openId = null;
+    let editingId = null;
     let draft = {};
     let myUid = null;
+    let isAdmin = false;
     let allCompanies = [];
     let stats = {};
-        let isAdmin = false;
-    let editingId = null;
-
-    async function checkAdmin() {
-      if (!myUid) { isAdmin = false; return; }
-      const { data } = await sb.from('profiles').select('role').eq('id', myUid).maybeSingle();
-      isAdmin = !!data && data.role === 'admin';
-    }
-        let isAdmin = false;
-
-    async function checkAdmin() {
-      if (!myUid) { isAdmin = false; return; }
-      const { data } = await sb.from('profiles').select('role').eq('id', myUid).maybeSingle();
-      isAdmin = !!data && data.role === 'admin';
-    }
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -152,6 +140,15 @@
       return String(p ?? '');
     };
 
+    async function checkAdmin() {
+      isAdmin = false;
+      if (!myUid) return;
+      try {
+        const { data } = await sb.from('profiles').select('role').eq('id', myUid).maybeSingle();
+        isAdmin = !!data && data.role === 'admin';
+      } catch (e) { isAdmin = false; }
+    }
+
     $('showPw').onclick = () => {
       const p = $('password');
       const show = p.type === 'password';
@@ -160,6 +157,7 @@
     };
 
     function showMsg(el, text, ok) {
+      if (!el) return alert(text);
       el.textContent = text;
       el.className = 'msg ' + (ok ? 'ok' : 'err');
       el.style.display = 'block';
@@ -191,7 +189,7 @@
       }
     };
 
-    async function logout() { openId = null; await sb.auth.signOut(); }
+    async function logout() { openId = null; editingId = null; await sb.auth.signOut(); }
 
     $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
 
@@ -246,12 +244,7 @@
       else list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
       box.innerHTML = list.length ? list.map(c => {
-        const s = stats[c.id];
-        const overall = ov(c);
-        const rating = s
-          ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>`
-          : `<span class="meta">No reviews yet</span>`;
-               if (editingId === c.id) {
+        if (editingId === c.id) {
           return `
           <div class="card">
             <h4>Edit company</h4>
@@ -265,6 +258,11 @@
             <button class="link" data-canceledit="1">Cancel</button>
           </div>`;
         }
+        const s = stats[c.id];
+        const overall = ov(c);
+        const rating = s
+          ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>`
+          : `<span class="meta">No reviews yet</span>`;
         return `
           <div class="card">
             <div class="row">
@@ -272,15 +270,27 @@
                 <div class="cname">${esc(c.name)}</div>
                 <div>${rating}</div>
               </div>
-              <div>
+              <div class="actions">
                 <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
-                ${isAdmin ? `<button class="gold" data-edco="${c.id}">Edit</button> <button class="danger" data-delco="${c.id}">Delete</button>` : ''}
+                ${isAdmin ? `<button class="gold" data-edco="${c.id}">Edit</button><button class="danger" data-delco="${c.id}">Delete</button>` : ''}
               </div>
             </div>
             ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
             <div class="meta">${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
           </div>`;
+      }).join('') : '<p>No companies found.</p>';
+
+      if (openId) loadDetail(openId);
+    }
+
+    async function loadDetail(companyId) {
+      const el = $('detail');
+      if (!el) return;
+      el.innerHTML = 'Loading...';
+      const { data, error } = await sb.from('reviews').select('*').eq('company_id', companyId).order('created_at', { ascending: false });
+      if (error) { el.innerHTML = 'Error: ' + esc(error.message); return; }
+
       const mine = data.find(r => r.user_id === myUid);
       if (!Object.keys(draft).length && mine) {
         CATS.forEach(([k]) => draft[k] = mine[k]);
@@ -318,10 +328,10 @@
 
     document.addEventListener('click', async (e) => {
       const t = e.target;
+      const ds = t.dataset || {};
 
-      if (t.dataset && t.dataset.open) {
-        const id = t.dataset.open;
-        openId = (openId === id) ? null : id;
+      if (ds.open) {
+        openId = (openId === ds.open) ? null : ds.open;
         draft = {};
         renderCompanies();
         return;
@@ -335,37 +345,19 @@
         return;
       }
 
-      if (t.dataset && t.dataset.delco) {
+      if (ds.delco) {
         if (!confirm('Delete this company and ALL its reviews? This cannot be undone.')) return;
-        const { error } = await sb.from('companies').delete().eq('id', t.dataset.delco);
+        const { error } = await sb.from('companies').delete().eq('id', ds.delco);
         if (error) { alert(error.message); return; }
-        if (openId === t.dataset.delco) openId = null;
+        if (openId === ds.delco) openId = null;
         loadCompanies();
         return;
       }
 
-      if (t.dataset && t.dataset.delco) {
-        if (!confirm('Delete this company and ALL its reviews? This cannot be undone.')) return;
-        const { error } = await sb.from('companies').delete().eq('id', t.dataset.delco);
-        if (error) { alert(error.message); return; }
-        if (openId === t.dataset.delco) openId = null;
-        loadCompanies();
-        return;
-      }
+      if (ds.edco) { editingId = ds.edco; renderCompanies(); return; }
+      if (ds.canceledit) { editingId = null; renderCompanies(); return; }
 
-      if (t.dataset && t.dataset.edco) {
-        editingId = t.dataset.edco;
-        renderCompanies();
-        return;
-      }
-
-      if (t.dataset && t.dataset.canceledit) {
-        editingId = null;
-        renderCompanies();
-        return;
-      }
-
-      if (t.dataset && t.dataset.saveedit) {
+      if (ds.saveedit) {
         const name = $('eName').value.trim();
         if (!name) return showMsg($('editMsg'), 'Company name is required', false);
         const ph = $('ePhone').value.trim();
@@ -376,14 +368,14 @@
           email: $('eEmail').value.trim() || null,
           logo_url: $('eLogo').value.trim() || null
         };
-        const { error } = await sb.from('companies').update(row).eq('id', t.dataset.saveedit);
+        const { error } = await sb.from('companies').update(row).eq('id', ds.saveedit);
         if (error) return showMsg($('editMsg'), error.message, false);
         editingId = null;
         loadCompanies();
         return;
       }
 
-        if (t.id === 'submitReview') {
+      if (t.id === 'submitReview') {
         const msg = $('revMsg');
         if (CATS.some(([k]) => !draft[k])) return showMsg(msg, 'Please rate all 5 categories', false);
         const row = {
@@ -410,23 +402,25 @@
       }
     });
 
-    function render(session) {
+    async function render(session) {
       if (session) {
         myUid = session.user.id;
         $('authView').classList.add('hidden');
         $('mainView').classList.remove('hidden');
         $('userbar').innerHTML = `${esc(session.user.email)} <button id="logoutBtn">Log out</button>`;
         $('logoutBtn').onclick = logout;
-                checkAdmin().then(loadCompanies);
-checkAdmin().then(loadCompanies);      } else {
+        await checkAdmin();
+        loadCompanies();
+      } else {
         myUid = null;
+        isAdmin = false;
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
         $('userbar').innerHTML = '';
       }
     }
 
-    sb.auth.onAuthStateChange((_event, session) => render(session));
+    sb.auth.onAuthStateChange((_event, session) => { render(session); });
     sb.auth.getSession().then(({ data }) => render(data.session));
   </script>
 </body>
