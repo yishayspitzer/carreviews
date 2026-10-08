@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 0 16px 40px; background:#f5f7fa; }
-    header { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #ddd; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #ddd; gap:10px; flex-wrap:wrap; }
     .brand { display:flex; align-items:center; gap:10px; }
     h1 { color:#1a3c6e; margin:0; font-size:28px; }
     h1 span { color:#e8a317; }
@@ -17,7 +17,7 @@
     input, textarea, select { width:100%; padding:10px; margin:6px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:6px; font-family:inherit; }
     textarea { resize: vertical; max-width: 100%; min-height: 70px; }
     .pwwrap { position:relative; }
-    .pwwrap input { padding-right:70px; }
+    .pwwrap input { padding-right:80px; }
     .pwwrap button { position:absolute; right:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:#1a3c6e; }
     button { padding:10px 16px; border:0; border-radius:6px; background:#1a3c6e; color:#fff; cursor:pointer; }
     button.link { background:none; color:#1a3c6e; text-decoration:underline; padding:4px; }
@@ -37,7 +37,7 @@
     .stars.big { font-size:22px; }
     .num { color:#333; font-size:14px; margin-left:6px; letter-spacing:0; }
     .detail { border-top:1px solid #eee; margin-top:12px; padding-top:12px; }
-    .catrow { display:flex; justify-content:space-between; align-items:center; padding:5px 0; }
+    .catrow { display:flex; justify-content:space-between; align-items:center; padding:5px 0; gap:8px; }
     .pick .st { cursor:pointer; font-size:26px; color:#ccc; padding:0 2px; user-select:none; }
     .pick .st.on { color:#e8a317; }
     .rev { background:#f8f9fb; border-radius:6px; padding:10px; margin:8px 0; }
@@ -46,6 +46,8 @@
     .filters input { flex:2; }
     .filters select { flex:1; }
     .fileline { font-size:13px; color:#555; margin:6px 0 2px; }
+    #userbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    #langSel { width:auto; margin:0; padding:6px 8px; }
     h4 { margin:14px 0 6px; color:#1a3c6e; }
   </style>
 </head>
@@ -63,49 +65,56 @@
       </svg>
       <h1>Car<span>Reviews</span></h1>
     </div>
-    <div id="userbar"></div>
+    <div id="userbar">
+      <select id="langSel">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+        <option value="es">Español</option>
+      </select>
+      <span id="userinfo"></span>
+    </div>
   </header>
 
   <div id="authView" class="box card">
-    <h2 id="authTitle">Log in</h2>
+    <h2 id="authTitle"></h2>
     <div id="msg" class="msg"></div>
     <div id="nameWrap" class="hidden">
-      <input id="fullName" type="text" placeholder="Full name">
+      <input id="fullName" type="text">
     </div>
-    <input id="email" type="email" placeholder="Email">
+    <input id="email" type="email">
     <div class="pwwrap">
-      <input id="password" type="password" placeholder="Password (min 6 chars)">
-      <button id="showPw" type="button">👁 Show</button>
+      <input id="password" type="password">
+      <button id="showPw" type="button"></button>
     </div>
-    <button id="authBtn">Log in</button>
-    <p><button id="toggleBtn" class="link">No account? Sign up</button></p>
+    <button id="authBtn"></button>
+    <p><button id="toggleBtn" class="link"></button></p>
   </div>
 
   <div id="mainView" class="hidden">
     <div class="row">
-      <h2>Companies</h2>
-      <button id="addToggle" class="gold">+ Add company</button>
+      <h2 id="tCompanies"></h2>
+      <button id="addToggle" class="gold"></button>
     </div>
 
     <div id="addForm" class="card hidden">
-      <h3>Add a company</h3>
+      <h3 id="tAddTitle"></h3>
       <div id="addMsg" class="msg"></div>
-      <input id="cName" type="text" placeholder="Company name *">
-      <textarea id="cDesc" rows="3" placeholder="Description"></textarea>
-      <input id="cPhone" type="text" placeholder="Phone">
-      <input id="cEmail" type="email" placeholder="Email">
-      <div class="fileline">Logo (optional):</div>
+      <input id="cName" type="text">
+      <textarea id="cDesc" rows="3"></textarea>
+      <input id="cPhone" type="text">
+      <input id="cEmail" type="email">
+      <div class="fileline" id="tLogoOpt"></div>
       <input id="cLogoFile" type="file" accept="image/*">
-      <button id="saveCompany">Save company</button>
+      <button id="saveCompany"></button>
     </div>
 
     <div class="filters">
-      <input id="search" type="text" placeholder="🔍 Search companies...">
+      <input id="search" type="text">
       <select id="sort">
-        <option value="rating">Best rating</option>
-        <option value="count">Most reviews</option>
-        <option value="new">Newest</option>
-        <option value="name">Name A–Z</option>
+        <option value="rating"></option>
+        <option value="count"></option>
+        <option value="new"></option>
+        <option value="name"></option>
       </select>
     </div>
 
@@ -117,20 +126,108 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const CATS = [
-      ['punctuality', '⏱ Punctuality'],
-      ['price',       '💲 Price'],
-      ['service',     '🤝 Service'],
-      ['cleanliness', '✨ Cleanliness'],
-      ['driving',     '🛡 Safe driving']
-    ];
+    // ---------- Translations ----------
+    const T = {
+      en: {
+        login: 'Log in', signup: 'Sign up', logout: 'Log out',
+        fullName: 'Full name', email: 'Email', password: 'Password (min 6 chars)',
+        show: '👁 Show', hide: '🙈 Hide',
+        noAccount: 'No account? Sign up', haveAccount: 'Have an account? Log in',
+        enterCreds: 'Enter email and a password of 6+ characters',
+        created: 'Account created ✅', createdConfirm: 'Account created. Check your email to confirm, then log in.',
+        companies: 'Companies', addCompany: '+ Add company', addTitle: 'Add a company',
+        companyName: 'Company name *', description: 'Description', phone: 'Phone',
+        logoOpt: 'Logo (optional):', saveCompany: 'Save company',
+        search: '🔍 Search companies...',
+        sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
+        noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
+        reviews: 'Reviews', close: 'Close', edit: 'Edit', del: 'Delete',
+        editCompany: 'Edit company', currentLogo: 'Current logo:', replaceLogo: 'Replace logo (optional):',
+        save: 'Save', cancel: 'Cancel', nameRequired: 'Company name is required',
+        logoTooBig: 'Logo is too big (max 2 MB)',
+        confirmDelCo: 'Delete this company and ALL its reviews? This cannot be undone.',
+        ratingsByCat: 'Ratings by category', writeReview: 'Write a review', editReview: 'Edit your review',
+        anonymous: '(anonymous)', otherIssue: 'Other issue',
+        submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
+        confirmDelRev: 'Delete your review?', rateAll: 'Please rate all 5 categories',
+        allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
+        punctuality: '⏱ Punctuality', price: '💲 Price', service: '🤝 Service',
+        cleanliness: '✨ Cleanliness', driving: '🛡 Safe driving'
+      },
+      ru: {
+        login: 'Войти', signup: 'Регистрация', logout: 'Выйти',
+        fullName: 'Полное имя', email: 'Эл. почта', password: 'Пароль (мин. 6 символов)',
+        show: '👁 Показать', hide: '🙈 Скрыть',
+        noAccount: 'Нет аккаунта? Зарегистрируйтесь', haveAccount: 'Уже есть аккаунт? Войти',
+        enterCreds: 'Введите эл. почту и пароль от 6 символов',
+        created: 'Аккаунт создан ✅', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
+        companies: 'Компании', addCompany: '+ Добавить компанию', addTitle: 'Добавить компанию',
+        companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
+        logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию',
+        search: '🔍 Поиск компаний...',
+        sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
+        noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
+        reviews: 'Отзывы', close: 'Закрыть', edit: 'Изменить', del: 'Удалить',
+        editCompany: 'Изменить компанию', currentLogo: 'Текущий логотип:', replaceLogo: 'Заменить логотип (необязательно):',
+        save: 'Сохранить', cancel: 'Отмена', nameRequired: 'Укажите название компании',
+        logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
+        confirmDelCo: 'Удалить эту компанию и ВСЕ её отзывы? Это нельзя отменить.',
+        ratingsByCat: 'Оценки по категориям', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
+        anonymous: '(анонимно)', otherIssue: 'Другая проблема',
+        submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
+        confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Пожалуйста, оцените все 5 категорий',
+        allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
+        punctuality: '⏱ Пунктуальность', price: '💲 Цена', service: '🤝 Сервис',
+        cleanliness: '✨ Чистота', driving: '🛡 Безопасное вождение'
+      },
+      es: {
+        login: 'Iniciar sesión', signup: 'Registrarse', logout: 'Cerrar sesión',
+        fullName: 'Nombre completo', email: 'Correo electrónico', password: 'Contraseña (mín. 6 caracteres)',
+        show: '👁 Mostrar', hide: '🙈 Ocultar',
+        noAccount: '¿No tienes cuenta? Regístrate', haveAccount: '¿Ya tienes cuenta? Inicia sesión',
+        enterCreds: 'Ingresa tu correo y una contraseña de 6+ caracteres',
+        created: 'Cuenta creada ✅', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
+        companies: 'Empresas', addCompany: '+ Agregar empresa', addTitle: 'Agregar una empresa',
+        companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
+        logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa',
+        search: '🔍 Buscar empresas...',
+        sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
+        noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
+        reviews: 'Reseñas', close: 'Cerrar', edit: 'Editar', del: 'Eliminar',
+        editCompany: 'Editar empresa', currentLogo: 'Logo actual:', replaceLogo: 'Reemplazar logo (opcional):',
+        save: 'Guardar', cancel: 'Cancelar', nameRequired: 'El nombre de la empresa es obligatorio',
+        logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
+        confirmDelCo: '¿Eliminar esta empresa y TODAS sus reseñas? No se puede deshacer.',
+        ratingsByCat: 'Calificaciones por categoría', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
+        anonymous: '(anónima)', otherIssue: 'Otro problema',
+        submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
+        confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Por favor califica las 5 categorías',
+        allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
+        punctuality: '⏱ Puntualidad', price: '💲 Precio', service: '🤝 Servicio',
+        cleanliness: '✨ Limpieza', driving: '🛡 Conducción segura'
+      }
+    };
+
+    function detectLang() {
+      const saved = localStorage.getItem('lang');
+      if (saved && T[saved]) return saved;
+      const n = (navigator.language || 'en').slice(0, 2).toLowerCase();
+      return T[n] ? n : 'en';
+    }
+    let lang = detectLang();
+    const t_ = k => (T[lang] && T[lang][k]) || T.en[k] || k;
+
+    const CAT_KEYS = ['punctuality', 'price', 'service', 'cleanliness', 'driving'];
+    const catLabel = k => t_(k);
 
     let isSignup = false;
     let openId = null;
     let editingId = null;
     let draft = {};
     let myUid = null;
+    let myEmail = '';
     let isAdmin = false;
+    let loggedIn = false;
     let allCompanies = [];
     let stats = {};
 
@@ -144,9 +241,50 @@
       return String(p ?? '');
     };
 
+    // ---------- Static UI text ----------
+    function applyStaticText() {
+      document.documentElement.lang = lang;
+      $('langSel').value = lang;
+      $('authTitle').textContent = isSignup ? t_('signup') : t_('login');
+      $('authBtn').textContent = isSignup ? t_('signup') : t_('login');
+      $('toggleBtn').textContent = isSignup ? t_('haveAccount') : t_('noAccount');
+      $('fullName').placeholder = t_('fullName');
+      $('email').placeholder = t_('email');
+      $('password').placeholder = t_('password');
+      $('showPw').textContent = $('password').type === 'password' ? t_('show') : t_('hide');
+      $('tCompanies').textContent = t_('companies');
+      $('addToggle').textContent = t_('addCompany');
+      $('tAddTitle').textContent = t_('addTitle');
+      $('cName').placeholder = t_('companyName');
+      $('cDesc').placeholder = t_('description');
+      $('cPhone').placeholder = t_('phone');
+      $('cEmail').placeholder = t_('email');
+      $('tLogoOpt').textContent = t_('logoOpt');
+      $('saveCompany').textContent = t_('saveCompany');
+      $('search').placeholder = t_('search');
+      const opts = $('sort').options;
+      opts[0].textContent = t_('sortRating');
+      opts[1].textContent = t_('sortCount');
+      opts[2].textContent = t_('sortNew');
+      opts[3].textContent = t_('sortName');
+      if (loggedIn) {
+        $('userinfo').innerHTML = `${esc(myEmail)} <button id="logoutBtn">${esc(t_('logout'))}</button>`;
+        $('logoutBtn').onclick = logout;
+      } else {
+        $('userinfo').innerHTML = '';
+      }
+    }
+
+    $('langSel').onchange = () => {
+      lang = $('langSel').value;
+      localStorage.setItem('lang', lang);
+      applyStaticText();
+      if (loggedIn) renderCompanies();
+    };
+
     async function uploadLogo(file) {
       if (!file) return null;
-      if (file.size > 2 * 1024 * 1024) throw new Error('Logo is too big (max 2 MB)');
+      if (file.size > 2 * 1024 * 1024) throw new Error(t_('logoTooBig'));
       const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');
       const path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
       const { error } = await sb.storage.from('logos').upload(path, file, { contentType: file.type });
@@ -165,9 +303,8 @@
 
     $('showPw').onclick = () => {
       const p = $('password');
-      const show = p.type === 'password';
-      p.type = show ? 'text' : 'password';
-      $('showPw').textContent = show ? '🙈 Hide' : '👁 Show';
+      p.type = p.type === 'password' ? 'text' : 'password';
+      $('showPw').textContent = p.type === 'password' ? t_('show') : t_('hide');
     };
 
     function showMsg(el, text, ok) {
@@ -179,24 +316,22 @@
 
     function setMode(signup) {
       isSignup = signup;
-      $('authTitle').textContent = signup ? 'Sign up' : 'Log in';
-      $('authBtn').textContent = signup ? 'Sign up' : 'Log in';
-      $('toggleBtn').textContent = signup ? 'Have an account? Log in' : 'No account? Sign up';
       $('nameWrap').classList.toggle('hidden', !signup);
       $('msg').style.display = 'none';
+      applyStaticText();
     }
     $('toggleBtn').onclick = () => setMode(!isSignup);
 
     $('authBtn').onclick = async () => {
       const email = $('email').value.trim();
       const password = $('password').value;
-      if (!email || password.length < 6) return showMsg($('msg'), 'Enter email and a password of 6+ characters', false);
+      if (!email || password.length < 6) return showMsg($('msg'), t_('enterCreds'), false);
       if (isSignup) {
         const full_name = $('fullName').value.trim();
         const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name } } });
         if (error) return showMsg($('msg'), error.message, false);
-        if (data.session) showMsg($('msg'), 'Account created ✅', true);
-        else { showMsg($('msg'), 'Account created. Check your email to confirm, then log in.', true); setMode(false); }
+        if (data.session) showMsg($('msg'), t_('created'), true);
+        else { showMsg($('msg'), t_('createdConfirm'), true); setMode(false); }
       } else {
         const { error } = await sb.auth.signInWithPassword({ email, password });
         if (error) return showMsg($('msg'), error.message, false);
@@ -209,7 +344,7 @@
 
     $('saveCompany').onclick = async () => {
       const name = $('cName').value.trim();
-      if (!name) return showMsg($('addMsg'), 'Company name is required', false);
+      if (!name) return showMsg($('addMsg'), t_('nameRequired'), false);
       const btn = $('saveCompany');
       btn.disabled = true;
       try {
@@ -243,7 +378,7 @@
         sb.from('companies').select('*').order('created_at', { ascending: false }),
         sb.from('company_stats').select('*')
       ]);
-      if (cRes.error) { box.innerHTML = '<div class="card">Error: ' + esc(cRes.error.message) + '</div>'; return; }
+      if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
       stats = {};
       (sRes.data || []).forEach(s => stats[s.company_id] = s);
@@ -269,24 +404,24 @@
         if (editingId === c.id) {
           return `
           <div class="card">
-            <h4>Edit company</h4>
+            <h4>${esc(t_('editCompany'))}</h4>
             <div id="editMsg" class="msg"></div>
-            <input id="eName" type="text" value="${esc(c.name)}" placeholder="Company name *">
-            <textarea id="eDesc" rows="3" placeholder="Description">${esc(c.description || '')}</textarea>
-            <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="Phone">
-            <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="Email">
-            ${c.logo_url ? `<div class="fileline">Current logo:</div><img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
-            <div class="fileline">${c.logo_url ? 'Replace logo (optional):' : 'Logo (optional):'}</div>
+            <input id="eName" type="text" value="${esc(c.name)}" placeholder="${esc(t_('companyName'))}">
+            <textarea id="eDesc" rows="3" placeholder="${esc(t_('description'))}">${esc(c.description || '')}</textarea>
+            <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="${esc(t_('phone'))}">
+            <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="${esc(t_('email'))}">
+            ${c.logo_url ? `<div class="fileline">${esc(t_('currentLogo'))}</div><img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
+            <div class="fileline">${esc(c.logo_url ? t_('replaceLogo') : t_('logoOpt'))}</div>
             <input id="eLogoFile" type="file" accept="image/*">
-            <button data-saveedit="${c.id}">Save</button>
-            <button class="link" data-canceledit="1">Cancel</button>
+            <button data-saveedit="${c.id}">${esc(t_('save'))}</button>
+            <button class="link" data-canceledit="1">${esc(t_('cancel'))}</button>
           </div>`;
         }
         const s = stats[c.id];
         const overall = ov(c);
         const rating = s
           ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>`
-          : `<span class="meta">No reviews yet</span>`;
+          : `<span class="meta">${esc(t_('noReviewsYet'))}</span>`;
         return `
           <div class="card">
             <div class="row">
@@ -298,15 +433,15 @@
                 </div>
               </div>
               <div class="actions">
-                <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
-                ${isAdmin ? `<button class="gold" data-edco="${c.id}">Edit</button><button class="danger" data-delco="${c.id}">Delete</button>` : ''}
+                <button data-open="${c.id}">${esc(openId === c.id ? t_('close') : t_('reviews'))}</button>
+                ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
               </div>
             </div>
             ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
             <div class="meta">${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
           </div>`;
-      }).join('') : '<p>No companies found.</p>';
+      }).join('') : '<p>' + esc(t_('noCompanies')) + '</p>';
 
       if (openId) loadDetail(openId);
     }
@@ -314,43 +449,43 @@
     async function loadDetail(companyId) {
       const el = $('detail');
       if (!el) return;
-      el.innerHTML = 'Loading...';
+      el.innerHTML = esc(t_('loading'));
       const { data, error } = await sb.from('reviews').select('*').eq('company_id', companyId).order('created_at', { ascending: false });
-      if (error) { el.innerHTML = 'Error: ' + esc(error.message); return; }
+      if (error) { el.innerHTML = esc(t_('error')) + ': ' + esc(error.message); return; }
 
       const mine = data.find(r => r.user_id === myUid);
       if (!Object.keys(draft).length && mine) {
-        CATS.forEach(([k]) => draft[k] = mine[k]);
+        CAT_KEYS.forEach(k => draft[k] = mine[k]);
         draft.comment = mine.comment || '';
       }
 
-      const avgs = CATS.map(([k, label]) => {
+      const avgs = CAT_KEYS.map(k => {
         const a = data.length ? data.reduce((t, r) => t + r[k], 0) / data.length : 0;
-        return `<div class="catrow"><span>${label}</span><span><span class="stars">${stars(a)}</span><span class="num">${data.length ? a.toFixed(1) : '-'}</span></span></div>`;
+        return `<div class="catrow"><span>${esc(catLabel(k))}</span><span><span class="stars">${stars(a)}</span><span class="num">${data.length ? a.toFixed(1) : '-'}</span></span></div>`;
       }).join('');
 
-      const form = CATS.map(([k, label]) => `
-        <div class="catrow"><span>${label}</span>
+      const form = CAT_KEYS.map(k => `
+        <div class="catrow"><span>${esc(catLabel(k))}</span>
           <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
         </div>`).join('');
 
       const list = data.length ? data.map(r => `
         <div class="rev">
           <span class="stars">${stars((r.punctuality + r.price + r.service + r.cleanliness + r.driving) / 5)}</span>
-          <span class="meta">${new Date(r.created_at).toLocaleDateString()}</span>
-          ${r.comment ? `<div><b>Other issue:</b> ${esc(r.comment)}</div>` : ''}
-          <div class="cats">${CATS.map(([k, label]) => `${label}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
-        </div>`).join('') : '<p class="meta">No reviews yet. Be the first!</p>';
+          <span class="meta">${new Date(r.created_at).toLocaleDateString(lang)}</span>
+          ${r.comment ? `<div><b>${esc(t_('otherIssue'))}:</b> ${esc(r.comment)}</div>` : ''}
+          <div class="cats">${CAT_KEYS.map(k => `${esc(catLabel(k))}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
+        </div>`).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
 
       el.innerHTML = `
-        <h4>Ratings by category</h4>${avgs}
-        <h4>${mine ? 'Edit your review' : 'Write a review'} (anonymous)</h4>
+        <h4>${esc(t_('ratingsByCat'))}</h4>${avgs}
+        <h4>${esc(mine ? t_('editReview') : t_('writeReview'))} ${esc(t_('anonymous'))}</h4>
         <div id="revMsg" class="msg"></div>
         ${form}
-        <textarea id="revComment" rows="3" placeholder="Other issue">${esc(draft.comment || '')}</textarea>
-        <button id="submitReview" data-company="${companyId}">${mine ? 'Update review' : 'Submit review'}</button>
-        ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">Delete my review</button>` : ''}
-        <h4>All reviews (${data.length})</h4>${list}`;
+        <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
+        <button id="submitReview" data-company="${companyId}">${esc(mine ? t_('update') : t_('submit'))}</button>
+        ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
+        <h4>${esc(t_('allReviews'))} (${data.length})</h4>${list}`;
     }
 
     document.addEventListener('click', async (e) => {
@@ -373,7 +508,7 @@
       }
 
       if (ds.delco) {
-        if (!confirm('Delete this company and ALL its reviews? This cannot be undone.')) return;
+        if (!confirm(t_('confirmDelCo'))) return;
         const { error } = await sb.from('companies').delete().eq('id', ds.delco);
         if (error) { alert(error.message); return; }
         if (openId === ds.delco) openId = null;
@@ -386,7 +521,7 @@
 
       if (ds.saveedit) {
         const name = $('eName').value.trim();
-        if (!name) return showMsg($('editMsg'), 'Company name is required', false);
+        if (!name) return showMsg($('editMsg'), t_('nameRequired'), false);
         t.disabled = true;
         try {
           const ph = $('ePhone').value.trim();
@@ -411,14 +546,14 @@
 
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
-        if (CATS.some(([k]) => !draft[k])) return showMsg(msg, 'Please rate all 5 categories', false);
+        if (CAT_KEYS.some(k => !draft[k])) return showMsg(msg, t_('rateAll'), false);
         const row = {
           company_id: t.dataset.company,
           user_id: myUid,
           comment: $('revComment').value.trim() || null,
           updated_at: new Date().toISOString()
         };
-        CATS.forEach(([k]) => row[k] = draft[k]);
+        CAT_KEYS.forEach(k => row[k] = draft[k]);
         const { error } = await sb.from('reviews').upsert(row, { onConflict: 'company_id,user_id' });
         if (error) return showMsg(msg, error.message, false);
         draft = {};
@@ -427,7 +562,7 @@
       }
 
       if (t.id === 'deleteReview') {
-        if (!confirm('Delete your review?')) return;
+        if (!confirm(t_('confirmDelRev'))) return;
         const { error } = await sb.from('reviews').delete()
           .eq('company_id', t.dataset.company).eq('user_id', myUid);
         if (error) return showMsg($('revMsg'), error.message, false);
@@ -439,21 +574,25 @@
     async function render(session) {
       if (session) {
         myUid = session.user.id;
+        myEmail = session.user.email;
+        loggedIn = true;
         $('authView').classList.add('hidden');
         $('mainView').classList.remove('hidden');
-        $('userbar').innerHTML = `${esc(session.user.email)} <button id="logoutBtn">Log out</button>`;
-        $('logoutBtn').onclick = logout;
+        applyStaticText();
         await checkAdmin();
         loadCompanies();
       } else {
         myUid = null;
+        myEmail = '';
+        loggedIn = false;
         isAdmin = false;
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
-        $('userbar').innerHTML = '';
+        applyStaticText();
       }
     }
 
+    applyStaticText();
     sb.auth.onAuthStateChange((_event, session) => { render(session); });
     sb.auth.getSession().then(({ data }) => render(data.session));
   </script>
