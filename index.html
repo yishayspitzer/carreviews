@@ -14,16 +14,20 @@
     h1 span { color:#e8a317; }
     .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:14px; margin:10px 0; }
     .box { max-width:360px; margin:30px auto; }
-    input { width:100%; padding:10px; margin:6px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:6px; }
+    input, textarea { width:100%; padding:10px; margin:6px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:6px; font-family:inherit; }
     .pwwrap { position:relative; }
     .pwwrap input { padding-right:70px; }
     .pwwrap button { position:absolute; right:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:#1a3c6e; }
     button { padding:10px 16px; border:0; border-radius:6px; background:#1a3c6e; color:#fff; cursor:pointer; }
     button.link { background:none; color:#1a3c6e; text-decoration:underline; padding:4px; }
+    button.gold { background:#e8a317; }
     .msg { padding:8px; border-radius:6px; margin:8px 0; display:none; }
     .err { background:#fde8e8; color:#a00; }
     .ok  { background:#e6f7e9; color:#0a6a22; }
     .hidden { display:none; }
+    .row { display:flex; justify-content:space-between; align-items:center; }
+    .cname { font-weight:bold; color:#1a3c6e; font-size:18px; }
+    .meta { color:#555; font-size:14px; margin-top:4px; }
   </style>
 </head>
 <body>
@@ -59,7 +63,22 @@
   </div>
 
   <div id="mainView" class="hidden">
-    <h2>Companies</h2>
+    <div class="row">
+      <h2>Companies</h2>
+      <button id="addToggle" class="gold">+ Add company</button>
+    </div>
+
+    <div id="addForm" class="card hidden">
+      <h3>Add a company</h3>
+      <div id="addMsg" class="msg"></div>
+      <input id="cName" type="text" placeholder="Company name *">
+      <textarea id="cDesc" rows="3" placeholder="Description"></textarea>
+      <input id="cPhone" type="text" placeholder="Phone">
+      <input id="cEmail" type="email" placeholder="Email">
+      <input id="cLogo" type="text" placeholder="Logo URL (optional)">
+      <button id="saveCompany">Save company</button>
+    </div>
+
     <div id="companies"></div>
   </div>
 
@@ -70,6 +89,7 @@
 
     let isSignup = false;
     const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
     $('showPw').onclick = () => {
       const p = $('password');
@@ -78,11 +98,10 @@
       $('showPw').textContent = show ? '🙈 Hide' : '👁 Show';
     };
 
-    function showMsg(text, ok) {
-      const m = $('msg');
-      m.textContent = text;
-      m.className = 'msg ' + (ok ? 'ok' : 'err');
-      m.style.display = 'block';
+    function showMsg(el, text, ok) {
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'ok' : 'err');
+      el.style.display = 'block';
     }
 
     function setMode(signup) {
@@ -99,30 +118,55 @@
     $('authBtn').onclick = async () => {
       const email = $('email').value.trim();
       const password = $('password').value;
-      if (!email || password.length < 6) return showMsg('Enter email and a password of 6+ characters', false);
+      if (!email || password.length < 6) return showMsg($('msg'), 'Enter email and a password of 6+ characters', false);
 
       if (isSignup) {
         const full_name = $('fullName').value.trim();
         const { data, error } = await sb.auth.signUp({
           email, password, options: { data: { full_name } }
         });
-        if (error) return showMsg(error.message, false);
-        if (data.session) { showMsg('Account created ✅', true); }
-        else { showMsg('Account created. Check your email to confirm, then log in.', true); setMode(false); }
+        if (error) return showMsg($('msg'), error.message, false);
+        if (data.session) { showMsg($('msg'), 'Account created ✅', true); }
+        else { showMsg($('msg'), 'Account created. Check your email to confirm, then log in.', true); setMode(false); }
       } else {
         const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) return showMsg(error.message, false);
+        if (error) return showMsg($('msg'), error.message, false);
       }
     };
 
     async function logout() { await sb.auth.signOut(); }
 
+    $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
+
+    $('saveCompany').onclick = async () => {
+      const name = $('cName').value.trim();
+      if (!name) return showMsg($('addMsg'), 'Company name is required', false);
+      const row = {
+        name,
+        description: $('cDesc').value.trim() || null,
+        phone: $('cPhone').value.trim() || null,
+        email: $('cEmail').value.trim() || null,
+        logo_url: $('cLogo').value.trim() || null
+      };
+      const { error } = await sb.from('companies').insert(row);
+      if (error) return showMsg($('addMsg'), error.message, false);
+      ['cName','cDesc','cPhone','cEmail','cLogo'].forEach(id => $(id).value = '');
+      $('addMsg').style.display = 'none';
+      $('addForm').classList.add('hidden');
+      loadCompanies();
+    };
+
     async function loadCompanies() {
-      const { data, error } = await sb.from('companies').select('*');
+      const { data, error } = await sb.from('companies').select('*').order('created_at', { ascending: false });
       const box = $('companies');
-      if (error) { box.innerHTML = '<div class="card">Error: ' + error.message + '</div>'; return; }
+      if (error) { box.innerHTML = '<div class="card">Error: ' + esc(error.message) + '</div>'; return; }
       box.innerHTML = data.length
-        ? data.map(c => `<div class="card">${c.name ?? JSON.stringify(c)}</div>`).join('')
+        ? data.map(c => `
+            <div class="card">
+              <div class="cname">${esc(c.name)}</div>
+              ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
+              <div class="meta">${c.phone ? '📞 ' + esc(c.phone) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
+            </div>`).join('')
         : '<p>No companies yet.</p>';
     }
 
@@ -130,7 +174,7 @@
       if (session) {
         $('authView').classList.add('hidden');
         $('mainView').classList.remove('hidden');
-        $('userbar').innerHTML = `${session.user.email} <button id="logoutBtn">Log out</button>`;
+        $('userbar').innerHTML = `${esc(session.user.email)} <button id="logoutBtn">Log out</button>`;
         $('logoutBtn').onclick = logout;
         loadCompanies();
       } else {
