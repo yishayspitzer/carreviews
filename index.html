@@ -127,6 +127,14 @@
     let allCompanies = [];
     let stats = {};
         let isAdmin = false;
+    let editingId = null;
+
+    async function checkAdmin() {
+      if (!myUid) { isAdmin = false; return; }
+      const { data } = await sb.from('profiles').select('role').eq('id', myUid).maybeSingle();
+      isAdmin = !!data && data.role === 'admin';
+    }
+        let isAdmin = false;
 
     async function checkAdmin() {
       if (!myUid) { isAdmin = false; return; }
@@ -243,6 +251,20 @@
         const rating = s
           ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>`
           : `<span class="meta">No reviews yet</span>`;
+               if (editingId === c.id) {
+          return `
+          <div class="card">
+            <h4>Edit company</h4>
+            <div id="editMsg" class="msg"></div>
+            <input id="eName" type="text" value="${esc(c.name)}" placeholder="Company name *">
+            <textarea id="eDesc" rows="3" placeholder="Description">${esc(c.description || '')}</textarea>
+            <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="Phone">
+            <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="Email">
+            <input id="eLogo" type="text" value="${esc(c.logo_url || '')}" placeholder="Logo URL">
+            <button data-saveedit="${c.id}">Save</button>
+            <button class="link" data-canceledit="1">Cancel</button>
+          </div>`;
+        }
         return `
           <div class="card">
             <div class="row">
@@ -252,24 +274,13 @@
               </div>
               <div>
                 <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
-                ${isAdmin ? `<button class="danger" data-delco="${c.id}">Delete</button>` : ''}
-              </div>            </div>
+                ${isAdmin ? `<button class="gold" data-edco="${c.id}">Edit</button> <button class="danger" data-delco="${c.id}">Delete</button>` : ''}
+              </div>
+            </div>
             ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
             <div class="meta">${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
           </div>`;
-      }).join('') : '<p>No companies found.</p>';
-
-      if (openId) loadDetail(openId);
-    }
-
-    async function loadDetail(companyId) {
-      const el = $('detail');
-      if (!el) return;
-      el.innerHTML = 'Loading...';
-      const { data, error } = await sb.from('reviews').select('*').eq('company_id', companyId).order('created_at', { ascending: false });
-      if (error) { el.innerHTML = 'Error: ' + esc(error.message); return; }
-
       const mine = data.find(r => r.user_id === myUid);
       if (!Object.keys(draft).length && mine) {
         CATS.forEach(([k]) => draft[k] = mine[k]);
@@ -333,7 +344,46 @@
         return;
       }
 
-      if (t.id === 'submitReview') {
+      if (t.dataset && t.dataset.delco) {
+        if (!confirm('Delete this company and ALL its reviews? This cannot be undone.')) return;
+        const { error } = await sb.from('companies').delete().eq('id', t.dataset.delco);
+        if (error) { alert(error.message); return; }
+        if (openId === t.dataset.delco) openId = null;
+        loadCompanies();
+        return;
+      }
+
+      if (t.dataset && t.dataset.edco) {
+        editingId = t.dataset.edco;
+        renderCompanies();
+        return;
+      }
+
+      if (t.dataset && t.dataset.canceledit) {
+        editingId = null;
+        renderCompanies();
+        return;
+      }
+
+      if (t.dataset && t.dataset.saveedit) {
+        const name = $('eName').value.trim();
+        if (!name) return showMsg($('editMsg'), 'Company name is required', false);
+        const ph = $('ePhone').value.trim();
+        const row = {
+          name,
+          description: $('eDesc').value.trim() || null,
+          phone: ph ? fmtPhone(ph) : null,
+          email: $('eEmail').value.trim() || null,
+          logo_url: $('eLogo').value.trim() || null
+        };
+        const { error } = await sb.from('companies').update(row).eq('id', t.dataset.saveedit);
+        if (error) return showMsg($('editMsg'), error.message, false);
+        editingId = null;
+        loadCompanies();
+        return;
+      }
+
+        if (t.id === 'submitReview') {
         const msg = $('revMsg');
         if (CATS.some(([k]) => !draft[k])) return showMsg(msg, 'Please rate all 5 categories', false);
         const row = {
@@ -367,6 +417,7 @@
         $('mainView').classList.remove('hidden');
         $('userbar').innerHTML = `${esc(session.user.email)} <button id="logoutBtn">Log out</button>`;
         $('logoutBtn').onclick = logout;
+                checkAdmin().then(loadCompanies);
 checkAdmin().then(loadCompanies);      } else {
         myUid = null;
         $('authView').classList.remove('hidden');
