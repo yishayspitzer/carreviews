@@ -23,6 +23,7 @@
     button.link { background:none; color:#1a3c6e; text-decoration:underline; padding:4px; }
     button.gold { background:#e8a317; }
     button.danger { background:#c0392b; }
+    button.small { padding:4px 10px; font-size:12px; margin-top:6px; }
     .msg { padding:8px; border-radius:6px; margin:8px 0; display:none; }
     .err { background:#fde8e8; color:#a00; }
     .ok  { background:#e6f7e9; color:#0a6a22; }
@@ -146,6 +147,7 @@
         save: 'Save', cancel: 'Cancel', nameRequired: 'Company name is required',
         logoTooBig: 'Logo is too big (max 2 MB)',
         confirmDelCo: 'Delete this company and ALL its reviews? This cannot be undone.',
+        confirmDelAnyRev: 'Delete this review? This cannot be undone.',
         ratingsByCat: 'Ratings by category', writeReview: 'Write a review', editReview: 'Edit your review',
         anonymous: '(anonymous)', otherIssue: 'Other issue',
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
@@ -172,6 +174,7 @@
         save: 'Сохранить', cancel: 'Отмена', nameRequired: 'Укажите название компании',
         logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
         confirmDelCo: 'Удалить эту компанию и ВСЕ её отзывы? Это нельзя отменить.',
+        confirmDelAnyRev: 'Удалить этот отзыв? Это нельзя отменить.',
         ratingsByCat: 'Оценки по категориям', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
         anonymous: '(анонимно)', otherIssue: 'Другая проблема',
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
@@ -198,6 +201,7 @@
         save: 'Guardar', cancel: 'Cancelar', nameRequired: 'El nombre de la empresa es obligatorio',
         logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
         confirmDelCo: '¿Eliminar esta empresa y TODAS sus reseñas? No se puede deshacer.',
+        confirmDelAnyRev: '¿Eliminar esta reseña? No se puede deshacer.',
         ratingsByCat: 'Calificaciones por categoría', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
         anonymous: '(anónima)', otherIssue: 'Otro problema',
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
@@ -475,6 +479,7 @@
           <span class="meta">${new Date(r.created_at).toLocaleDateString(lang)}</span>
           ${r.comment ? `<div><b>${esc(t_('otherIssue'))}:</b> ${esc(r.comment)}</div>` : ''}
           <div class="cats">${CAT_KEYS.map(k => `${esc(catLabel(k))}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
+          ${isAdmin && r.user_id !== myUid ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : ''}
         </div>`).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
 
       el.innerHTML = `
@@ -504,6 +509,14 @@
         const v = Number(t.dataset.v);
         draft[cat] = v;
         t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= v));
+        return;
+      }
+
+      if (ds.delrev) {
+        if (!confirm(t_('confirmDelAnyRev'))) return;
+        const { error } = await sb.from('reviews').delete().eq('id', ds.delrev);
+        if (error) { alert(error.message); return; }
+        loadCompanies();
         return;
       }
 
