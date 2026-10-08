@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarReviews</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 16px; }
+    h1 { color: #1a3c6e; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin: 10px 0; }
+    .status { padding: 8px; border-radius: 6px; background: #eef; }
+  </style>
+</head>
+<body>
+  <h1>🚗 CarReviews</h1>
+  <div id="status" class="status">Connecting to Supabase...</div>
+  <h2>Companies</h2>
+  <div id="companies"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadCompanies() {
+      const { data, error } = await sb.from('companies').select('*');
+      const status = document.getElementById('status');
+      if (error) {
+        status.textContent = 'Error: ' + error.message;
+        return;
+      }
+      status.textContent = 'Connected ✅';
+      const box = document.getElementById('companies');
+      box.innerHTML = data.length
+        ? data.map(c => `<div class="card">${c.name ?? JSON.stringify(c)}</div>`).join('')
+        : '<p>No companies yet.</p>';
+    }
+    loadCompanies();
+  </script>
+</body>
+</html>
