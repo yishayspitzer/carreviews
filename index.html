@@ -29,6 +29,8 @@
     .hidden { display:none; }
     .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+    .cinfo { display:flex; align-items:center; gap:12px; }
+    .clogo { width:56px; height:56px; object-fit:contain; border-radius:8px; border:1px solid #eee; background:#fff; }
     .cname { font-weight:bold; color:#1a3c6e; font-size:18px; }
     .meta { color:#555; font-size:14px; margin-top:4px; }
     .stars { color:#e8a317; letter-spacing:2px; font-size:18px; }
@@ -43,6 +45,7 @@
     .filters { display:flex; gap:10px; margin:6px 0; }
     .filters input { flex:2; }
     .filters select { flex:1; }
+    .fileline { font-size:13px; color:#555; margin:6px 0 2px; }
     h4 { margin:14px 0 6px; color:#1a3c6e; }
   </style>
 </head>
@@ -91,7 +94,8 @@
       <textarea id="cDesc" rows="3" placeholder="Description"></textarea>
       <input id="cPhone" type="text" placeholder="Phone">
       <input id="cEmail" type="email" placeholder="Email">
-      <input id="cLogo" type="text" placeholder="Logo URL (optional)">
+      <div class="fileline">Logo (optional):</div>
+      <input id="cLogoFile" type="file" accept="image/*">
       <button id="saveCompany">Save company</button>
     </div>
 
@@ -139,6 +143,16 @@
       if (d.length === 11 && d[0] === '1') return d.slice(1,4) + '-' + d.slice(4,7) + '-' + d.slice(7);
       return String(p ?? '');
     };
+
+    async function uploadLogo(file) {
+      if (!file) return null;
+      if (file.size > 2 * 1024 * 1024) throw new Error('Logo is too big (max 2 MB)');
+      const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      const { error } = await sb.storage.from('logos').upload(path, file, { contentType: file.type });
+      if (error) throw error;
+      return sb.storage.from('logos').getPublicUrl(path).data.publicUrl;
+    }
 
     async function checkAdmin() {
       isAdmin = false;
@@ -196,20 +210,28 @@
     $('saveCompany').onclick = async () => {
       const name = $('cName').value.trim();
       if (!name) return showMsg($('addMsg'), 'Company name is required', false);
-      const phoneRaw = $('cPhone').value.trim();
-      const row = {
-        name,
-        description: $('cDesc').value.trim() || null,
-        phone: phoneRaw ? fmtPhone(phoneRaw) : null,
-        email: $('cEmail').value.trim() || null,
-        logo_url: $('cLogo').value.trim() || null
-      };
-      const { error } = await sb.from('companies').insert(row);
-      if (error) return showMsg($('addMsg'), error.message, false);
-      ['cName','cDesc','cPhone','cEmail','cLogo'].forEach(id => $(id).value = '');
-      $('addMsg').style.display = 'none';
-      $('addForm').classList.add('hidden');
-      loadCompanies();
+      const btn = $('saveCompany');
+      btn.disabled = true;
+      try {
+        const logo_url = await uploadLogo($('cLogoFile').files[0]);
+        const phoneRaw = $('cPhone').value.trim();
+        const row = {
+          name,
+          description: $('cDesc').value.trim() || null,
+          phone: phoneRaw ? fmtPhone(phoneRaw) : null,
+          email: $('cEmail').value.trim() || null,
+          logo_url
+        };
+        const { error } = await sb.from('companies').insert(row);
+        if (error) throw error;
+        ['cName','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
+        $('addMsg').style.display = 'none';
+        $('addForm').classList.add('hidden');
+        loadCompanies();
+      } catch (err) {
+        showMsg($('addMsg'), err.message || String(err), false);
+      }
+      btn.disabled = false;
     };
 
     $('search').oninput = () => renderCompanies();
@@ -253,7 +275,9 @@
             <textarea id="eDesc" rows="3" placeholder="Description">${esc(c.description || '')}</textarea>
             <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="Phone">
             <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="Email">
-            <input id="eLogo" type="text" value="${esc(c.logo_url || '')}" placeholder="Logo URL">
+            ${c.logo_url ? `<div class="fileline">Current logo:</div><img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
+            <div class="fileline">${c.logo_url ? 'Replace logo (optional):' : 'Logo (optional):'}</div>
+            <input id="eLogoFile" type="file" accept="image/*">
             <button data-saveedit="${c.id}">Save</button>
             <button class="link" data-canceledit="1">Cancel</button>
           </div>`;
@@ -266,9 +290,12 @@
         return `
           <div class="card">
             <div class="row">
-              <div>
-                <div class="cname">${esc(c.name)}</div>
-                <div>${rating}</div>
+              <div class="cinfo">
+                ${c.logo_url ? `<img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
+                <div>
+                  <div class="cname">${esc(c.name)}</div>
+                  <div>${rating}</div>
+                </div>
               </div>
               <div class="actions">
                 <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
@@ -360,18 +387,25 @@
       if (ds.saveedit) {
         const name = $('eName').value.trim();
         if (!name) return showMsg($('editMsg'), 'Company name is required', false);
-        const ph = $('ePhone').value.trim();
-        const row = {
-          name,
-          description: $('eDesc').value.trim() || null,
-          phone: ph ? fmtPhone(ph) : null,
-          email: $('eEmail').value.trim() || null,
-          logo_url: $('eLogo').value.trim() || null
-        };
-        const { error } = await sb.from('companies').update(row).eq('id', ds.saveedit);
-        if (error) return showMsg($('editMsg'), error.message, false);
-        editingId = null;
-        loadCompanies();
+        t.disabled = true;
+        try {
+          const ph = $('ePhone').value.trim();
+          const row = {
+            name,
+            description: $('eDesc').value.trim() || null,
+            phone: ph ? fmtPhone(ph) : null,
+            email: $('eEmail').value.trim() || null
+          };
+          const file = $('eLogoFile').files[0];
+          if (file) row.logo_url = await uploadLogo(file);
+          const { error } = await sb.from('companies').update(row).eq('id', ds.saveedit);
+          if (error) throw error;
+          editingId = null;
+          loadCompanies();
+        } catch (err) {
+          showMsg($('editMsg'), err.message || String(err), false);
+          t.disabled = false;
+        }
         return;
       }
 
