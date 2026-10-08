@@ -126,6 +126,13 @@
     let myUid = null;
     let allCompanies = [];
     let stats = {};
+        let isAdmin = false;
+
+    async function checkAdmin() {
+      if (!myUid) { isAdmin = false; return; }
+      const { data } = await sb.from('profiles').select('role').eq('id', myUid).maybeSingle();
+      isAdmin = !!data && data.role === 'admin';
+    }
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -243,8 +250,10 @@
                 <div class="cname">${esc(c.name)}</div>
                 <div>${rating}</div>
               </div>
-              <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
-            </div>
+              <div>
+                <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
+                ${isAdmin ? `<button class="danger" data-delco="${c.id}">Delete</button>` : ''}
+              </div>            </div>
             ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
             <div class="meta">${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
@@ -315,6 +324,15 @@
         return;
       }
 
+      if (t.dataset && t.dataset.delco) {
+        if (!confirm('Delete this company and ALL its reviews? This cannot be undone.')) return;
+        const { error } = await sb.from('companies').delete().eq('id', t.dataset.delco);
+        if (error) { alert(error.message); return; }
+        if (openId === t.dataset.delco) openId = null;
+        loadCompanies();
+        return;
+      }
+
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
         if (CATS.some(([k]) => !draft[k])) return showMsg(msg, 'Please rate all 5 categories', false);
@@ -349,8 +367,7 @@
         $('mainView').classList.remove('hidden');
         $('userbar').innerHTML = `${esc(session.user.email)} <button id="logoutBtn">Log out</button>`;
         $('logoutBtn').onclick = logout;
-        loadCompanies();
-      } else {
+checkAdmin().then(loadCompanies);      } else {
         myUid = null;
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
