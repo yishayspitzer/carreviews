@@ -25,9 +25,19 @@
     .err { background:#fde8e8; color:#a00; }
     .ok  { background:#e6f7e9; color:#0a6a22; }
     .hidden { display:none; }
-    .row { display:flex; justify-content:space-between; align-items:center; }
+    .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .cname { font-weight:bold; color:#1a3c6e; font-size:18px; }
     .meta { color:#555; font-size:14px; margin-top:4px; }
+    .stars { color:#e8a317; letter-spacing:2px; font-size:18px; }
+    .stars.big { font-size:22px; }
+    .num { color:#333; font-size:14px; margin-left:6px; letter-spacing:0; }
+    .detail { border-top:1px solid #eee; margin-top:12px; padding-top:12px; }
+    .catrow { display:flex; justify-content:space-between; align-items:center; padding:5px 0; }
+    .pick .st { cursor:pointer; font-size:26px; color:#ccc; padding:0 2px; user-select:none; }
+    .pick .st.on { color:#e8a317; }
+    .rev { background:#f8f9fb; border-radius:6px; padding:10px; margin:8px 0; }
+    .rev .cats { font-size:13px; color:#555; margin-top:4px; }
+    h4 { margin:14px 0 6px; color:#1a3c6e; }
   </style>
 </head>
 <body>
@@ -87,9 +97,22 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    const CATS = [
+      ['punctuality', '⏱ Punctuality'],
+      ['price',       '💲 Price'],
+      ['service',     '🤝 Service'],
+      ['cleanliness', '✨ Cleanliness'],
+      ['driving',     '🛡 Safe driving']
+    ];
+
     let isSignup = false;
+    let openId = null;     // company whose reviews are open
+    let draft = {};        // current review form values
+    let myUid = null;
+
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const stars = v => { const n = Math.round(Number(v) || 0); return '★'.repeat(n) + '☆'.repeat(5 - n); };
 
     $('showPw').onclick = () => {
       const p = $('password');
@@ -112,21 +135,17 @@
       $('nameWrap').classList.toggle('hidden', !signup);
       $('msg').style.display = 'none';
     }
-
     $('toggleBtn').onclick = () => setMode(!isSignup);
 
     $('authBtn').onclick = async () => {
       const email = $('email').value.trim();
       const password = $('password').value;
       if (!email || password.length < 6) return showMsg($('msg'), 'Enter email and a password of 6+ characters', false);
-
       if (isSignup) {
         const full_name = $('fullName').value.trim();
-        const { data, error } = await sb.auth.signUp({
-          email, password, options: { data: { full_name } }
-        });
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name } } });
         if (error) return showMsg($('msg'), error.message, false);
-        if (data.session) { showMsg($('msg'), 'Account created ✅', true); }
+        if (data.session) showMsg($('msg'), 'Account created ✅', true);
         else { showMsg($('msg'), 'Account created. Check your email to confirm, then log in.', true); setMode(false); }
       } else {
         const { error } = await sb.auth.signInWithPassword({ email, password });
@@ -134,7 +153,7 @@
       }
     };
 
-    async function logout() { await sb.auth.signOut(); }
+    async function logout() { openId = null; await sb.auth.signOut(); }
 
     $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
 
@@ -157,27 +176,126 @@
     };
 
     async function loadCompanies() {
-      const { data, error } = await sb.from('companies').select('*').order('created_at', { ascending: false });
       const box = $('companies');
-      if (error) { box.innerHTML = '<div class="card">Error: ' + esc(error.message) + '</div>'; return; }
-      box.innerHTML = data.length
-        ? data.map(c => `
-            <div class="card">
-              <div class="cname">${esc(c.name)}</div>
-              ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
-              <div class="meta">${c.phone ? '📞 ' + esc(c.phone) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
-            </div>`).join('')
-        : '<p>No companies yet.</p>';
+      const [cRes, sRes] = await Promise.all([
+        sb.from('companies').select('*').order('created_at', { ascending: false }),
+        sb.from('company_stats').select('*')
+      ]);
+      if (cRes.error) { box.innerHTML = '<div class="card">Error: ' + esc(cRes.error.message) + '</div>'; return; }
+      const stats = {};
+      (sRes.data || []).forEach(s => stats[s.company_id] = s);
+
+      box.innerHTML = cRes.data.length ? cRes.data.map(c => {
+        const s = stats[c.id];
+        const overall = s ? Number(s.overall) : 0;
+        const rating = s
+          ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>`
+          : `<span class="meta">No reviews yet</span>`;
+        return `
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="cname">${esc(c.name)}</div>
+                <div>${rating}</div>
+              </div>
+              <button data-open="${c.id}">${openId === c.id ? 'Close' : 'Reviews'}</button>
+            </div>
+            ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
+            <div class="meta">${c.phone ? '📞 ' + esc(c.phone) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
+            ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
+          </div>`;
+      }).join('') : '<p>No companies yet.</p>';
+
+      if (openId) loadDetail(openId);
     }
+
+    async function loadDetail(companyId) {
+      const el = $('detail');
+      if (!el) return;
+      el.innerHTML = 'Loading...';
+      const { data, error } = await sb.from('reviews').select('*').eq('company_id', companyId).order('created_at', { ascending: false });
+      if (error) { el.innerHTML = 'Error: ' + esc(error.message); return; }
+
+      const mine = data.find(r => r.user_id === myUid);
+      if (!Object.keys(draft).length && mine) {
+        CATS.forEach(([k]) => draft[k] = mine[k]);
+        draft.comment = mine.comment || '';
+      }
+
+      const avgs = CATS.map(([k, label]) => {
+        const a = data.length ? data.reduce((t, r) => t + r[k], 0) / data.length : 0;
+        return `<div class="catrow"><span>${label}</span><span><span class="stars">${stars(a)}</span><span class="num">${data.length ? a.toFixed(1) : '-'}</span></span></div>`;
+      }).join('');
+
+      const form = CATS.map(([k, label]) => `
+        <div class="catrow"><span>${label}</span>
+          <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
+        </div>`).join('');
+
+      const list = data.length ? data.map(r => `
+        <div class="rev">
+          <span class="stars">${stars((r.punctuality + r.price + r.service + r.cleanliness + r.driving) / 5)}</span>
+          <span class="meta">${new Date(r.created_at).toLocaleDateString()}</span>
+          ${r.comment ? `<div>${esc(r.comment)}</div>` : ''}
+          <div class="cats">${CATS.map(([k, label]) => `${label}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
+        </div>`).join('') : '<p class="meta">No reviews yet. Be the first!</p>';
+
+      el.innerHTML = `
+        <h4>Ratings by category</h4>${avgs}
+        <h4>${mine ? 'Edit your review' : 'Write a review'} (anonymous)</h4>
+        <div id="revMsg" class="msg"></div>
+        ${form}
+        <textarea id="revComment" rows="3" placeholder="Comment (optional)">${esc(draft.comment || '')}</textarea>
+        <button id="submitReview" data-company="${companyId}">${mine ? 'Update review' : 'Submit review'}</button>
+        <h4>All reviews (${data.length})</h4>${list}`;
+    }
+
+    document.addEventListener('click', async (e) => {
+      const t = e.target;
+
+      if (t.dataset.open) {
+        const id = t.dataset.open;
+        openId = (openId === id) ? null : id;
+        draft = {};
+        loadCompanies();
+        return;
+      }
+
+      if (t.classList.contains('st')) {
+        const cat = t.parentElement.dataset.cat;
+        const v = Number(t.dataset.v);
+        draft[cat] = v;
+        t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= v));
+        return;
+      }
+
+      if (t.id === 'submitReview') {
+        const msg = $('revMsg');
+        if (CATS.some(([k]) => !draft[k])) return showMsg(msg, 'Please rate all 5 categories', false);
+        const row = {
+          company_id: t.dataset.company,
+          user_id: myUid,
+          comment: $('revComment').value.trim() || null,
+          updated_at: new Date().toISOString()
+        };
+        CATS.forEach(([k]) => row[k] = draft[k]);
+        const { error } = await sb.from('reviews').upsert(row, { onConflict: 'company_id,user_id' });
+        if (error) return showMsg(msg, error.message, false);
+        draft = {};
+        loadCompanies();
+      }
+    });
 
     function render(session) {
       if (session) {
+        myUid = session.user.id;
         $('authView').classList.add('hidden');
         $('mainView').classList.remove('hidden');
         $('userbar').innerHTML = `${esc(session.user.email)} <button id="logoutBtn">Log out</button>`;
         $('logoutBtn').onclick = logout;
         loadCompanies();
       } else {
+        myUid = null;
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
         $('userbar').innerHTML = '';
