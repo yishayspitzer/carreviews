@@ -35,22 +35,37 @@
     .clogo { width:56px; height:56px; object-fit:contain; border-radius:8px; border:1px solid #eee; background:#fff; }
     .cname { font-weight:bold; color:#1a3c6e; font-size:18px; }
     .meta { color:#555; font-size:14px; margin-top:4px; }
+    .rec { color:#1e8e3e; font-size:14px; margin-left:8px; font-weight:bold; }
     .stars { color:#e8a317; letter-spacing:2px; font-size:18px; }
     .stars.big { font-size:22px; }
     .num { color:#333; font-size:14px; margin-left:6px; letter-spacing:0; }
     .detail { border-top:1px solid #eee; margin-top:12px; padding-top:12px; }
     .catrow { display:flex; justify-content:space-between; align-items:center; padding:5px 0; gap:8px; }
+    .grp { font-weight:bold; color:#1a3c6e; background:#eef2f8; border-radius:6px; padding:6px 10px; margin:10px 0 4px; font-size:14px; }
     .pick .st { cursor:pointer; font-size:26px; color:#ccc; padding:0 2px; user-select:none; }
     .pick .st.on { color:#e8a317; }
     .rev { background:#f8f9fb; border-radius:6px; padding:10px; margin:8px 0; }
     .rev .cats { font-size:13px; color:#555; margin-top:4px; }
-    .filters { display:flex; gap:10px; margin:6px 0; }
-    .filters input { flex:2; }
-    .filters select { flex:1; }
+    .filters { display:flex; gap:10px; margin:6px 0; flex-wrap:wrap; }
+    .filters input { flex:2 1 220px; }
+    .filters select { flex:1 1 150px; }
     .fileline { font-size:13px; color:#555; margin:6px 0 2px; }
     #userbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     #langSel { width:auto; margin:0; padding:6px 8px; }
     h4 { margin:14px 0 6px; color:#1a3c6e; }
+    .chips { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; }
+    .chip { padding:6px 12px; border-radius:16px; font-size:13px; background:#fff; border:1px solid #999; color:#555; cursor:pointer; }
+    .chip.pos { border-color:#1e8e3e; color:#1e8e3e; }
+    .chip.neg { border-color:#c0392b; color:#c0392b; }
+    .chip.pos.on { background:#1e8e3e; color:#fff; }
+    .chip.neg.on { background:#c0392b; color:#fff; }
+    .chip.static { cursor:default; padding:4px 10px; }
+    .recbtns { display:flex; gap:8px; margin:6px 0; }
+    .recbtn { background:#fff; color:#555; border:1px solid #999; padding:8px 16px; }
+    .recbtn.yes.on { background:#1e8e3e; color:#fff; border-color:#1e8e3e; }
+    .recbtn.no.on { background:#c0392b; color:#fff; border-color:#c0392b; }
+    .two { display:flex; gap:10px; flex-wrap:wrap; }
+    .two > * { flex:1 1 150px; }
     @media (max-width:560px) { .logoStrip { width:200px; height:43px; } .logoStrip img { width:232px; height:232px; left:-16px; top:-168px; } }
   </style>
 </head>
@@ -95,6 +110,7 @@
       <h3 id="tAddTitle"></h3>
       <div id="addMsg" class="msg"></div>
       <input id="cName" type="text">
+      <input id="cCity" type="text">
       <textarea id="cDesc" rows="3"></textarea>
       <input id="cPhone" type="text">
       <input id="cEmail" type="email">
@@ -105,6 +121,7 @@
 
     <div class="filters">
       <input id="search" type="text">
+      <select id="cityFilter"></select>
       <select id="sort">
         <option value="rating"></option>
         <option value="count"></option>
@@ -132,6 +149,7 @@
         created: 'Account created ✅', createdConfirm: 'Account created. Check your email to confirm, then log in.',
         companies: 'Companies', addCompany: '+ Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
+        cityPh: 'City / area (e.g. Monsey)', allCities: 'All cities',
         logoOpt: 'Logo (optional):', saveCompany: 'Save company',
         search: '🔍 Search companies...',
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
@@ -148,8 +166,19 @@
         confirmDelRev: 'Delete your review?', rateAll: 'Please rate all 5 categories',
         saved: 'Saved ✅', notSaved: 'Not saved. Please log out, log in again and retry.',
         allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
+        grpOffice: '🏢 Office / Dispatch', grpDriver: '🚗 Driver & car',
         punctuality: '⏱ Punctuality', price: '💲 Price', service: '🤝 Service',
-        cleanliness: '✨ Cleanliness', driving: '🛡 Safe driving'
+        cleanliness: '✨ Cleanliness', driving: '🛡 Safe driving',
+        recommendQ: 'Would you recommend this company?', yes: '👍 Yes', no: '👎 No',
+        recommendWord: 'recommend',
+        tagsTitle: 'What stood out? (optional)', saidTags: 'What people say',
+        tripWhen: 'When was your trip? (optional)', todPh: 'Time of day',
+        tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
+        trip: 'Trip',
+        tag_on_time: 'On time', tag_polite: 'Polite driver', tag_clean: 'Clean car',
+        tag_fair_price: 'Fair price', tag_safe: 'Safe driving', tag_great_service: 'Great service',
+        tag_late: 'Late', tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
+        tag_overcharged: 'Overcharged', tag_unsafe: 'Unsafe driving', tag_no_answer: 'Hard to reach'
       },
       ru: {
         login: 'Войти', signup: 'Регистрация', logout: 'Выйти',
@@ -160,6 +189,7 @@
         created: 'Аккаунт создан ✅', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
         companies: 'Компании', addCompany: '+ Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
+        cityPh: 'Город / район (напр. Monsey)', allCities: 'Все города',
         logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию',
         search: '🔍 Поиск компаний...',
         sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
@@ -176,8 +206,19 @@
         confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Пожалуйста, оцените все 5 категорий',
         saved: 'Сохранено ✅', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
         allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
+        grpOffice: '🏢 Офис / Диспетчер', grpDriver: '🚗 Водитель и машина',
         punctuality: '⏱ Пунктуальность', price: '💲 Цена', service: '🤝 Сервис',
-        cleanliness: '✨ Чистота', driving: '🛡 Безопасное вождение'
+        cleanliness: '✨ Чистота', driving: '🛡 Безопасное вождение',
+        recommendQ: 'Вы бы порекомендовали эту компанию?', yes: '👍 Да', no: '👎 Нет',
+        recommendWord: 'рекомендуют',
+        tagsTitle: 'Что запомнилось? (необязательно)', saidTags: 'Что говорят люди',
+        tripWhen: 'Когда была поездка? (необязательно)', todPh: 'Время суток',
+        tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
+        trip: 'Поездка',
+        tag_on_time: 'Вовремя', tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
+        tag_fair_price: 'Честная цена', tag_safe: 'Безопасная езда', tag_great_service: 'Отличный сервис',
+        tag_late: 'Опоздание', tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
+        tag_overcharged: 'Завышенная цена', tag_unsafe: 'Опасная езда', tag_no_answer: 'Не дозвониться'
       },
       es: {
         login: 'Iniciar sesión', signup: 'Registrarse', logout: 'Cerrar sesión',
@@ -188,6 +229,7 @@
         created: 'Cuenta creada ✅', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
         companies: 'Empresas', addCompany: '+ Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
+        cityPh: 'Ciudad / zona (ej. Monsey)', allCities: 'Todas las ciudades',
         logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa',
         search: '🔍 Buscar empresas...',
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
@@ -204,8 +246,19 @@
         confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Por favor califica las 5 categorías',
         saved: 'Guardado ✅', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
         allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
+        grpOffice: '🏢 Oficina / Despacho', grpDriver: '🚗 Conductor y auto',
         punctuality: '⏱ Puntualidad', price: '💲 Precio', service: '🤝 Servicio',
-        cleanliness: '✨ Limpieza', driving: '🛡 Conducción segura'
+        cleanliness: '✨ Limpieza', driving: '🛡 Conducción segura',
+        recommendQ: '¿Recomendarías esta empresa?', yes: '👍 Sí', no: '👎 No',
+        recommendWord: 'recomiendan',
+        tagsTitle: '¿Qué destacó? (opcional)', saidTags: 'Lo que dice la gente',
+        tripWhen: '¿Cuándo fue tu viaje? (opcional)', todPh: 'Hora del día',
+        tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
+        trip: 'Viaje',
+        tag_on_time: 'Puntual', tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
+        tag_fair_price: 'Precio justo', tag_safe: 'Conducción segura', tag_great_service: 'Gran servicio',
+        tag_late: 'Tarde', tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
+        tag_overcharged: 'Cobro excesivo', tag_unsafe: 'Conducción peligrosa', tag_no_answer: 'Difícil de contactar'
       }
     };
 
@@ -219,6 +272,14 @@
     const t_ = k => (T[lang] && T[lang][k]) || T.en[k] || k;
 
     const CAT_KEYS = ['punctuality', 'price', 'service', 'cleanliness', 'driving'];
+    const GROUPS = [
+      ['grpOffice', ['punctuality', 'price', 'service']],
+      ['grpDriver', ['cleanliness', 'driving']]
+    ];
+    const POS_TAGS = ['on_time', 'polite', 'clean', 'fair_price', 'safe', 'great_service'];
+    const NEG_TAGS = ['late', 'rude', 'dirty', 'overcharged', 'unsafe', 'no_answer'];
+    const TODS = ['morning', 'afternoon', 'evening', 'night'];
+    const isPos = k => POS_TAGS.includes(k);
     const catLabel = k => t_(k);
 
     let isSignup = false;
@@ -231,6 +292,7 @@
     let loggedIn = false;
     let allCompanies = [];
     let stats = {};
+    let recStats = {};
     let myReviewId = null;
     let flash = '';
 
@@ -259,6 +321,7 @@
       $('addToggle').textContent = t_('addCompany');
       $('tAddTitle').textContent = t_('addTitle');
       $('cName').placeholder = t_('companyName');
+      $('cCity').placeholder = t_('cityPh');
       $('cDesc').placeholder = t_('description');
       $('cPhone').placeholder = t_('phone');
       $('cEmail').placeholder = t_('email');
@@ -356,6 +419,7 @@
         const phoneRaw = $('cPhone').value.trim();
         const row = {
           name,
+          city: $('cCity').value.trim() || null,
           description: $('cDesc').value.trim() || null,
           phone: phoneRaw ? fmtPhone(phoneRaw) : null,
           email: $('cEmail').value.trim() || null,
@@ -363,7 +427,7 @@
         };
         const { error } = await sb.from('companies').insert(row);
         if (error) throw error;
-        ['cName','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
+        ['cName','cCity','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
         $('addMsg').style.display = 'none';
         $('addForm').classList.add('hidden');
         loadCompanies();
@@ -375,17 +439,21 @@
 
     $('search').oninput = () => renderCompanies();
     $('sort').onchange = () => renderCompanies();
+    $('cityFilter').onchange = () => renderCompanies();
 
     async function loadCompanies() {
       const box = $('companies');
-      const [cRes, sRes] = await Promise.all([
+      const [cRes, sRes, rRes] = await Promise.all([
         sb.from('companies').select('*').order('created_at', { ascending: false }),
-        sb.from('company_stats').select('*')
+        sb.from('company_stats').select('*'),
+        sb.from('company_recommend').select('*')
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
       stats = {};
       (sRes.data || []).forEach(s => stats[s.company_id] = s);
+      recStats = {};
+      (rRes.data || []).forEach(s => recStats[s.company_id] = s);
       renderCompanies();
     }
 
@@ -396,8 +464,21 @@
       const ov = c => stats[c.id] ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
 
+      // City filter options
+      const cities = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b));
+      const citySel = $('cityFilter');
+      const curCity = citySel.value;
+      citySel.innerHTML = `<option value="">${esc(t_('allCities'))}</option>` +
+        cities.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+      citySel.value = cities.includes(curCity) ? curCity : '';
+      const cityQ = citySel.value;
+
       let list = allCompanies.filter(c =>
-        !q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q));
+        (!q || (c.name || '').toLowerCase().includes(q) ||
+               (c.description || '').toLowerCase().includes(q) ||
+               (c.city || '').toLowerCase().includes(q)) &&
+        (!cityQ || (c.city || '').trim() === cityQ));
 
       if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
       else if (mode === 'count') list.sort((a, b) => cnt(b) - cnt(a));
@@ -411,6 +492,7 @@
             <h4>${esc(t_('editCompany'))}</h4>
             <div id="editMsg" class="msg"></div>
             <input id="eName" type="text" value="${esc(c.name)}" placeholder="${esc(t_('companyName'))}">
+            <input id="eCity" type="text" value="${esc(c.city || '')}" placeholder="${esc(t_('cityPh'))}">
             <textarea id="eDesc" rows="3" placeholder="${esc(t_('description'))}">${esc(c.description || '')}</textarea>
             <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="${esc(t_('phone'))}">
             <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="${esc(t_('email'))}">
@@ -422,9 +504,12 @@
           </div>`;
         }
         const s = stats[c.id];
+        const rc = recStats[c.id];
         const overall = ov(c);
+        const recHtml = rc && rc.rec_votes > 0
+          ? `<span class="rec">👍 ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</span>` : '';
         const rating = s
-          ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>`
+          ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>${recHtml}`
           : `<span class="meta">${esc(t_('noReviewsYet'))}</span>`;
         return `
           <div class="card">
@@ -442,7 +527,7 @@
               </div>
             </div>
             ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
-            <div class="meta">${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
+            <div class="meta">${c.city ? '📍 ' + esc(c.city) + ' &nbsp; ' : ''}${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
           </div>`;
       }).join('') : '<p>' + esc(t_('noCompanies')) + '</p>';
@@ -462,32 +547,92 @@
       if (!Object.keys(draft).length && mine) {
         CAT_KEYS.forEach(k => draft[k] = mine[k]);
         draft.comment = mine.comment || '';
+        draft.rec = mine.recommend;
+        draft.tags = Array.isArray(mine.tags) ? mine.tags.slice() : [];
+        draft.trip_date = mine.trip_date || '';
+        draft.tod = mine.time_of_day || '';
       }
+      const dTags = draft.tags || [];
 
-      const avgs = CAT_KEYS.map(k => {
-        const a = data.length ? data.reduce((t, r) => t + r[k], 0) / data.length : 0;
-        return `<div class="catrow"><span>${esc(catLabel(k))}</span><span><span class="stars">${stars(a)}</span><span class="num">${data.length ? a.toFixed(1) : '-'}</span></span></div>`;
-      }).join('');
+      // Averages grouped
+      const avgs = GROUPS.map(([g, keys]) => `
+        <div class="grp">${esc(t_(g))}</div>
+        ${keys.map(k => {
+          const a = data.length ? data.reduce((t, r) => t + r[k], 0) / data.length : 0;
+          return `<div class="catrow"><span>${esc(catLabel(k))}</span><span><span class="stars">${stars(a)}</span><span class="num">${data.length ? a.toFixed(1) : '-'}</span></span></div>`;
+        }).join('')}`).join('');
 
-      const form = CAT_KEYS.map(k => `
-        <div class="catrow"><span>${esc(catLabel(k))}</span>
-          <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
-        </div>`).join('');
+      // Tag counts ("what people say")
+      const counts = {};
+      data.forEach(r => (r.tags || []).forEach(tg => counts[tg] = (counts[tg] || 0) + 1));
+      const tagKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+      const tagSummary = tagKeys.length
+        ? `<h4>${esc(t_('saidTags'))}</h4><div class="chips">${tagKeys.map(k =>
+            `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))} · ${counts[k]}</span>`).join('')}</div>`
+        : '';
 
-      const list = data.length ? data.map(r => `
+      // Form: grouped stars
+      const form = GROUPS.map(([g, keys]) => `
+        <div class="grp">${esc(t_(g))}</div>
+        ${keys.map(k => `
+          <div class="catrow"><span>${esc(catLabel(k))}</span>
+            <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
+          </div>`).join('')}`).join('');
+
+      const recForm = `
+        <h4>${esc(t_('recommendQ'))}</h4>
+        <div class="recbtns">
+          <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${esc(t_('yes'))}</button>
+          <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${esc(t_('no'))}</button>
+        </div>`;
+
+      const tagForm = `
+        <h4>${esc(t_('tagsTitle'))}</h4>
+        <div class="chips">
+          ${POS_TAGS.map(k => `<button type="button" class="chip pos ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+          ${NEG_TAGS.map(k => `<button type="button" class="chip neg ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+        </div>`;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const tripForm = `
+        <h4>${esc(t_('tripWhen'))}</h4>
+        <div class="two">
+          <input id="revDate" type="date" max="${today}" value="${esc(draft.trip_date || '')}">
+          <select id="revTod">
+            <option value="">${esc(t_('todPh'))}</option>
+            ${TODS.map(k => `<option value="${k}" ${draft.tod === k ? 'selected' : ''}>${esc(t_('tod_' + k))}</option>`).join('')}
+          </select>
+        </div>`;
+
+      const list = data.length ? data.map(r => {
+        const rtags = (r.tags || []).map(k =>
+          `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`).join('');
+        const tripBits = [];
+        if (r.trip_date) tripBits.push(new Date(r.trip_date + 'T00:00:00').toLocaleDateString(lang));
+        if (r.time_of_day && TODS.includes(r.time_of_day)) tripBits.push(t_('tod_' + r.time_of_day));
+        const recBadge = r.recommend === true ? ` <span class="rec">${esc(t_('yes'))}</span>`
+                       : r.recommend === false ? ` <span class="meta" style="color:#c0392b;font-weight:bold">${esc(t_('no'))}</span>` : '';
+        return `
         <div class="rev">
           <span class="stars">${stars((r.punctuality + r.price + r.service + r.cleanliness + r.driving) / 5)}</span>
-          <span class="meta">${new Date(r.created_at).toLocaleDateString(lang)}</span>
+          <span class="meta">${new Date(r.created_at).toLocaleDateString(lang)}</span>${recBadge}
+          ${tripBits.length ? `<div class="meta">🕒 ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
+          ${rtags ? `<div class="chips">${rtags}</div>` : ''}
           ${r.comment ? `<div><b>${esc(t_('otherIssue'))}:</b> ${esc(r.comment)}</div>` : ''}
-          <div class="cats">${CAT_KEYS.map(k => `${esc(catLabel(k))}: ${r[k]}★`).join(' &nbsp;|&nbsp; ')}</div>
+          <div class="cats">${GROUPS.map(([g, keys]) => `<b>${esc(t_(g))}</b>: ` + keys.map(k => `${esc(catLabel(k))} ${r[k]}★`).join(' | ')).join('<br>')}</div>
           ${isAdmin && r.user_id !== myUid ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : ''}
-        </div>`).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
+        </div>`;
+      }).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
 
       el.innerHTML = `
         <h4>${esc(t_('ratingsByCat'))}</h4>${avgs}
+        ${tagSummary}
         <h4>${esc(mine ? t_('editReview') : t_('writeReview'))} ${esc(t_('anonymous'))}</h4>
         <div id="revMsg" class="msg"></div>
         ${form}
+        ${recForm}
+        ${tagForm}
+        ${tripForm}
         <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
         <button id="submitReview" data-company="${companyId}">${esc(mine ? t_('update') : t_('submit'))}</button>
         ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
@@ -512,6 +657,26 @@
         const v = Number(t.dataset.v);
         draft[cat] = v;
         t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= v));
+        return;
+      }
+
+      // Recommend Yes / No (click again to clear)
+      if (ds.rec !== undefined) {
+        const val = ds.rec === '1';
+        draft.rec = (draft.rec === val) ? undefined : val;
+        document.querySelectorAll('.recbtn').forEach(b => {
+          const bv = b.dataset.rec === '1';
+          b.classList.toggle('on', draft.rec === bv);
+        });
+        return;
+      }
+
+      // Tag chips
+      if (ds.tag) {
+        draft.tags = draft.tags || [];
+        const i = draft.tags.indexOf(ds.tag);
+        if (i >= 0) draft.tags.splice(i, 1); else draft.tags.push(ds.tag);
+        t.classList.toggle('on', i < 0);
         return;
       }
 
@@ -543,6 +708,7 @@
           const ph = $('ePhone').value.trim();
           const row = {
             name,
+            city: $('eCity').value.trim() || null,
             description: $('eDesc').value.trim() || null,
             phone: ph ? fmtPhone(ph) : null,
             email: $('eEmail').value.trim() || null
@@ -563,14 +729,19 @@
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
         if (CAT_KEYS.some(k => !draft[k])) return showMsg(msg, t_('rateAll'), false);
-        const comment = $('revComment').value.trim() || null;
-        const vals = { comment, updated_at: new Date().toISOString() };
+        const vals = {
+          comment: $('revComment').value.trim() || null,
+          recommend: (draft.rec === true || draft.rec === false) ? draft.rec : null,
+          tags: draft.tags || [],
+          trip_date: $('revDate').value || null,
+          time_of_day: $('revTod').value || null,
+          updated_at: new Date().toISOString()
+        };
         CAT_KEYS.forEach(k => vals[k] = draft[k]);
         t.disabled = true;
 
         let error = null;
         if (myReviewId) {
-          // Explicit UPDATE of my existing review, and verify a row was really changed
           const res = await sb.from('reviews').update(vals)
             .eq('id', myReviewId).eq('user_id', myUid).select();
           error = res.error;
