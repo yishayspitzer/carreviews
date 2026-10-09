@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CarReviews</title>
-  <link rel="icon" id="favicon" href="logo.png">
+  <link rel="icon" id="favicon" href="data:,">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root { --navy:#1a3c6e; --navy2:#12294d; --gold:#e8a317; --green:#1e8e3e; --red:#c0392b; --amber:#e8a317; --line:#e3e8ef; --soft:#f1f4f9; }
@@ -60,6 +60,7 @@
     .err { background:#fde8e8; color:#a00; }
     .ok  { background:#e6f7e9; color:#0a6a22; }
     .banner { background:#fde8e8; color:#a00; border:1px solid #f3b9b9; border-radius:10px; padding:10px 14px; margin:10px 0; font-weight:600; }
+    .note { background:#eef6ff; border:1px solid #cfe2fb; color:#1a3c6e; border-radius:8px; padding:8px 12px; margin:8px 0; font-size:13px; }
     .hidden { display:none !important; }
     .row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
     .toolbar { margin:10px 0 4px; }
@@ -150,6 +151,12 @@
     .sugrow img { width:90px; height:56px; object-fit:contain; background:#fff; border:1px solid #eee; border-radius:8px; }
     .sugrow .sbtns { display:flex; gap:6px; margin-inline-start:auto; }
 
+    .reqitem { padding:10px 0; border-bottom:1px solid #f0e2b8; }
+    .reqitem:last-child { border-bottom:0; }
+    .reqitem .kv { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; margin:6px 0; }
+    .reqitem .old { color:#999; text-decoration:line-through; }
+    .tagkind { background:var(--navy); color:#fff; border-radius:6px; padding:1px 8px; font-size:12px; font-weight:700; }
+
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
 
@@ -235,10 +242,12 @@
       </div>
     </div>
 
+    <div id="reqPanel" class="card hidden" style="background:#fff7e0;border:1px dashed var(--gold)"></div>
     <div id="usersPanel" class="card hidden"></div>
 
     <div id="addForm" class="card hidden">
       <h3 id="tAddTitle"></h3>
+      <div id="tApprNote" class="note hidden"></div>
       <div id="addMsg" class="msg"></div>
       <input id="cName" type="text">
       <div id="cCityBox"></div>
@@ -347,7 +356,11 @@
         companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
         cityPh: 'City / area', allCities: 'All cities',
-        logoOpt: 'Logo (optional):', saveCompany: 'Save company',
+        logoOpt: 'Logo (optional):', saveCompany: 'Save company', sendForApproval: 'Send for approval',
+        apprNote: 'Your request is sent to the admin. It appears on the site only after the admin approves it.',
+        reqSent: 'Sent to the admin for approval', suggestChange: 'Suggest a change',
+        reqTitle: 'Pending approvals', reqAdd: 'New company', reqEdit: 'Change', approve: 'Approve', reject: 'Reject',
+        confirmReject: 'Reject this request?',
         search: 'Search companies...',
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
@@ -403,7 +416,11 @@
         companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
         companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
         cityPh: 'שטאָט / געגנט', allCities: 'אַלע שטעט',
-        logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני',
+        logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באַשטעטיקונג',
+        apprNote: 'אײַער בקשה גייט צום אַדמין. עס ווײַזט זיך אויף דער זייט נאָר נאָכדעם וואָס דער אַדמין באַשטעטיקט עס.',
+        reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאָגט פֿאָר אַ ענדערונג',
+        reqTitle: 'וואַרטן אויף באַשטעטיקונג', reqAdd: 'נײַע קאָמפּאַני', reqEdit: 'ענדערונג', approve: 'באַשטעטיקן', reject: 'אָפּוואַרפֿן',
+        confirmReject: 'אָפּוואַרפֿן די בקשה?',
         search: 'זוכט קאָמפּאַניעס...',
         sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
         noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
@@ -459,7 +476,11 @@
         companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
         cityPh: 'Город / район', allCities: 'Все города',
-        logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию',
+        logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию', sendForApproval: 'Отправить на одобрение',
+        apprNote: 'Ваш запрос отправляется админу. Он появится на сайте только после одобрения.',
+        reqSent: 'Отправлено админу на одобрение', suggestChange: 'Предложить изменение',
+        reqTitle: 'Ожидают одобрения', reqAdd: 'Новая компания', reqEdit: 'Изменение', approve: 'Одобрить', reject: 'Отклонить',
+        confirmReject: 'Отклонить запрос?',
         search: 'Поиск компаний...',
         sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
         noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
@@ -515,7 +536,11 @@
         companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
         cityPh: 'Ciudad / zona', allCities: 'Todas las ciudades',
-        logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa',
+        logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa', sendForApproval: 'Enviar para aprobación',
+        apprNote: 'Tu solicitud se envía al administrador. Aparece en el sitio solo después de su aprobación.',
+        reqSent: 'Enviado al administrador para aprobación', suggestChange: 'Sugerir un cambio',
+        reqTitle: 'Pendientes de aprobación', reqAdd: 'Nueva empresa', reqEdit: 'Cambio', approve: 'Aprobar', reject: 'Rechazar',
+        confirmReject: '¿Rechazar esta solicitud?',
         search: 'Buscar empresas...',
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
@@ -589,6 +614,7 @@
     let allCompanies = [], stats = {}, recStats = {}, myReviewId = null;
     let userMap = {}, usersOpen = false;
     let sugMap = {}, sugList = [], sugTarget = null;
+    let reqList = [];
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -606,25 +632,24 @@
       return String(p ?? '');
     };
 
-    // ---------- Favicon from the logo (only the van + stars, square crop) ----------
+    // ---------- Favicon: only the words "Car" / "Reviews" ----------
     (function makeFavicon() {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const c = document.createElement('canvas');
-          c.width = c.height = 64;
-          const x = c.getContext('2d');
-          x.fillStyle = '#fff';
-          x.fillRect(0, 0, 64, 64);
-          // crop only the van + stars (left part of the logo), as a square
-          const sx = img.naturalWidth * 0.04, sw = img.naturalWidth * 0.46;
-          const sy = img.naturalHeight * 0.17;
-          const side = Math.min(sw, img.naturalHeight * 0.58);
-          x.drawImage(img, sx + (sw - side) / 2, sy, side, side, 0, 0, 64, 64);
-          $('favicon').href = c.toDataURL('image/png');
-        } catch (e) {}
-      };
-      img.src = 'logo.png?v=' + Date.now();
+      try {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const x = c.getContext('2d');
+        x.fillStyle = '#fff';
+        x.fillRect(0, 0, 128, 128);
+        x.textAlign = 'center';
+        x.textBaseline = 'alphabetic';
+        x.fillStyle = '#1a3c6e';
+        x.font = 'italic 900 56px Arial, sans-serif';
+        x.fillText('Car', 64, 58);
+        x.fillStyle = '#e8660a';
+        x.font = 'italic 900 31px Arial, sans-serif';
+        x.fillText('Reviews', 64, 104);
+        $('favicon').href = c.toDataURL('image/png');
+      } catch (e) {}
     })();
 
     // ---------- Jewish calendar ----------
@@ -705,6 +730,8 @@
       $('bannedBanner').textContent = t_('bannedMsg');
       $('bannedBanner').classList.toggle('hidden', !isBanned);
       $('tAddTitle').textContent = t_('addTitle');
+      $('tApprNote').textContent = t_('apprNote');
+      $('tApprNote').classList.toggle('hidden', isAdmin);
       $('cName').placeholder = t_('companyName');
       renderCityBox(false);
       $('cDesc').placeholder = t_('description');
@@ -713,7 +740,7 @@
       $('tLogoOpt').textContent = t_('logoOpt');
       $('tLogoOpt').classList.toggle('hidden', !isAdmin);
       $('cLogoFile').classList.toggle('hidden', !isAdmin);
-      $('saveCompany').textContent = t_('saveCompany');
+      $('saveCompany').textContent = isAdmin ? t_('saveCompany') : t_('sendForApproval');
       $('search').placeholder = t_('search');
       $('searchIc').innerHTML = ic('search');
       const opts = $('sort').options;
@@ -734,7 +761,7 @@
       localStorage.setItem('lang', lang);
       applyStaticText();
       if ($('calModal').style.display === 'flex') renderCal();
-      if (loggedIn) { renderCompanies(); renderUsers(); }
+      if (loggedIn) { renderCompanies(); renderUsers(); renderRequests(); }
     };
     $('calBtn').onclick = openCal;
 
@@ -836,18 +863,23 @@
       const btn = $('saveCompany');
       btn.disabled = true;
       try {
-        const logo_url = isAdmin ? await uploadLogo($('cLogoFile').files[0]) : null;
         const phoneRaw = $('cPhone').value.trim();
         const row = {
           name,
           city: readPlace('cCity'),
           description: $('cDesc').value.trim() || null,
           phone: phoneRaw ? fmtPhone(phoneRaw) : null,
-          email: $('cEmail').value.trim() || null,
-          logo_url
+          email: $('cEmail').value.trim() || null
         };
-        const { error } = await sb.from('companies').insert(row);
-        if (error) throw error;
+        if (isAdmin) {
+          row.logo_url = await uploadLogo($('cLogoFile').files[0]);
+          const { error } = await sb.from('companies').insert(row);
+          if (error) throw error;
+        } else {
+          const { error } = await sb.from('change_requests').insert({ user_id: myUid, kind: 'add', company_id: null, data: row });
+          if (error) throw error;
+          toast(t_('reqSent'));
+        }
         ['cName','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
         renderCityBox(true);
         $('addMsg').style.display = 'none';
@@ -880,6 +912,41 @@
       }
     }
 
+    async function loadRequests() {
+      reqList = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('change_requests').select('*').order('created_at', { ascending: true });
+      if (!error && data) reqList = data;
+    }
+
+    function renderRequests() {
+      const box = $('reqPanel');
+      const show = isAdmin && reqList.length > 0;
+      box.classList.toggle('hidden', !show);
+      if (!show) return;
+      const F = [['name','companyName'], ['city','cityPh'], ['description','description'], ['phone','phone'], ['email','email']];
+      box.innerHTML = `<h4>${ic('check')} ${esc(t_('reqTitle'))} (${reqList.length})</h4>` + reqList.map(r => {
+        const u = userMap[r.user_id];
+        const cur = r.kind === 'edit' ? (allCompanies.find(c => c.id === r.company_id) || {}) : {};
+        const lines = F.filter(([k]) => r.data[k] !== undefined && (r.kind === 'add' ? r.data[k] : true)).map(([k, lbl]) => {
+          const nv = r.data[k] || '';
+          const ov = cur[k] || '';
+          if (r.kind === 'edit' && String(nv) === String(ov)) return '';
+          return `<span><b>${esc(t_(lbl).replace(' *',''))}:</b> ${r.kind === 'edit' && ov ? `<span class="old">${esc(k === 'city' ? placeLabel(ov) : ov)}</span> → ` : ''}${esc(k === 'city' ? placeLabel(nv) : nv) || '—'}</span>`;
+        }).join('');
+        return `<div class="reqitem">
+          <div><span class="tagkind">${esc(t_(r.kind === 'add' ? 'reqAdd' : 'reqEdit'))}</span>
+            ${r.kind === 'edit' ? `<b>${esc(cur.name || '?')}</b>` : ''}
+            <span class="meta">${u ? esc(u.full_name || u.email) : ''}</span></div>
+          <div class="kv">${lines}</div>
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:0" data-approve="${r.id}">${ic('check')} ${esc(t_('approve'))}</button>
+            <button class="danger small" style="margin:0" data-rejectreq="${r.id}">${ic('x')} ${esc(t_('reject'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
     function renderUsers() {
       const box = $('usersPanel');
       box.classList.toggle('hidden', !(isAdmin && usersOpen));
@@ -903,13 +970,15 @@
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
         loadUsers(),
-        loadSuggestions()
+        loadSuggestions(),
+        loadRequests()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
       stats = {}; (sRes.data || []).forEach(s => stats[s.company_id] = s);
       recStats = {}; (rRes.data || []).forEach(s => recStats[s.company_id] = s);
       renderUsers();
+      renderRequests();
       renderCompanies();
     }
 
@@ -920,7 +989,6 @@
       const ov = c => stats[c.id] ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
 
-      // city filter: ALL known places + any custom city already used by a company
       const known = PLACES.map(p => p[0]);
       const extra = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(x => x && !known.includes(x)))]
         .sort((a, b) => a.localeCompare(b));
@@ -933,7 +1001,7 @@
       const cityQ = citySel.value;
 
       let list = allCompanies.filter(c =>
-        (!q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q)) &&
+        (!q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q) || (c.phone || '').includes(q)) &&
         (!cityQ || (c.city || '').trim() === cityQ));
 
       if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
@@ -945,17 +1013,19 @@
         if (editingId === c.id) {
           return `
           <div class="card">
-            <h4>${esc(t_('editCompany'))}</h4>
+            <h4>${esc(isAdmin ? t_('editCompany') : t_('suggestChange'))}</h4>
+            ${isAdmin ? '' : `<div class="note">${esc(t_('apprNote'))}</div>`}
             <div id="editMsg" class="msg"></div>
             <input id="eName" type="text" value="${esc(c.name)}" placeholder="${esc(t_('companyName'))}">
             ${placeSelect('eCity', (c.city || '').trim(), t_('cityPh'))}
             <textarea id="eDesc" rows="3" placeholder="${esc(t_('description'))}">${esc(c.description || '')}</textarea>
             <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="${esc(t_('phone'))}">
             <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="${esc(t_('email'))}">
-            ${c.logo_url ? `<div class="fileline">${esc(t_('currentLogo'))}</div><img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
-            <div class="fileline">${esc(c.logo_url ? t_('replaceLogo') : t_('logoOpt'))}</div>
-            <input id="eLogoFile" type="file" accept="image/*">
-            <button data-saveedit="${c.id}">${esc(t_('save'))}</button>
+            ${isAdmin ? `
+              ${c.logo_url ? `<div class="fileline">${esc(t_('currentLogo'))}</div><img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
+              <div class="fileline">${esc(c.logo_url ? t_('replaceLogo') : t_('logoOpt'))}</div>
+              <input id="eLogoFile" type="file" accept="image/*">` : ''}
+            <button data-saveedit="${c.id}">${esc(isAdmin ? t_('save') : t_('sendForApproval'))}</button>
             <button class="link" data-canceledit="1">${esc(t_('cancel'))}</button>
           </div>`;
         }
@@ -1010,6 +1080,7 @@
               <button class="ghost" data-comments="${c.id}">${ic('chat')} ${esc(commOpen ? t_('close') : t_('commentsBtn'))}</button>
               ${isBanned ? '' : `<button class="green" data-write="${c.id}">${ic('edit')} ${esc(writeOpen ? t_('close') : t_('writeBtn'))}</button>`}
               ${(!isAdmin && !isBanned) ? `<button class="ghost" data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
+              ${(!isAdmin && !isBanned) ? `<button class="ghost" data-edco="${c.id}">${ic('edit')} ${esc(t_('suggestChange'))}</button>` : ''}
               ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
             </div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
@@ -1219,7 +1290,6 @@
       }
     });
 
-    // show / hide the "other place" text box
     document.addEventListener('change', (e) => {
       const el = e.target;
       if (el && el.classList && el.classList.contains('placeSel')) {
@@ -1244,6 +1314,33 @@
 
       if (ds.usersclose) { usersOpen = false; renderUsers(); return; }
 
+      // admin: approve / reject requests
+      if (ds.approve) {
+        const r = reqList.find(x => x.id === ds.approve);
+        if (!r) return;
+        t.disabled = true;
+        const d = r.data || {};
+        const row = { name: d.name, city: d.city || null, description: d.description || null, phone: d.phone || null, email: d.email || null };
+        let err = null;
+        if (r.kind === 'add') {
+          err = (await sb.from('companies').insert(row)).error;
+        } else {
+          err = (await sb.from('companies').update(row).eq('id', r.company_id)).error;
+        }
+        if (err) { alert(err.message); t.disabled = false; return; }
+        await sb.from('change_requests').delete().eq('id', r.id);
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.rejectreq) {
+        if (!confirm(t_('confirmReject'))) return;
+        const { error } = await sb.from('change_requests').delete().eq('id', ds.rejectreq);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
       const dayEl = e.target.closest ? e.target.closest('[data-day]') : null;
       if (dayEl && pickMode) {
         const v = dayEl.dataset.day;
@@ -1264,7 +1361,6 @@
         return;
       }
 
-      // logo suggestions
       if (ds.sendlogo) { sugTarget = ds.sendlogo; $('sugFile').click(); return; }
       if (ds.uselogo) {
         const sg = sugList.find(x => x.id === ds.uselogo);
@@ -1301,7 +1397,6 @@
         return;
       }
 
-      // open / close panels: reviews, written comments, write
       if (ds.open || ds.write || ds.comments) {
         const id = ds.open || ds.write || ds.comments;
         const m = ds.open ? 'view' : (ds.write ? 'write' : 'comments');
@@ -1377,10 +1472,16 @@
             phone: ph ? fmtPhone(ph) : null,
             email: $('eEmail').value.trim() || null
           };
-          const file = $('eLogoFile').files[0];
-          if (file) row.logo_url = await uploadLogo(file);
-          const { error } = await sb.from('companies').update(row).eq('id', ds.saveedit);
-          if (error) throw error;
+          if (isAdmin) {
+            const file = $('eLogoFile') ? $('eLogoFile').files[0] : null;
+            if (file) row.logo_url = await uploadLogo(file);
+            const { error } = await sb.from('companies').update(row).eq('id', ds.saveedit);
+            if (error) throw error;
+          } else {
+            const { error } = await sb.from('change_requests').insert({ user_id: myUid, kind: 'edit', company_id: ds.saveedit, data: row });
+            if (error) throw error;
+            toast(t_('reqSent'));
+          }
           editingId = null;
           loadCompanies();
         } catch (err) {
