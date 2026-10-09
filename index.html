@@ -41,6 +41,11 @@
     .pwwrap input { padding-inline-end:84px; }
     .pwwrap button { position:absolute; inset-inline-end:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:var(--navy); }
 
+    .pricewrap { direction:ltr; display:flex; align-items:center; border:1px solid #cdd5df; border-radius:8px; background:#fff; margin:6px 0; padding-left:12px; }
+    .pricewrap:focus-within { outline:2px solid #c7d6ee; border-color:var(--navy); }
+    .pricewrap .dol { font-weight:800; color:var(--navy); font-size:18px; }
+    .pricewrap input { border:0; margin:0; outline:none !important; background:transparent; }
+
     button { padding:9px 16px; border:0; border-radius:8px; background:var(--navy); color:#fff; cursor:pointer; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:6px; font-family:inherit; }
     button:hover { filter:brightness(1.12); }
     button:disabled { opacity:.6; cursor:default; }
@@ -91,6 +96,7 @@
     .sect { background:var(--soft); border-radius:12px; padding:14px; margin:12px 0; }
     .sect.white { background:#fff; border:1px solid var(--line); }
     .sect.ride { background:#eef6ff; border:1px solid #cfe2fb; }
+    .sect.sug { background:#fff7e0; border:1px dashed var(--gold); }
     .cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     @media (max-width:640px) { .cols { grid-template-columns:1fr; } .chead { flex-direction:column; } }
     .grp { font-weight:700; color:var(--navy); font-size:13px; text-transform:uppercase; letter-spacing:.5px; margin:0 0 8px; display:flex; align-items:center; gap:8px; }
@@ -120,6 +126,8 @@
     .recbtn.no.on { background:var(--red); color:#fff; border-color:var(--red); }
     .two { display:flex; gap:10px; flex-wrap:wrap; }
     .two > * { flex:1 1 150px; }
+    .placebox { flex:1 1 150px; }
+    .placebox input { margin-top:0; }
     .heb { color:var(--navy); font-weight:600; font-size:13px; min-height:18px; margin-top:4px; }
 
     .rev { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin:8px 0; }
@@ -131,11 +139,15 @@
     .yn { font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
     .ridebox { background:#eef6ff; border:1px solid #cfe2fb; border-radius:8px; padding:8px 10px; margin-top:8px; font-size:14px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; }
     .ridebox span { display:inline-flex; align-items:center; gap:6px; }
-    .price { background:var(--navy); color:#fff; border-radius:6px; padding:2px 10px; font-weight:800; }
+    .price { background:var(--navy); color:#fff; border-radius:6px; padding:2px 10px; font-weight:800; direction:ltr; }
     .prow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid #dfe5ee; flex-wrap:wrap; font-size:14px; }
     .prow:last-child { border-bottom:0; }
     .author { background:#fff7e0; border:1px dashed var(--gold); border-radius:8px; padding:6px 10px; margin-top:8px; font-size:13px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .tagban { background:var(--red); color:#fff; border-radius:6px; padding:1px 8px; font-size:12px; font-weight:700; }
+    .sugrow { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid #f0e2b8; flex-wrap:wrap; }
+    .sugrow:last-child { border-bottom:0; }
+    .sugrow img { width:90px; height:56px; object-fit:contain; background:#fff; border:1px solid #eee; border-radius:8px; }
+    .sugrow .sbtns { display:flex; gap:6px; margin-inline-start:auto; }
 
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
@@ -165,6 +177,7 @@
 </head>
 <body>
   <div id="toast"></div>
+  <input type="file" id="sugFile" accept="image/*" class="hidden">
 
   <div id="calModal">
     <div class="calBox">
@@ -277,10 +290,45 @@
       x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
       plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
       edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+      upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
       ban:'<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>'
     };
     const ic = n => `<svg class="ic" viewBox="0 0 24 24">${P[n]}</svg>`;
     const KEY_ICON = { punctuality:'clock', service:'chat', driver_service:'user', cleanliness:'drop', driving:'shield' };
+
+    // ---------- Places (stored in English, shown in Yiddish when language = yi) ----------
+    const PLACES = [
+      ['Williamsburg','וויליאמסבורג'], ['Boro Park','בארא פארק'], ['Crown Heights','קראון הייטס'],
+      ['Flatbush','פלעטבוש'], ['Midwood','מידוד'], ['Kensington','קענסינגטאן'],
+      ['Kiryas Joel','קרית יואל'], ['Monsey','מאנסי'], ['Spring Valley','שפרינג וואלי'],
+      ['Monroe','מאנרא'], ['New Square','סקווירא'], ['Lakewood','לעיקוואוד'],
+      ['Passaic','פאסייק'], ['Teaneck','טיניק'], ['Five Towns','פייוו טאונס'],
+      ['Far Rockaway','פאר ראקאווי'], ['Kew Gardens Hills','קיו גארדענס הילס'],
+      ['Manhattan','מאנהעטן'], ['Staten Island','סטעיטן איילאנד'], ['Montreal','מאנטריאל'],
+      ['JFK Airport','JFK עירפארט'], ['LaGuardia Airport','לאגווארדיע עירפארט'], ['Newark Airport','נוארק עירפארט']
+    ];
+    const placeLabel = v => {
+      if (lang !== 'yi') return v;
+      const p = PLACES.find(x => x[0] === v);
+      return p ? p[1] : v;
+    };
+    function placeSelect(id, val, ph) {
+      const inList = PLACES.some(p => p[0] === val);
+      const sel = val ? (inList ? val : '__other') : '';
+      return `<div class="placebox">
+        <select id="${id}" class="placeSel">
+          <option value="">${esc(ph)}</option>
+          ${PLACES.map(p => `<option value="${esc(p[0])}" ${sel === p[0] ? 'selected' : ''}>${esc(placeLabel(p[0]))}</option>`).join('')}
+          <option value="__other" ${sel === '__other' ? 'selected' : ''}>${esc(t_('otherPlace'))}</option>
+        </select>
+        <input id="${id}Txt" type="text" maxlength="120" placeholder="${esc(t_('otherPlaceType'))}" value="${esc(sel === '__other' ? val : '')}" class="${sel === '__other' ? '' : 'hidden'}">
+      </div>`;
+    }
+    function readPlace(id) {
+      const s = $(id).value;
+      if (s === '__other') return $(id + 'Txt').value.trim() || null;
+      return s || null;
+    }
 
     // ---------- Translations ----------
     const T = {
@@ -302,6 +350,8 @@
         editCompany: 'Edit company', currentLogo: 'Current logo:', replaceLogo: 'Replace logo (optional):',
         save: 'Save', cancel: 'Cancel', nameRequired: 'Company name is required',
         logoTooBig: 'Logo is too big (max 2 MB)',
+        sendLogo: 'Send logo to admin', logoSent: 'Logo sent to the admin',
+        logoSugTitle: 'Logo suggestions', useLogo: 'Use as logo', dismiss: 'Dismiss',
         confirmDelCo: 'Delete this company and ALL its reviews? This cannot be undone.',
         confirmDelAnyRev: 'Delete this review? This cannot be undone.',
         ratingsByCat: 'Ratings overview', writeReview: 'Write a review', editReview: 'Edit your review',
@@ -318,7 +368,8 @@
         recommendQ: 'Would you recommend this company?', yes: 'Yes', no: 'No',
         recommendWord: 'recommend',
         tagsTitle: 'What stood out?', saidTags: 'What people say',
-        rideTitle: 'Your ride & price', fromPh: 'From (pick-up)', toPh: 'To (drop-off)', pricePh: 'Price paid ($)',
+        rideTitle: 'Your ride & price', fromPh: 'From (pick-up area)', toPh: 'To (drop-off area)', pricePh: 'Price paid',
+        otherPlace: 'Other place...', otherPlaceType: 'Type the place',
         pricesTitle: 'Reported prices',
         tripWhen: 'When was your trip?', todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
@@ -354,6 +405,8 @@
         editCompany: 'ענדערט קאָמפּאַני', currentLogo: 'איצטיקער לאָגאָ:', replaceLogo: 'ערזעצט לאָגאָ (אָפּציע):',
         save: 'שפּײַכערן', cancel: 'אָפּשטעלן', nameRequired: 'דער נאָמען פֿון קאָמפּאַני איז נייטיק',
         logoTooBig: 'דער לאָגאָ איז צו גרויס (מאַקס 2 MB)',
+        sendLogo: 'שיקט לאָגאָ צום אַדמין', logoSent: 'דער לאָגאָ איז געשיקט געוואָרן צום אַדמין',
+        logoSugTitle: 'לאָגאָ פֿאָרשלאָגן', useLogo: 'ניצט דעם לאָגאָ', dismiss: 'אָפּוואַרפֿן',
         confirmDelCo: 'אויסמעקן די קאָמפּאַני און ALLE איר רעוויוס? מען קען עס נישט צוריקבײַטן.',
         confirmDelAnyRev: 'אויסמעקן דעם רעוויו? מען קען עס נישט צוריקבײַטן.',
         ratingsByCat: 'איבערבליק פֿון באַוואַרטונגען', writeReview: 'שרײַבט אַ רעוויו', editReview: 'ענדערט אײַער רעוויו',
@@ -370,7 +423,8 @@
         recommendQ: 'וואָלט איר רעקאָמענדירט די קאָמפּאַני?', yes: 'יאָ', no: 'ניין',
         recommendWord: 'רעקאָמענדירן',
         tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
-        rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואַנען', toPh: 'וווּהין', pricePh: 'וויפֿל באַצאָלט ($)',
+        rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואַנען (געגנט)', toPh: 'וווּהין (געגנט)', pricePh: 'וויפֿל באַצאָלט',
+        otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
         pricesTitle: 'באַריכטעטע פּרײַזן',
         tripWhen: 'ווען איז געווען די נסיעה?', todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
@@ -406,6 +460,8 @@
         editCompany: 'Изменить компанию', currentLogo: 'Текущий логотип:', replaceLogo: 'Заменить логотип (необязательно):',
         save: 'Сохранить', cancel: 'Отмена', nameRequired: 'Укажите название компании',
         logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
+        sendLogo: 'Отправить логотип админу', logoSent: 'Логотип отправлен админу',
+        logoSugTitle: 'Предложенные логотипы', useLogo: 'Использовать как логотип', dismiss: 'Отклонить',
         confirmDelCo: 'Удалить эту компанию и ВСЕ её отзывы? Это нельзя отменить.',
         confirmDelAnyRev: 'Удалить этот отзыв? Это нельзя отменить.',
         ratingsByCat: 'Обзор оценок', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
@@ -422,7 +478,8 @@
         recommendQ: 'Вы бы порекомендовали эту компанию?', yes: 'Да', no: 'Нет',
         recommendWord: 'рекомендуют',
         tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
-        rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда', toPh: 'Куда', pricePh: 'Оплачено ($)',
+        rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда (район)', toPh: 'Куда (район)', pricePh: 'Оплачено',
+        otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
         pricesTitle: 'Сообщённые цены',
         tripWhen: 'Когда была поездка?', todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
@@ -458,6 +515,8 @@
         editCompany: 'Editar empresa', currentLogo: 'Logo actual:', replaceLogo: 'Reemplazar logo (opcional):',
         save: 'Guardar', cancel: 'Cancelar', nameRequired: 'El nombre de la empresa es obligatorio',
         logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
+        sendLogo: 'Enviar logo al administrador', logoSent: 'Logo enviado al administrador',
+        logoSugTitle: 'Logos sugeridos', useLogo: 'Usar como logo', dismiss: 'Descartar',
         confirmDelCo: '¿Eliminar esta empresa y TODAS sus reseñas? No se puede deshacer.',
         confirmDelAnyRev: '¿Eliminar esta reseña? No se puede deshacer.',
         ratingsByCat: 'Resumen de calificaciones', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
@@ -474,7 +533,8 @@
         recommendQ: '¿Recomendarías esta empresa?', yes: 'Sí', no: 'No',
         recommendWord: 'recomiendan',
         tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
-        rideTitle: 'Tu viaje y precio', fromPh: 'Desde', toPh: 'Hasta', pricePh: 'Precio pagado ($)',
+        rideTitle: 'Tu viaje y precio', fromPh: 'Desde (zona)', toPh: 'Hasta (zona)', pricePh: 'Precio pagado',
+        otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
         pricesTitle: 'Precios reportados',
         tripWhen: '¿Cuándo fue tu viaje?', todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
@@ -519,6 +579,7 @@
     let myUid = null, myEmail = '', isAdmin = false, isBanned = false, loggedIn = false;
     let allCompanies = [], stats = {}, recStats = {}, myReviewId = null;
     let userMap = {}, usersOpen = false;
+    let sugMap = {}, sugList = [], sugTarget = null;
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -620,6 +681,8 @@
       $('cPhone').placeholder = t_('phone');
       $('cEmail').placeholder = t_('email');
       $('tLogoOpt').textContent = t_('logoOpt');
+      $('tLogoOpt').classList.toggle('hidden', !isAdmin);
+      $('cLogoFile').classList.toggle('hidden', !isAdmin);
       $('saveCompany').textContent = t_('saveCompany');
       $('search').placeholder = t_('search');
       $('searchIc').innerHTML = ic('search');
@@ -645,6 +708,7 @@
     };
     $('calBtn').onclick = openCal;
 
+    // Admin only (storage policy enforces this too)
     async function uploadLogo(file) {
       if (!file) return null;
       if (file.size > 2 * 1024 * 1024) throw new Error(t_('logoTooBig'));
@@ -654,6 +718,27 @@
       if (error) throw error;
       return sb.storage.from('logos').getPublicUrl(path).data.publicUrl;
     }
+
+    // Anyone: send a logo suggestion to the admin
+    $('sugFile').onchange = async () => {
+      const f = $('sugFile').files[0];
+      const cid = sugTarget;
+      $('sugFile').value = '';
+      if (!f || !cid) return;
+      if (f.size > 2 * 1024 * 1024) { alert(t_('logoTooBig')); return; }
+      try {
+        const ext = (f.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const path = cid + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        const up = await sb.storage.from('logo-suggestions').upload(path, f, { contentType: f.type });
+        if (up.error) throw up.error;
+        const url = sb.storage.from('logo-suggestions').getPublicUrl(path).data.publicUrl;
+        const ins = await sb.from('logo_suggestions').insert({ company_id: cid, user_id: myUid, logo_url: url });
+        if (ins.error) throw ins.error;
+        toast(t_('logoSent'));
+      } catch (err) {
+        alert(err.message || String(err));
+      }
+    };
 
     async function checkAdmin() {
       isAdmin = false;
@@ -721,7 +806,7 @@
       const btn = $('saveCompany');
       btn.disabled = true;
       try {
-        const logo_url = await uploadLogo($('cLogoFile').files[0]);
+        const logo_url = isAdmin ? await uploadLogo($('cLogoFile').files[0]) : null;
         const phoneRaw = $('cPhone').value.trim();
         const row = {
           name,
@@ -754,6 +839,16 @@
       if (!error && data) data.forEach(u => userMap[u.id] = u);
     }
 
+    async function loadSuggestions() {
+      sugMap = {}; sugList = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('logo_suggestions').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        sugList = data;
+        data.forEach(s => { (sugMap[s.company_id] = sugMap[s.company_id] || []).push(s); });
+      }
+    }
+
     function renderUsers() {
       const box = $('usersPanel');
       box.classList.toggle('hidden', !(isAdmin && usersOpen));
@@ -776,7 +871,8 @@
         sb.from('companies').select('*').order('created_at', { ascending: false }),
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
-        loadUsers()
+        loadUsers(),
+        loadSuggestions()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
@@ -835,6 +931,24 @@
           : `<div class="score"><div class="meta">${esc(t_('noReviewsYet'))}</div></div>`;
         const viewOpen = openId === c.id && openMode === 'view';
         const writeOpen = openId === c.id && openMode === 'write';
+
+        const sugs = (isAdmin && sugMap[c.id]) ? sugMap[c.id] : [];
+        const sugHtml = sugs.length ? `
+          <div class="sect sug">
+            <h4>${ic('upload')} ${esc(t_('logoSugTitle'))} (${sugs.length})</h4>
+            ${sugs.map(sg => {
+              const u = userMap[sg.user_id];
+              return `<div class="sugrow">
+                <img src="${esc(sg.logo_url)}" alt="">
+                <span class="meta" style="margin:0">${u ? esc(u.full_name || u.email) : ''}</span>
+                <span class="sbtns">
+                  <button class="green small" style="margin:0" data-uselogo="${sg.id}">${ic('check')} ${esc(t_('useLogo'))}</button>
+                  <button class="ghost small" style="margin:0" data-dismisslogo="${sg.id}">${ic('x')} ${esc(t_('dismiss'))}</button>
+                </span>
+              </div>`;
+            }).join('')}
+          </div>` : '';
+
         return `
           <div class="card co" id="co-${c.id}">
             <div class="chead">
@@ -853,9 +967,11 @@
               ${c.phone ? `<span>${ic('phone')}${esc(fmtPhone(c.phone))}</span>` : ''}
               ${c.email ? `<span>${ic('mail')}${esc(c.email)}</span>` : ''}
             </div>
+            ${sugHtml}
             <div class="actions">
               <button data-open="${c.id}">${esc(viewOpen ? t_('close') : t_('reviews'))}</button>
               ${isBanned ? '' : `<button class="green" data-write="${c.id}">${ic('edit')} ${esc(writeOpen ? t_('close') : t_('writeBtn'))}</button>`}
+              ${(!isAdmin && !isBanned) ? `<button class="ghost" data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
               ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
             </div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
@@ -875,7 +991,7 @@
 
     function rideHtml(r) {
       const bits = [];
-      if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from || '?')} → ${esc(r.trip_to || '?')}</span>`);
+      if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
       if (r.price_paid !== null && r.price_paid !== undefined) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
       return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
     }
@@ -937,10 +1053,10 @@
             <button type="button" class="ghost small" data-pickdate="1">${ic('cal')} ${esc(t_('pickJewish'))}</button>
             <div class="heb" id="revHeb">${esc(hebFromStr(draft.trip_date))}</div>
             <div class="two">
-              <input id="revFrom" type="text" maxlength="120" placeholder="${esc(t_('fromPh'))}" value="${esc(draft.from || '')}">
-              <input id="revTo" type="text" maxlength="120" placeholder="${esc(t_('toPh'))}" value="${esc(draft.to || '')}">
+              ${placeSelect('revFrom', draft.from || '', t_('fromPh'))}
+              ${placeSelect('revTo', draft.to || '', t_('toPh'))}
             </div>
-            <input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="${esc(t_('pricePh'))}" value="${esc(draft.price || '')}">
+            <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="${esc(t_('pricePh'))}" value="${esc(draft.price || '')}"></div>
           </div>`;
 
         const tagForm = `
@@ -984,7 +1100,7 @@
       const priceSummary = priced.length
         ? `<div class="sect ride"><h4>${ic('dollar')} ${esc(t_('pricesTitle'))} (${priced.length})</h4>
             ${priced.map(r => `<div class="prow">
-              <span>${ic('pin')} ${esc(r.trip_from || '?')} → ${esc(r.trip_to || '?')}</span>
+              <span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>
               <span><span class="price">${esc(money(r.price_paid))}</span>
               ${r.trip_date ? `<span class="meta" style="margin:0 8px">${esc(new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl()))}</span>` : ''}</span>
             </div>`).join('')}
@@ -1044,6 +1160,18 @@
       }
     });
 
+    // show / hide the "other place" text box
+    document.addEventListener('change', (e) => {
+      const el = e.target;
+      if (el && el.classList && el.classList.contains('placeSel')) {
+        const txt = $(el.id + 'Txt');
+        if (txt) {
+          txt.classList.toggle('hidden', el.value !== '__other');
+          if (el.value === '__other') txt.focus();
+        }
+      }
+    });
+
     $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) { $('calModal').style.display = 'none'; pickMode = false; } });
 
     function scrollToCard(id) {
@@ -1077,6 +1205,25 @@
         return;
       }
 
+      // logo suggestions
+      if (ds.sendlogo) { sugTarget = ds.sendlogo; $('sugFile').click(); return; }
+      if (ds.uselogo) {
+        const sg = sugList.find(x => x.id === ds.uselogo);
+        if (!sg) return;
+        const up = await sb.from('companies').update({ logo_url: sg.logo_url }).eq('id', sg.company_id);
+        if (up.error) { alert(up.error.message); return; }
+        await sb.from('logo_suggestions').delete().eq('id', sg.id);
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.dismisslogo) {
+        const { error } = await sb.from('logo_suggestions').delete().eq('id', ds.dismisslogo);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
       if (ds.ban) {
         if (!confirm(t_('confirmBan'))) return;
         const del = confirm(t_('confirmBanDel'));
@@ -1095,7 +1242,6 @@
         return;
       }
 
-      // open / close panels (view or write)
       if (ds.open || ds.write) {
         const id = ds.open || ds.write;
         const m = ds.open ? 'view' : 'write';
@@ -1203,8 +1349,8 @@
           tags: draft.tags || [],
           trip_date: $('revDate').value || null,
           time_of_day: $('revTod').value || null,
-          trip_from: $('revFrom').value.trim() || null,
-          trip_to: $('revTo').value.trim() || null,
+          trip_from: readPlace('revFrom'),
+          trip_to: readPlace('revTo'),
           price_paid,
           price: null,
           driver_service: draft.driver_service || null,
