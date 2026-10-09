@@ -91,6 +91,11 @@
     .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:600; background:#e6f4ea; color:var(--green); margin-top:8px; }
     .pill.low { background:#fde8e8; color:var(--red); }
     .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .actions button[data-open] { background:#1a3c6e; }
+    .actions button[data-comments] { background:#7b3fa0; color:#fff; border:0; }
+    .actions button[data-write] { background:#1e8e3e; }
+    .actions button[data-sendlogo] { background:#0e8a9a; color:#fff; border:0; }
+    .actions button[data-edco]:not(.gold) { background:#e8660a; color:#fff; border:0; }
 
     .detail { margin-top:14px; border-top:1px solid var(--line); padding-top:14px; }
     .dtop { display:flex; justify-content:flex-end; margin-bottom:8px; }
@@ -1575,8 +1580,18 @@
     }
 
     applyStaticText();
-    sb.auth.onAuthStateChange((_event, session) => { render(session); });
-    sb.auth.getSession().then(({ data }) => render(data.session));
+
+    // Re-render only when the user really changes (login / logout),
+    // not on tab refocus or token refresh.
+    let lastUid;   // undefined = nothing rendered yet
+    function handleSession(session) {
+      const uid = session ? session.user.id : null;
+      if (uid === lastUid) return;
+      lastUid = uid;
+      render(session);
+    }
+    sb.auth.onAuthStateChange((_event, session) => handleSession(session));
+    sb.auth.getSession().then(({ data }) => handleSession(data.session));
   </script>
 </body>
 </html>
