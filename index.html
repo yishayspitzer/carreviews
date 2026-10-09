@@ -30,9 +30,10 @@
 
     /* logo */
     .hero { display:flex; justify-content:center; margin:18px 0 6px; }
-    .logoCard { background:#fff; border-radius:20px; padding:10px 14px; box-shadow:0 10px 30px rgba(18,41,77,.15); border-top:5px solid var(--gold); width:min(500px,100%); }
-    .logoBox { width:100%; aspect-ratio: 1 / 0.84; overflow:hidden; border-radius:12px; }
-    .logoBox img { display:block; width:113.6%; max-width:none; margin-left:-7.95%; margin-top:-15.9%; }
+    .logoCard { background:#fff; border-radius:20px; padding:8px 14px; box-shadow:0 10px 30px rgba(18,41,77,.15); border-top:5px solid var(--gold); width:100%; }
+    .logoBox { width:100%; height:280px; overflow:hidden; display:flex; justify-content:center; }
+    .logoBox img { display:block; height:350px; width:auto; max-width:none; margin-top:-38px; mix-blend-mode:multiply; }
+    @media (max-width:560px) { .logoBox { height:190px; } .logoBox img { height:238px; margin-top:-26px; } }
 
     .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin:12px 0; box-shadow:0 2px 8px rgba(16,24,40,.06); }
     .card.co { border-inline-start:5px solid var(--navy); }
@@ -121,7 +122,7 @@
     .recbtn.no.on { background:var(--red); color:#fff; border-color:var(--red); }
     .two { display:flex; gap:10px; flex-wrap:wrap; }
     .two > * { flex:1 1 150px; }
-    .heb { color:var(--navy); font-weight:600; font-size:13px; min-height:18px; }
+    .heb { color:var(--navy); font-weight:600; font-size:13px; min-height:18px; margin-top:4px; }
 
     .rev { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin:8px 0; }
     .rev .rh { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
@@ -155,6 +156,9 @@
     .cd.today { background:var(--gold); }
     .cd.today b, .cd.today small { color:#fff; }
     .cd.blank { background:none; }
+    .cd[data-day] { cursor:pointer; }
+    .cd[data-day]:hover { background:#dbe6fb; }
+    .cd.fut { opacity:.35; }
   </style>
 </head>
 <body>
@@ -318,6 +322,7 @@
         tag_late: 'Late', tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
         tag_overcharged: 'Overcharged', tag_unsafe: 'Unsafe driving', tag_no_answer: 'Hard to reach',
         calToday: 'Today', calClose: 'Close',
+        pickJewish: 'Pick from Jewish calendar',
         users: 'Users', usersTitle: 'All users', noUsers: 'No users',
         ban: 'Ban', unban: 'Unban', banned: 'Banned', by: 'By',
         bannedMsg: 'You are banned and cannot write reviews or add companies.',
@@ -363,9 +368,10 @@
         trip: 'נסיעה',
         tag_on_time: 'פּינקטלעך', tag_polite: 'העפֿלעכער דרײַווער', tag_clean: 'רײנע קאַר',
         tag_fair_price: 'ריכטיקער פּרײַז', tag_safe: 'זיכער געפֿאָרן', tag_great_service: 'אויסגעצייכנט סערוויס',
-        tag_late: 'פֿאַרשפּעטיקט', tag_rude: 'גראָבער דרײַווער', tag_dirty: 'שמוציקע קאַר',
+        tag_late: 'פֿאַרשפּעטיקט', tag_rude: 'אומהעפֿלעכער דרײַווער', tag_dirty: 'שמוציקע קאַר',
         tag_overcharged: 'צו טײַער', tag_unsafe: 'נישט זיכער געפֿאָרן', tag_no_answer: 'שווער צו דערגרייכן',
         calToday: 'הײַנט', calClose: 'צומאַכן',
+        pickJewish: 'קלײַבט פֿון אידישן לוח',
         users: 'באַניצער', usersTitle: 'אַלע באַניצער', noUsers: 'קיין באַניצער נישט',
         ban: 'אַרויסשליסן', unban: 'צוריקלאָזן', banned: 'אַרויסגעשלאָסן', by: 'פֿון',
         bannedMsg: 'איר זענט אַרויסגעשלאָסן און קענט נישט שרײַבן רעוויוס אָדער לייגן קאָמפּאַניעס.',
@@ -504,8 +510,10 @@
     const hebFull = d => hf(d, { day: 'numeric', month: 'long', year: 'numeric' });
     const hebFromStr = s => s ? hebFull(new Date(s + 'T12:00:00')) : '';
     const noon = d => { const x = new Date(d); x.setHours(12, 0, 0, 0); return x; };
+    const isoOf = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
 
     let calAnchor = noon(new Date()), calFirst = null, calLast = null;
+    let pickMode = false;
 
     function renderCal() {
       const a = noon(calAnchor);
@@ -516,11 +524,13 @@
       while (hMonth(d) === label && days.length < 31) { days.push(new Date(d)); d.setDate(d.getDate() + 1); }
       calFirst = first; calLast = days[days.length - 1];
       const todayStr = new Date().toDateString();
+      const now = new Date();
       const wk = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','שבת'];
       let html = wk.map(w => `<div class="cw">${w}</div>`).join('');
       for (let i = 0; i < first.getDay(); i++) html += '<div class="cd blank"></div>';
       days.forEach(x => {
-        html += `<div class="cd ${x.getDay() === 6 ? 'sat' : ''} ${x.toDateString() === todayStr ? 'today' : ''}">
+        const future = x > now && x.toDateString() !== todayStr;
+        html += `<div class="cd ${x.getDay() === 6 ? 'sat' : ''} ${x.toDateString() === todayStr ? 'today' : ''} ${pickMode && future ? 'fut' : ''}" ${pickMode && !future ? `data-day="${isoOf(x)}"` : ''}>
           <b>${esc(hf(x, { day: 'numeric' }))}</b><small>${x.getDate()}</small></div>`;
       });
       $('calBody').innerHTML = `<div class="calGrid">${html}</div>`;
@@ -528,7 +538,14 @@
       const o = { month: 'short', year: 'numeric' };
       $('calSub').textContent = calFirst.toLocaleDateString(dl(), o) + ' – ' + calLast.toLocaleDateString(dl(), o);
     }
-    function openCal() { calAnchor = noon(new Date()); renderCal(); $('calModal').style.display = 'flex'; }
+    function openCal() { pickMode = false; calAnchor = noon(new Date()); renderCal(); $('calModal').style.display = 'flex'; }
+    function openPick() {
+      pickMode = true;
+      const v = $('revDate') && $('revDate').value;
+      calAnchor = v ? noon(new Date(v + 'T12:00:00')) : noon(new Date());
+      renderCal();
+      $('calModal').style.display = 'flex';
+    }
 
     let toastTimer;
     function toast(text) {
@@ -587,7 +604,7 @@
       lang = $('langSel').value;
       localStorage.setItem('lang', lang);
       applyStaticText();
-      if (!$('calModal').style.display || $('calModal').style.display === 'flex') renderCal();
+      if ($('calModal').style.display === 'flex') renderCal();
       if (loggedIn) { renderCompanies(); renderUsers(); }
     };
     $('calBtn').onclick = openCal;
@@ -706,7 +723,7 @@
       box.classList.toggle('hidden', !(isAdmin && usersOpen));
       if (!(isAdmin && usersOpen)) return;
       const list = Object.values(userMap);
-      box.innerHTML = `<h4>${ic('users')} ${esc(t_('usersTitle'))} (${list.length})</h4>` +
+      box.innerHTML = `<div class="row"><h4>${ic('users')} ${esc(t_('usersTitle'))} (${list.length})</h4><button class="ghost small" style="margin:0" data-usersclose="1">${ic('x')} ${esc(t_('close'))}</button></div>` +
         (list.length ? list.map(u => `
           <div class="urow">
             <div>${ic('user')} <b>${esc(u.full_name || '—')}</b> <span class="meta">${esc(u.email)}</span>
@@ -881,6 +898,7 @@
             ${TODS.map(k => `<option value="${k}" ${draft.tod === k ? 'selected' : ''}>${esc(t_('tod_' + k))}</option>`).join('')}
           </select>
         </div>
+        <button type="button" class="ghost small" data-pickdate="1">${ic('cal')} ${esc(t_('pickJewish'))}</button>
         <div class="heb" id="revHeb">${esc(hebFromStr(draft.trip_date))}</div>`;
 
       const list = data.length ? data.map(r => {
@@ -945,19 +963,34 @@
     // show Hebrew date next to the trip date input
     document.addEventListener('input', (e) => {
       if (e.target && e.target.id === 'revDate') {
+        draft.trip_date = e.target.value;
         $('revHeb').textContent = hebFromStr(e.target.value);
       }
     });
 
     // close calendar when clicking the dark background
-    $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) $('calModal').style.display = 'none'; });
+    $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) { $('calModal').style.display = 'none'; pickMode = false; } });
 
     document.addEventListener('click', async (e) => {
       const t = e.target.closest ? (e.target.closest('button, .st') || e.target) : e.target;
       const ds = t.dataset || {};
 
+      if (ds.usersclose) { usersOpen = false; renderUsers(); return; }
+
+      // Jewish calendar as a date picker
+      const dayEl = e.target.closest ? e.target.closest('[data-day]') : null;
+      if (dayEl && pickMode) {
+        const v = dayEl.dataset.day;
+        const inp = $('revDate');
+        if (inp) { inp.value = v; draft.trip_date = v; $('revHeb').textContent = hebFromStr(v); }
+        $('calModal').style.display = 'none';
+        pickMode = false;
+        return;
+      }
+      if (ds.pickdate) { openPick(); return; }
+
       if (ds.cal) {
-        if (ds.cal === 'close') { $('calModal').style.display = 'none'; return; }
+        if (ds.cal === 'close') { $('calModal').style.display = 'none'; pickMode = false; return; }
         if (ds.cal === 'today') calAnchor = noon(new Date());
         if (ds.cal === 'next') { calAnchor = new Date(calLast); calAnchor.setDate(calAnchor.getDate() + 1); }
         if (ds.cal === 'prev') { calAnchor = new Date(calFirst); calAnchor.setDate(calAnchor.getDate() - 1); }
