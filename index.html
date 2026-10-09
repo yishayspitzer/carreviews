@@ -7,71 +7,120 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 56 12v18c0 16-10 26-24 30C18 56 8 46 8 30V12z' fill='%231a3c6e'/%3E%3Cpath d='M16 36l4-9c1-2 3-3 5-3h14c2 0 4 1 5 3l4 9v8H16z' fill='%23fff'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 0 16px 40px; background:#f5f7fa; }
-    header { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #ddd; gap:10px; flex-wrap:wrap; }
-    .logoStrip { width:240px; height:52px; overflow:hidden; position:relative; }
-    .logoStrip img { position:absolute; width:279px; height:279px; left:-19px; top:-202px; max-width:none; }
-    .hero { text-align:center; margin-top:16px; }
-    .hero img { width:100%; max-width:320px; height:auto; }
-    .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:14px; margin:10px 0; }
-    .box { max-width:360px; margin:10px auto 30px; }
-    input, textarea, select { width:100%; padding:10px; margin:6px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:6px; font-family:inherit; }
-    textarea { resize: vertical; max-width: 100%; min-height: 70px; }
+    :root { --navy:#1a3c6e; --gold:#e8a317; --green:#1e8e3e; --red:#c0392b; --amber:#e8a317; --line:#e3e8ef; --soft:#f1f4f9; }
+    * { box-sizing:border-box; }
+    body { font-family: -apple-system, "Segoe UI", Arial, sans-serif; max-width: 920px; margin: 0 auto; padding: 0 16px 60px; background:#f5f7fa; color:#1f2a37; }
+    svg.ic { width:1em; height:1em; vertical-align:-0.15em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+    button svg, .chip svg { pointer-events:none; }
+
+    header { display:flex; justify-content:space-between; align-items:center; padding:8px 0; gap:10px; flex-wrap:wrap; }
+    .brand img { height:140px; width:auto; display:block; mix-blend-mode:multiply; }
+    #userbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14px; }
+    #langSel { width:auto; margin:0; padding:6px 8px; }
+    .hero { text-align:center; margin-top:4px; }
+    .hero img { width:100%; max-width:360px; height:auto; mix-blend-mode:multiply; }
+
+    .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; margin:12px 0; box-shadow:0 1px 2px rgba(16,24,40,.04); }
+    .box { max-width:380px; margin:10px auto 30px; }
+    input, textarea, select { width:100%; padding:10px 12px; margin:6px 0; border:1px solid #cdd5df; border-radius:8px; font-family:inherit; font-size:14px; background:#fff; }
+    input:focus, textarea:focus, select:focus { outline:2px solid #c7d6ee; border-color:var(--navy); }
+    textarea { resize:vertical; max-width:100%; min-height:70px; }
     .pwwrap { position:relative; }
     .pwwrap input { padding-right:80px; }
-    .pwwrap button { position:absolute; right:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:#1a3c6e; }
-    button { padding:10px 16px; border:0; border-radius:6px; background:#1a3c6e; color:#fff; cursor:pointer; }
-    button.link { background:none; color:#1a3c6e; text-decoration:underline; padding:4px; }
-    button.gold { background:#e8a317; }
-    button.danger { background:#c0392b; }
+    .pwwrap button { position:absolute; right:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:var(--navy); }
+
+    button { padding:9px 16px; border:0; border-radius:8px; background:var(--navy); color:#fff; cursor:pointer; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    button:hover { filter:brightness(1.1); }
+    button:disabled { opacity:.6; cursor:default; }
+    button.link { background:none; color:var(--navy); text-decoration:underline; padding:4px; font-weight:500; }
+    button.gold { background:var(--gold); }
+    button.danger { background:var(--red); }
+    button.ghost { background:#fff; color:var(--navy); border:1px solid #cdd5df; }
     button.small { padding:4px 10px; font-size:12px; margin-top:6px; }
-    .msg { padding:8px; border-radius:6px; margin:8px 0; display:none; }
+
+    .msg { padding:8px 12px; border-radius:8px; margin:8px 0; display:none; }
     .err { background:#fde8e8; color:#a00; }
     .ok  { background:#e6f7e9; color:#0a6a22; }
     .hidden { display:none; }
     .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
-    .cinfo { display:flex; align-items:center; gap:12px; }
-    .clogo { width:56px; height:56px; object-fit:contain; border-radius:8px; border:1px solid #eee; background:#fff; }
-    .cname { font-weight:bold; color:#1a3c6e; font-size:18px; }
-    .meta { color:#555; font-size:14px; margin-top:4px; }
-    .rec { color:#1e8e3e; font-size:14px; margin-left:8px; font-weight:bold; }
-    .stars { color:#e8a317; letter-spacing:2px; font-size:18px; }
-    .stars.big { font-size:22px; }
-    .num { color:#333; font-size:14px; margin-left:6px; letter-spacing:0; }
-    .detail { border-top:1px solid #eee; margin-top:12px; padding-top:12px; }
-    .catrow { display:flex; justify-content:space-between; align-items:center; padding:5px 0; gap:8px; }
-    .grp { font-weight:bold; color:#1a3c6e; background:#eef2f8; border-radius:6px; padding:6px 10px; margin:10px 0 4px; font-size:14px; }
-    .pick .st { cursor:pointer; font-size:26px; color:#ccc; padding:0 2px; user-select:none; }
-    .pick .st.on { color:#e8a317; }
-    .rev { background:#f8f9fb; border-radius:6px; padding:10px; margin:8px 0; }
-    .rev .cats { font-size:13px; color:#555; margin-top:4px; }
-    .filters { display:flex; gap:10px; margin:6px 0; flex-wrap:wrap; }
-    .filters input { flex:2 1 220px; }
-    .filters select { flex:1 1 150px; }
+    .toolbar { margin:6px 0 4px; }
+    h2 { margin:10px 0; color:var(--navy); }
+    h4 { margin:0 0 8px; color:var(--navy); font-size:15px; display:flex; align-items:center; gap:8px; }
     .fileline { font-size:13px; color:#555; margin:6px 0 2px; }
-    #userbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-    #langSel { width:auto; margin:0; padding:6px 8px; }
-    h4 { margin:14px 0 6px; color:#1a3c6e; }
+
+    .filters { display:flex; gap:10px; margin:6px 0; flex-wrap:wrap; }
+    .filters .sw { position:relative; flex:2 1 220px; }
+    .filters .sw svg { position:absolute; left:12px; top:19px; color:#8896a8; }
+    .filters .sw input { padding-left:36px; margin:6px 0; }
+    .filters select { flex:1 1 150px; }
+
+    /* company card */
+    .chead { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .cinfo { display:flex; align-items:center; gap:12px; min-width:0; }
+    .clogo { width:56px; height:56px; object-fit:contain; border-radius:10px; border:1px solid #eee; background:#fff; }
+    .cname { font-weight:700; color:var(--navy); font-size:19px; }
+    .meta { color:#5b6776; font-size:14px; margin-top:4px; }
+    .contact { display:flex; flex-wrap:wrap; gap:6px 16px; color:#5b6776; font-size:14px; margin-top:8px; }
+    .contact span { display:inline-flex; align-items:center; gap:6px; }
+    .score { text-align:center; min-width:84px; }
+    .score .big { font-size:30px; font-weight:800; line-height:1; }
+    .score .cnt { font-size:12px; color:#5b6776; margin-top:2px; }
+    .good { color:var(--green); } .mid { color:#c98a00; } .bad { color:var(--red); }
+    .bg-good { background:var(--green); } .bg-mid { background:var(--amber); } .bg-bad { background:var(--red); }
+    .stars { color:var(--gold); letter-spacing:1px; font-size:15px; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:600; background:#e6f4ea; color:var(--green); margin-top:8px; }
+    .pill.low { background:#fde8e8; color:var(--red); }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+
+    /* detail */
+    .detail { margin-top:14px; border-top:1px solid var(--line); padding-top:14px; }
+    .dtop { display:flex; justify-content:flex-end; margin-bottom:8px; }
+    .sect { background:var(--soft); border-radius:10px; padding:14px; margin:12px 0; }
+    .sect.white { background:#fff; border:1px solid var(--line); }
+    .cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width:640px) { .cols { grid-template-columns:1fr; } .chead { flex-direction:column; } .brand img { height:100px; } }
+    .grp { font-weight:700; color:var(--navy); font-size:13px; text-transform:uppercase; letter-spacing:.5px; margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+    .bar { display:grid; grid-template-columns:22px 1fr 110px 34px; align-items:center; gap:8px; padding:5px 0; font-size:14px; }
+    .bar .track { height:8px; background:#dfe5ee; border-radius:6px; overflow:hidden; }
+    .bar .fill { height:100%; border-radius:6px; }
+    .bar .val { font-weight:700; text-align:right; }
+    @media (max-width:640px) { .bar { grid-template-columns:22px 1fr 80px 30px; } }
+
+    .catrow { display:flex; justify-content:space-between; align-items:center; padding:4px 0; gap:8px; font-size:14px; }
+    .catrow .lbl { display:flex; align-items:center; gap:8px; }
+    .pick .st { cursor:pointer; font-size:28px; color:#cfd6df; padding:0 2px; user-select:none; }
+    .pick .st.on { color:var(--gold); }
+    .opt { font-size:12px; color:#7a8798; font-weight:400; }
+
     .chips { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; }
-    .chip { padding:6px 12px; border-radius:16px; font-size:13px; background:#fff; border:1px solid #999; color:#555; cursor:pointer; }
-    .chip.pos { border-color:#1e8e3e; color:#1e8e3e; }
-    .chip.neg { border-color:#c0392b; color:#c0392b; }
-    .chip.pos.on { background:#1e8e3e; color:#fff; }
-    .chip.neg.on { background:#c0392b; color:#fff; }
-    .chip.static { cursor:default; padding:4px 10px; }
+    .chip { padding:6px 12px; border-radius:16px; font-size:13px; background:#fff; border:1px solid #9aa5b3; color:#555; cursor:pointer; font-weight:500; display:inline-flex; align-items:center; gap:5px; }
+    .chip.pos { border-color:var(--green); color:var(--green); }
+    .chip.neg { border-color:var(--red); color:var(--red); }
+    .chip.pos.on { background:var(--green); color:#fff; }
+    .chip.neg.on { background:var(--red); color:#fff; }
+    .chip.static { cursor:default; padding:3px 10px; }
     .recbtns { display:flex; gap:8px; margin:6px 0; }
-    .recbtn { background:#fff; color:#555; border:1px solid #999; padding:8px 16px; }
-    .recbtn.yes.on { background:#1e8e3e; color:#fff; border-color:#1e8e3e; }
-    .recbtn.no.on { background:#c0392b; color:#fff; border-color:#c0392b; }
+    .recbtn { background:#fff; color:#555; border:1px solid #9aa5b3; }
+    .recbtn.yes.on { background:var(--green); color:#fff; border-color:var(--green); }
+    .recbtn.no.on { background:var(--red); color:#fff; border-color:var(--red); }
     .two { display:flex; gap:10px; flex-wrap:wrap; }
     .two > * { flex:1 1 150px; }
-    @media (max-width:560px) { .logoStrip { width:200px; height:43px; } .logoStrip img { width:232px; height:232px; left:-16px; top:-168px; } }
+
+    .rev { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin:8px 0; }
+    .rev .rh { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .badge { color:#fff; font-weight:800; border-radius:8px; padding:4px 10px; font-size:15px; }
+    .rev .mini { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; color:#5b6776; margin-top:8px; }
+    .rev .mini b { color:#1f2a37; }
+    .rev .mini span { display:inline-flex; align-items:center; gap:5px; }
+    .yn { font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
+
+    #toast { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; padding:10px 18px; border-radius:10px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.2); display:none; z-index:50; align-items:center; gap:8px; }
   </style>
 </head>
 <body>
+  <div id="toast"></div>
   <header>
-    <div class="logoStrip"><img src="logo.png" alt="CarReviews"></div>
+    <div class="brand"><img src="logo.png" alt="CarReviews"></div>
     <div id="userbar">
       <select id="langSel">
         <option value="en">English</option>
@@ -83,13 +132,10 @@
   </header>
 
   <div id="authView">
-    <div class="hero"><img src="logo.png" alt="CarReviews"></div>
     <div class="box card">
       <h2 id="authTitle"></h2>
       <div id="msg" class="msg"></div>
-      <div id="nameWrap" class="hidden">
-        <input id="fullName" type="text">
-      </div>
+      <div id="nameWrap" class="hidden"><input id="fullName" type="text"></div>
       <input id="email" type="email">
       <div class="pwwrap">
         <input id="password" type="password">
@@ -101,7 +147,7 @@
   </div>
 
   <div id="mainView" class="hidden">
-    <div class="row">
+    <div class="row toolbar">
       <h2 id="tCompanies"></h2>
       <button id="addToggle" class="gold"></button>
     </div>
@@ -120,7 +166,7 @@
     </div>
 
     <div class="filters">
-      <input id="search" type="text">
+      <div class="sw"><span id="searchIc"></span><input id="search" type="text"></div>
       <select id="cityFilter"></select>
       <select id="sort">
         <option value="rating"></option>
@@ -138,20 +184,44 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // ---------- Icons (inline SVG) ----------
+    const P = {
+      clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      dollar:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+      chat:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+      drop:'<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+      shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      office:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+      car:'<path d="M3 17h18v-4l-2-6H5l-2 6z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>',
+      phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+      mail:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+      pin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+      up:'<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
+      down:'<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>',
+      cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+      check:'<polyline points="20 6 9 17 4 12"/>',
+      search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+      x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'
+    };
+    const ic = n => `<svg class="ic" viewBox="0 0 24 24">${P[n]}</svg>`;
+    const KEY_ICON = { punctuality:'clock', price:'dollar', service:'chat', driver_service:'user', cleanliness:'drop', driving:'shield' };
+
     // ---------- Translations ----------
     const T = {
       en: {
         login: 'Log in', signup: 'Sign up', logout: 'Log out',
         fullName: 'Full name', email: 'Email', password: 'Password (min 6 chars)',
-        show: '👁 Show', hide: '🙈 Hide',
+        show: 'Show', hide: 'Hide',
         noAccount: 'No account? Sign up', haveAccount: 'Have an account? Log in',
         enterCreds: 'Enter email and a password of 6+ characters',
-        created: 'Account created ✅', createdConfirm: 'Account created. Check your email to confirm, then log in.',
-        companies: 'Companies', addCompany: '+ Add company', addTitle: 'Add a company',
+        created: 'Account created', createdConfirm: 'Account created. Check your email to confirm, then log in.',
+        companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
         cityPh: 'City / area (e.g. Monsey)', allCities: 'All cities',
         logoOpt: 'Logo (optional):', saveCompany: 'Save company',
-        search: '🔍 Search companies...',
+        search: 'Search companies...',
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
         reviews: 'Reviews', close: 'Close', edit: 'Edit', del: 'Delete',
@@ -160,19 +230,20 @@
         logoTooBig: 'Logo is too big (max 2 MB)',
         confirmDelCo: 'Delete this company and ALL its reviews? This cannot be undone.',
         confirmDelAnyRev: 'Delete this review? This cannot be undone.',
-        ratingsByCat: 'Ratings by category', writeReview: 'Write a review', editReview: 'Edit your review',
+        ratingsByCat: 'Ratings overview', writeReview: 'Write a review', editReview: 'Edit your review',
         anonymous: '(anonymous)', otherIssue: 'Other issue',
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
-        confirmDelRev: 'Delete your review?', rateAll: 'Please rate all 5 categories',
-        saved: 'Saved ✅', notSaved: 'Not saved. Please log out, log in again and retry.',
+        confirmDelRev: 'Delete your review?', rateAll: 'Please rate the 5 required categories',
+        saved: 'Saved', deleted: 'Review deleted', notSaved: 'Not saved. Please log out, log in again and retry.',
         allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
-        grpOffice: '🏢 Office / Dispatch', grpDriver: '🚗 Driver & car',
-        punctuality: '⏱ Punctuality', price: '💲 Price', service: '🤝 Service',
-        cleanliness: '✨ Cleanliness', driving: '🛡 Safe driving',
-        recommendQ: 'Would you recommend this company?', yes: '👍 Yes', no: '👎 No',
+        grpOffice: 'Office / Dispatch', grpDriver: 'Driver & car',
+        punctuality: 'Punctuality', price: 'Price', service: 'Service',
+        driver_service: 'Driver service', cleanliness: 'Cleanliness', driving: 'Safe driving',
+        optional: 'optional',
+        recommendQ: 'Would you recommend this company?', yes: 'Yes', no: 'No',
         recommendWord: 'recommend',
-        tagsTitle: 'What stood out? (optional)', saidTags: 'What people say',
-        tripWhen: 'When was your trip? (optional)', todPh: 'Time of day',
+        tagsTitle: 'What stood out?', saidTags: 'What people say',
+        tripWhen: 'When was your trip?', todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
         trip: 'Trip',
         tag_on_time: 'On time', tag_polite: 'Polite driver', tag_clean: 'Clean car',
@@ -183,15 +254,15 @@
       ru: {
         login: 'Войти', signup: 'Регистрация', logout: 'Выйти',
         fullName: 'Полное имя', email: 'Эл. почта', password: 'Пароль (мин. 6 символов)',
-        show: '👁 Показать', hide: '🙈 Скрыть',
+        show: 'Показать', hide: 'Скрыть',
         noAccount: 'Нет аккаунта? Зарегистрируйтесь', haveAccount: 'Уже есть аккаунт? Войти',
         enterCreds: 'Введите эл. почту и пароль от 6 символов',
-        created: 'Аккаунт создан ✅', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
-        companies: 'Компании', addCompany: '+ Добавить компанию', addTitle: 'Добавить компанию',
+        created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
+        companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
         cityPh: 'Город / район (напр. Monsey)', allCities: 'Все города',
         logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию',
-        search: '🔍 Поиск компаний...',
+        search: 'Поиск компаний...',
         sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
         noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
         reviews: 'Отзывы', close: 'Закрыть', edit: 'Изменить', del: 'Удалить',
@@ -200,19 +271,20 @@
         logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
         confirmDelCo: 'Удалить эту компанию и ВСЕ её отзывы? Это нельзя отменить.',
         confirmDelAnyRev: 'Удалить этот отзыв? Это нельзя отменить.',
-        ratingsByCat: 'Оценки по категориям', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
+        ratingsByCat: 'Обзор оценок', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
         anonymous: '(анонимно)', otherIssue: 'Другая проблема',
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
-        confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Пожалуйста, оцените все 5 категорий',
-        saved: 'Сохранено ✅', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
+        confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Пожалуйста, оцените 5 обязательных категорий',
+        saved: 'Сохранено', deleted: 'Отзыв удалён', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
         allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
-        grpOffice: '🏢 Офис / Диспетчер', grpDriver: '🚗 Водитель и машина',
-        punctuality: '⏱ Пунктуальность', price: '💲 Цена', service: '🤝 Сервис',
-        cleanliness: '✨ Чистота', driving: '🛡 Безопасное вождение',
-        recommendQ: 'Вы бы порекомендовали эту компанию?', yes: '👍 Да', no: '👎 Нет',
+        grpOffice: 'Офис / Диспетчер', grpDriver: 'Водитель и машина',
+        punctuality: 'Пунктуальность', price: 'Цена', service: 'Сервис',
+        driver_service: 'Обслуживание водителем', cleanliness: 'Чистота', driving: 'Безопасное вождение',
+        optional: 'необязательно',
+        recommendQ: 'Вы бы порекомендовали эту компанию?', yes: 'Да', no: 'Нет',
         recommendWord: 'рекомендуют',
-        tagsTitle: 'Что запомнилось? (необязательно)', saidTags: 'Что говорят люди',
-        tripWhen: 'Когда была поездка? (необязательно)', todPh: 'Время суток',
+        tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
+        tripWhen: 'Когда была поездка?', todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
         trip: 'Поездка',
         tag_on_time: 'Вовремя', tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
@@ -223,15 +295,15 @@
       es: {
         login: 'Iniciar sesión', signup: 'Registrarse', logout: 'Cerrar sesión',
         fullName: 'Nombre completo', email: 'Correo electrónico', password: 'Contraseña (mín. 6 caracteres)',
-        show: '👁 Mostrar', hide: '🙈 Ocultar',
+        show: 'Mostrar', hide: 'Ocultar',
         noAccount: '¿No tienes cuenta? Regístrate', haveAccount: '¿Ya tienes cuenta? Inicia sesión',
         enterCreds: 'Ingresa tu correo y una contraseña de 6+ caracteres',
-        created: 'Cuenta creada ✅', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
-        companies: 'Empresas', addCompany: '+ Agregar empresa', addTitle: 'Agregar una empresa',
+        created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
+        companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
         cityPh: 'Ciudad / zona (ej. Monsey)', allCities: 'Todas las ciudades',
         logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa',
-        search: '🔍 Buscar empresas...',
+        search: 'Buscar empresas...',
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
         reviews: 'Reseñas', close: 'Cerrar', edit: 'Editar', del: 'Eliminar',
@@ -240,19 +312,20 @@
         logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
         confirmDelCo: '¿Eliminar esta empresa y TODAS sus reseñas? No se puede deshacer.',
         confirmDelAnyRev: '¿Eliminar esta reseña? No se puede deshacer.',
-        ratingsByCat: 'Calificaciones por categoría', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
+        ratingsByCat: 'Resumen de calificaciones', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
         anonymous: '(anónima)', otherIssue: 'Otro problema',
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
-        confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Por favor califica las 5 categorías',
-        saved: 'Guardado ✅', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
+        confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Por favor califica las 5 categorías obligatorias',
+        saved: 'Guardado', deleted: 'Reseña eliminada', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
         allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
-        grpOffice: '🏢 Oficina / Despacho', grpDriver: '🚗 Conductor y auto',
-        punctuality: '⏱ Puntualidad', price: '💲 Precio', service: '🤝 Servicio',
-        cleanliness: '✨ Limpieza', driving: '🛡 Conducción segura',
-        recommendQ: '¿Recomendarías esta empresa?', yes: '👍 Sí', no: '👎 No',
+        grpOffice: 'Oficina / Despacho', grpDriver: 'Conductor y auto',
+        punctuality: 'Puntualidad', price: 'Precio', service: 'Servicio',
+        driver_service: 'Trato del conductor', cleanliness: 'Limpieza', driving: 'Conducción segura',
+        optional: 'opcional',
+        recommendQ: '¿Recomendarías esta empresa?', yes: 'Sí', no: 'No',
         recommendWord: 'recomiendan',
-        tagsTitle: '¿Qué destacó? (opcional)', saidTags: 'Lo que dice la gente',
-        tripWhen: '¿Cuándo fue tu viaje? (opcional)', todPh: 'Hora del día',
+        tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
+        tripWhen: '¿Cuándo fue tu viaje?', todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
         trip: 'Viaje',
         tag_on_time: 'Puntual', tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
@@ -271,34 +344,25 @@
     let lang = detectLang();
     const t_ = k => (T[lang] && T[lang][k]) || T.en[k] || k;
 
-    const CAT_KEYS = ['punctuality', 'price', 'service', 'cleanliness', 'driving'];
+    const REQ_KEYS = ['punctuality', 'price', 'service', 'cleanliness', 'driving'];
     const GROUPS = [
-      ['grpOffice', ['punctuality', 'price', 'service']],
-      ['grpDriver', ['cleanliness', 'driving']]
+      ['grpOffice', 'office', ['punctuality', 'price', 'service']],
+      ['grpDriver', 'car', ['driver_service', 'cleanliness', 'driving']]
     ];
+    const ALL_KEYS = ['punctuality', 'price', 'service', 'driver_service', 'cleanliness', 'driving'];
     const POS_TAGS = ['on_time', 'polite', 'clean', 'fair_price', 'safe', 'great_service'];
     const NEG_TAGS = ['late', 'rude', 'dirty', 'overcharged', 'unsafe', 'no_answer'];
     const TODS = ['morning', 'afternoon', 'evening', 'night'];
     const isPos = k => POS_TAGS.includes(k);
-    const catLabel = k => t_(k);
 
-    let isSignup = false;
-    let openId = null;
-    let editingId = null;
-    let draft = {};
-    let myUid = null;
-    let myEmail = '';
-    let isAdmin = false;
-    let loggedIn = false;
-    let allCompanies = [];
-    let stats = {};
-    let recStats = {};
-    let myReviewId = null;
-    let flash = '';
+    let isSignup = false, openId = null, editingId = null, draft = {};
+    let myUid = null, myEmail = '', isAdmin = false, loggedIn = false;
+    let allCompanies = [], stats = {}, recStats = {}, myReviewId = null;
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const stars = v => { const n = Math.round(Number(v) || 0); return '★'.repeat(n) + '☆'.repeat(5 - n); };
+    const tone = v => v >= 4 ? 'good' : v >= 3 ? 'mid' : 'bad';
     const fmtPhone = p => {
       const d = String(p ?? '').replace(/\D/g, '');
       if (d.length === 10) return d.slice(0,3) + '-' + d.slice(3,6) + '-' + d.slice(6);
@@ -306,7 +370,15 @@
       return String(p ?? '');
     };
 
-    // ---------- Static UI text ----------
+    let toastTimer;
+    function toast(text) {
+      const el = $('toast');
+      el.innerHTML = ic('check') + esc(text);
+      el.style.display = 'flex';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.style.display = 'none', 2500);
+    }
+
     function applyStaticText() {
       document.documentElement.lang = lang;
       $('langSel').value = lang;
@@ -318,7 +390,7 @@
       $('password').placeholder = t_('password');
       $('showPw').textContent = $('password').type === 'password' ? t_('show') : t_('hide');
       $('tCompanies').textContent = t_('companies');
-      $('addToggle').textContent = t_('addCompany');
+      $('addToggle').innerHTML = ic('plus') + esc(t_('addCompany'));
       $('tAddTitle').textContent = t_('addTitle');
       $('cName').placeholder = t_('companyName');
       $('cCity').placeholder = t_('cityPh');
@@ -328,6 +400,7 @@
       $('tLogoOpt').textContent = t_('logoOpt');
       $('saveCompany').textContent = t_('saveCompany');
       $('search').placeholder = t_('search');
+      $('searchIc').innerHTML = ic('search');
       const opts = $('sort').options;
       opts[0].textContent = t_('sortRating');
       opts[1].textContent = t_('sortCount');
@@ -450,10 +523,8 @@
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
-      stats = {};
-      (sRes.data || []).forEach(s => stats[s.company_id] = s);
-      recStats = {};
-      (rRes.data || []).forEach(s => recStats[s.company_id] = s);
+      stats = {}; (sRes.data || []).forEach(s => stats[s.company_id] = s);
+      recStats = {}; (rRes.data || []).forEach(s => recStats[s.company_id] = s);
       renderCompanies();
     }
 
@@ -464,20 +535,15 @@
       const ov = c => stats[c.id] ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
 
-      // City filter options
-      const cities = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b));
+      const cities = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
       const citySel = $('cityFilter');
       const curCity = citySel.value;
-      citySel.innerHTML = `<option value="">${esc(t_('allCities'))}</option>` +
-        cities.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+      citySel.innerHTML = `<option value="">${esc(t_('allCities'))}</option>` + cities.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
       citySel.value = cities.includes(curCity) ? curCity : '';
       const cityQ = citySel.value;
 
       let list = allCompanies.filter(c =>
-        (!q || (c.name || '').toLowerCase().includes(q) ||
-               (c.description || '').toLowerCase().includes(q) ||
-               (c.city || '').toLowerCase().includes(q)) &&
+        (!q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q)) &&
         (!cityQ || (c.city || '').trim() === cityQ));
 
       if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
@@ -503,36 +569,47 @@
             <button class="link" data-canceledit="1">${esc(t_('cancel'))}</button>
           </div>`;
         }
-        const s = stats[c.id];
-        const rc = recStats[c.id];
-        const overall = ov(c);
-        const recHtml = rc && rc.rec_votes > 0
-          ? `<span class="rec">👍 ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</span>` : '';
-        const rating = s
-          ? `<span class="stars big">${stars(overall)}</span><span class="num">${overall.toFixed(1)} (${s.review_count})</span>${recHtml}`
-          : `<span class="meta">${esc(t_('noReviewsYet'))}</span>`;
+        const s = stats[c.id], rc = recStats[c.id], overall = ov(c);
+        const recPill = rc && rc.rec_votes > 0
+          ? `<div class="pill ${Number(rc.rec_pct) < 50 ? 'low' : ''}">${ic(Number(rc.rec_pct) < 50 ? 'down' : 'up')} ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</div>` : '';
+        const scoreBox = s
+          ? `<div class="score"><div class="big ${tone(overall)}">${overall.toFixed(1)}</div><div class="stars">${stars(overall)}</div><div class="cnt">${s.review_count} ${esc(t_('reviews'))}</div></div>`
+          : `<div class="score"><div class="meta">${esc(t_('noReviewsYet'))}</div></div>`;
         return `
-          <div class="card">
-            <div class="row">
+          <div class="card" id="co-${c.id}">
+            <div class="chead">
               <div class="cinfo">
                 ${c.logo_url ? `<img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
                 <div>
                   <div class="cname">${esc(c.name)}</div>
-                  <div>${rating}</div>
+                  ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
+                  ${recPill}
                 </div>
               </div>
-              <div class="actions">
-                <button data-open="${c.id}">${esc(openId === c.id ? t_('close') : t_('reviews'))}</button>
-                ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
-              </div>
+              ${scoreBox}
             </div>
-            ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
-            <div class="meta">${c.city ? '📍 ' + esc(c.city) + ' &nbsp; ' : ''}${c.phone ? '📞 ' + esc(fmtPhone(c.phone)) + ' &nbsp; ' : ''}${c.email ? '✉️ ' + esc(c.email) : ''}</div>
+            <div class="contact">
+              ${c.city ? `<span>${ic('pin')}${esc(c.city)}</span>` : ''}
+              ${c.phone ? `<span>${ic('phone')}${esc(fmtPhone(c.phone))}</span>` : ''}
+              ${c.email ? `<span>${ic('mail')}${esc(c.email)}</span>` : ''}
+            </div>
+            <div class="actions">
+              <button data-open="${c.id}">${esc(openId === c.id ? t_('close') : t_('reviews'))}</button>
+              ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
+            </div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
           </div>`;
       }).join('') : '<p>' + esc(t_('noCompanies')) + '</p>';
 
       if (openId) loadDetail(openId);
+    }
+
+    function barRow(k, a, n) {
+      const has = n > 0;
+      const w = has ? Math.round(a / 5 * 100) : 0;
+      return `<div class="bar"><span class="${has ? tone(a) : ''}">${ic(KEY_ICON[k])}</span><span>${esc(t_(k))}</span>
+        <span class="track"><span class="fill bg-${has ? tone(a) : 'mid'}" style="display:block;width:${w}%"></span></span>
+        <span class="val ${has ? tone(a) : ''}">${has ? a.toFixed(1) : '-'}</span></div>`;
     }
 
     async function loadDetail(companyId) {
@@ -545,7 +622,7 @@
       const mine = data.find(r => r.user_id === myUid);
       myReviewId = mine ? mine.id : null;
       if (!Object.keys(draft).length && mine) {
-        CAT_KEYS.forEach(k => draft[k] = mine[k]);
+        ALL_KEYS.forEach(k => draft[k] = mine[k]);
         draft.comment = mine.comment || '';
         draft.rec = mine.recommend;
         draft.tags = Array.isArray(mine.tags) ? mine.tags.slice() : [];
@@ -554,40 +631,37 @@
       }
       const dTags = draft.tags || [];
 
-      // Averages grouped
-      const avgs = GROUPS.map(([g, keys]) => `
-        <div class="grp">${esc(t_(g))}</div>
-        ${keys.map(k => {
-          const a = data.length ? data.reduce((t, r) => t + r[k], 0) / data.length : 0;
-          return `<div class="catrow"><span>${esc(catLabel(k))}</span><span><span class="stars">${stars(a)}</span><span class="num">${data.length ? a.toFixed(1) : '-'}</span></span></div>`;
-        }).join('')}`).join('');
+      // averages (skip null values, e.g. old reviews without driver_service)
+      const avgOf = k => {
+        const vals = data.map(r => r[k]).filter(v => v !== null && v !== undefined);
+        return { a: vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : 0, n: vals.length };
+      };
+      const overview = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
+        <div><div class="grp">${ic(gi)} ${esc(t_(g))}</div>${keys.map(k => { const r = avgOf(k); return barRow(k, r.a, r.n); }).join('')}</div>`).join('')}</div>`;
 
-      // Tag counts ("what people say")
       const counts = {};
       data.forEach(r => (r.tags || []).forEach(tg => counts[tg] = (counts[tg] || 0) + 1));
       const tagKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
       const tagSummary = tagKeys.length
-        ? `<h4>${esc(t_('saidTags'))}</h4><div class="chips">${tagKeys.map(k =>
-            `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))} · ${counts[k]}</span>`).join('')}</div>`
-        : '';
+        ? `<div class="sect"><h4>${ic('chat')} ${esc(t_('saidTags'))}</h4><div class="chips">${tagKeys.map(k =>
+            `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))} · ${counts[k]}</span>`).join('')}</div></div>` : '';
 
-      // Form: grouped stars
-      const form = GROUPS.map(([g, keys]) => `
-        <div class="grp">${esc(t_(g))}</div>
+      const form = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
+        <div><div class="grp">${ic(gi)} ${esc(t_(g))}</div>
         ${keys.map(k => `
-          <div class="catrow"><span>${esc(catLabel(k))}</span>
+          <div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}${REQ_KEYS.includes(k) ? '' : ` <span class="opt">(${esc(t_('optional'))})</span>`}</span>
             <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
-          </div>`).join('')}`).join('');
+          </div>`).join('')}</div>`).join('')}</div>`;
 
       const recForm = `
-        <h4>${esc(t_('recommendQ'))}</h4>
+        <h4 style="margin-top:14px">${esc(t_('recommendQ'))}</h4>
         <div class="recbtns">
-          <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${esc(t_('yes'))}</button>
-          <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${esc(t_('no'))}</button>
+          <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
+          <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
         </div>`;
 
       const tagForm = `
-        <h4>${esc(t_('tagsTitle'))}</h4>
+        <h4 style="margin-top:14px">${esc(t_('tagsTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
         <div class="chips">
           ${POS_TAGS.map(k => `<button type="button" class="chip pos ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
           ${NEG_TAGS.map(k => `<button type="button" class="chip neg ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
@@ -595,7 +669,7 @@
 
       const today = new Date().toISOString().slice(0, 10);
       const tripForm = `
-        <h4>${esc(t_('tripWhen'))}</h4>
+        <h4 style="margin-top:14px">${ic('cal')} ${esc(t_('tripWhen'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
         <div class="two">
           <input id="revDate" type="date" max="${today}" value="${esc(draft.trip_date || '')}">
           <select id="revTod">
@@ -605,73 +679,77 @@
         </div>`;
 
       const list = data.length ? data.map(r => {
-        const rtags = (r.tags || []).map(k =>
-          `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`).join('');
+        const core = (r.punctuality + r.price + r.service + r.cleanliness + r.driving) / 5;
+        const rtags = (r.tags || []).map(k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`).join('');
         const tripBits = [];
         if (r.trip_date) tripBits.push(new Date(r.trip_date + 'T00:00:00').toLocaleDateString(lang));
         if (r.time_of_day && TODS.includes(r.time_of_day)) tripBits.push(t_('tod_' + r.time_of_day));
-        const recBadge = r.recommend === true ? ` <span class="rec">${esc(t_('yes'))}</span>`
-                       : r.recommend === false ? ` <span class="meta" style="color:#c0392b;font-weight:bold">${esc(t_('no'))}</span>` : '';
+        const recBadge = r.recommend === true ? `<span class="yn good">${ic('up')} ${esc(t_('yes'))}</span>`
+                       : r.recommend === false ? `<span class="yn bad">${ic('down')} ${esc(t_('no'))}</span>` : '';
+        const mini = ALL_KEYS.filter(k => r[k] !== null && r[k] !== undefined)
+          .map(k => `<span>${ic(KEY_ICON[k])} ${esc(t_(k))} <b>${r[k]}</b></span>`).join('');
         return `
         <div class="rev">
-          <span class="stars">${stars((r.punctuality + r.price + r.service + r.cleanliness + r.driving) / 5)}</span>
-          <span class="meta">${new Date(r.created_at).toLocaleDateString(lang)}</span>${recBadge}
-          ${tripBits.length ? `<div class="meta">🕒 ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
+          <div class="rh">
+            <span class="badge bg-${tone(core)}">${core.toFixed(1)}</span>
+            <span class="stars">${stars(core)}</span>
+            ${recBadge}
+            <span class="meta" style="margin:0 0 0 auto">${new Date(r.created_at).toLocaleDateString(lang)}</span>
+          </div>
+          ${tripBits.length ? `<div class="meta">${ic('cal')} ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
           ${rtags ? `<div class="chips">${rtags}</div>` : ''}
-          ${r.comment ? `<div><b>${esc(t_('otherIssue'))}:</b> ${esc(r.comment)}</div>` : ''}
-          <div class="cats">${GROUPS.map(([g, keys]) => `<b>${esc(t_(g))}</b>: ` + keys.map(k => `${esc(catLabel(k))} ${r[k]}★`).join(' | ')).join('<br>')}</div>
+          ${r.comment ? `<div style="margin-top:6px"><b>${esc(t_('otherIssue'))}:</b> ${esc(r.comment)}</div>` : ''}
+          <div class="mini">${mini}</div>
           ${isAdmin && r.user_id !== myUid ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : ''}
         </div>`;
       }).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
 
       el.innerHTML = `
-        <h4>${esc(t_('ratingsByCat'))}</h4>${avgs}
+        <div class="dtop"><button class="ghost small" data-open="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>
+        <div class="sect"><h4>${esc(t_('ratingsByCat'))}</h4>${overview}</div>
         ${tagSummary}
-        <h4>${esc(mine ? t_('editReview') : t_('writeReview'))} ${esc(t_('anonymous'))}</h4>
-        <div id="revMsg" class="msg"></div>
-        ${form}
-        ${recForm}
-        ${tagForm}
-        ${tripForm}
-        <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
-        <button id="submitReview" data-company="${companyId}">${esc(mine ? t_('update') : t_('submit'))}</button>
-        ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
-        <h4>${esc(t_('allReviews'))} (${data.length})</h4>${list}`;
-
-      if (flash) { showMsg($('revMsg'), flash, true); flash = ''; }
+        <div class="sect white">
+          <h4>${esc(mine ? t_('editReview') : t_('writeReview'))} ${esc(t_('anonymous'))}</h4>
+          <div id="revMsg" class="msg"></div>
+          ${form}${recForm}${tagForm}${tripForm}
+          <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
+          <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
+          ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
+        </div>
+        <h4>${esc(t_('allReviews'))} (${data.length})</h4>${list}
+        <div class="dtop" style="margin-top:10px"><button class="ghost" data-open="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>`;
     }
 
     document.addEventListener('click', async (e) => {
-      const t = e.target;
+      const t = e.target.closest ? (e.target.closest('button, .st') || e.target) : e.target;
       const ds = t.dataset || {};
 
       if (ds.open) {
-        openId = (openId === ds.open) ? null : ds.open;
+        const wasOpen = openId === ds.open;
+        openId = wasOpen ? null : ds.open;
         draft = {};
         renderCompanies();
+        const card = $('co-' + ds.open);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
       if (t.classList && t.classList.contains('st')) {
         const cat = t.parentElement.dataset.cat;
         const v = Number(t.dataset.v);
-        draft[cat] = v;
-        t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= v));
+        // click the same star again on an optional category to clear it
+        if (!REQ_KEYS.includes(cat) && draft[cat] === v) draft[cat] = null; else draft[cat] = v;
+        t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= (draft[cat] || 0)));
         return;
       }
 
-      // Recommend Yes / No (click again to clear)
       if (ds.rec !== undefined) {
         const val = ds.rec === '1';
         draft.rec = (draft.rec === val) ? undefined : val;
-        document.querySelectorAll('.recbtn').forEach(b => {
-          const bv = b.dataset.rec === '1';
-          b.classList.toggle('on', draft.rec === bv);
-        });
+        document.querySelectorAll('.recbtn').forEach(b => b.classList.toggle('on', draft.rec === (b.dataset.rec === '1')));
         return;
       }
 
-      // Tag chips
       if (ds.tag) {
         draft.tags = draft.tags || [];
         const i = draft.tags.indexOf(ds.tag);
@@ -728,22 +806,22 @@
 
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
-        if (CAT_KEYS.some(k => !draft[k])) return showMsg(msg, t_('rateAll'), false);
+        if (REQ_KEYS.some(k => !draft[k])) return showMsg(msg, t_('rateAll'), false);
         const vals = {
           comment: $('revComment').value.trim() || null,
           recommend: (draft.rec === true || draft.rec === false) ? draft.rec : null,
           tags: draft.tags || [],
           trip_date: $('revDate').value || null,
           time_of_day: $('revTod').value || null,
+          driver_service: draft.driver_service || null,
           updated_at: new Date().toISOString()
         };
-        CAT_KEYS.forEach(k => vals[k] = draft[k]);
+        REQ_KEYS.forEach(k => vals[k] = draft[k]);
         t.disabled = true;
 
         let error = null;
         if (myReviewId) {
-          const res = await sb.from('reviews').update(vals)
-            .eq('id', myReviewId).eq('user_id', myUid).select();
+          const res = await sb.from('reviews').update(vals).eq('id', myReviewId).eq('user_id', myUid).select();
           error = res.error;
           if (!error && (!res.data || res.data.length === 0)) {
             t.disabled = false;
@@ -755,9 +833,14 @@
         }
         if (error) { t.disabled = false; return showMsg(msg, error.message, false); }
 
+        // success: close the panel, show a toast
+        const cid = openId;
         draft = {};
-        flash = t_('saved');
-        loadCompanies();
+        openId = null;
+        await loadCompanies();
+        toast(t_('saved'));
+        const card = $('co-' + cid);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
@@ -767,7 +850,9 @@
           .eq('company_id', t.dataset.company).eq('user_id', myUid);
         if (error) return showMsg($('revMsg'), error.message, false);
         draft = {};
-        loadCompanies();
+        openId = null;
+        await loadCompanies();
+        toast(t_('deleted'));
       }
     });
 
@@ -782,10 +867,7 @@
         await checkAdmin();
         loadCompanies();
       } else {
-        myUid = null;
-        myEmail = '';
-        loggedIn = false;
-        isAdmin = false;
+        myUid = null; myEmail = ''; loggedIn = false; isAdmin = false;
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
         applyStaticText();
