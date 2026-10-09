@@ -305,7 +305,7 @@
       ['Monroe','מאנרא'], ['New Square','סקווירא'], ['Lakewood','לעיקוואוד'],
       ['Passaic','פאסעיק'], ['Teaneck','טינעק'], ['Five Towns','פייוו טאונס'],
       ['Far Rockaway','פאר ראקאוועי'], ['Kew Gardens Hills','קיו גארדענס הילס'],
-      ['Manhattan','מאנהעטן'], ['Staten Island','סטעטן איילענד'], ['Montreal','מאנטריאל'],
+      ['Manhattan','מאנהעטען'], ['Staten Island','סטעטן איילענד'], ['Montreal','מאנטריאל'],
       ['JFK Airport','JFK עירפארט'], ['LaGuardia Airport','לאגווארדיע עירפארט'], ['Newark Airport','נוארק עירפארט']
     ];
     const placeLabel = v => {
@@ -606,18 +606,21 @@
       return String(p ?? '');
     };
 
-    // ---------- Favicon from the logo (left square part) ----------
+    // ---------- Favicon from the logo (only the van + stars, square crop) ----------
     (function makeFavicon() {
       const img = new Image();
       img.onload = () => {
         try {
-          const s = img.naturalHeight;
           const c = document.createElement('canvas');
           c.width = c.height = 64;
           const x = c.getContext('2d');
           x.fillStyle = '#fff';
           x.fillRect(0, 0, 64, 64);
-          x.drawImage(img, 0, 0, Math.min(s, img.naturalWidth), s, 0, 0, 64, 64);
+          // crop only the van + stars (left part of the logo), as a square
+          const sx = img.naturalWidth * 0.04, sw = img.naturalWidth * 0.46;
+          const sy = img.naturalHeight * 0.17;
+          const side = Math.min(sw, img.naturalHeight * 0.58);
+          x.drawImage(img, sx + (sw - side) / 2, sy, side, side, 0, 0, 64, 64);
           $('favicon').href = c.toDataURL('image/png');
         } catch (e) {}
       };
