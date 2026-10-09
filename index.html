@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CarReviews</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 56 12v18c0 16-10 26-24 30C18 56 8 46 8 30V12z' fill='%231a3c6e'/%3E%3Cpath d='M16 36l4-9c1-2 3-3 5-3h14c2 0 4 1 5 3l4 9v8H16z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="icon" id="favicon" href="logo.png">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root { --navy:#1a3c6e; --navy2:#12294d; --gold:#e8a317; --green:#1e8e3e; --red:#c0392b; --amber:#e8a317; --line:#e3e8ef; --soft:#f1f4f9; }
@@ -136,6 +136,7 @@
     .rev .mini { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; color:#5b6776; margin-top:8px; }
     .rev .mini b { color:#1f2a37; }
     .rev .mini span { display:inline-flex; align-items:center; gap:5px; }
+    .cmt { background:#fffdf5; border-inline-start:3px solid var(--gold); padding:8px 10px; border-radius:6px; margin-top:8px; white-space:pre-wrap; word-break:break-word; }
     .yn { font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
     .ridebox { background:#eef6ff; border:1px solid #cfe2fb; border-radius:8px; padding:8px 10px; margin-top:8px; font-size:14px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; }
     .ridebox span { display:inline-flex; align-items:center; gap:6px; }
@@ -240,7 +241,7 @@
       <h3 id="tAddTitle"></h3>
       <div id="addMsg" class="msg"></div>
       <input id="cName" type="text">
-      <input id="cCity" type="text">
+      <div id="cCityBox"></div>
       <textarea id="cDesc" rows="3"></textarea>
       <input id="cPhone" type="text">
       <input id="cEmail" type="email">
@@ -329,6 +330,10 @@
       if (s === '__other') return $(id + 'Txt').value.trim() || null;
       return s || null;
     }
+    function renderCityBox(reset) {
+      const cur = (!reset && $('cCity')) ? (readPlace('cCity') || '') : '';
+      $('cCityBox').innerHTML = placeSelect('cCity', cur, t_('cityPh'));
+    }
 
     // ---------- Translations ----------
     const T = {
@@ -341,12 +346,13 @@
         created: 'Account created', createdConfirm: 'Account created. Check your email to confirm, then log in.',
         companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
-        cityPh: 'City / area (e.g. Monsey)', allCities: 'All cities',
+        cityPh: 'City / area', allCities: 'All cities',
         logoOpt: 'Logo (optional):', saveCompany: 'Save company',
         search: 'Search companies...',
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
-        reviews: 'Reviews', writeBtn: 'Write a review', close: 'Close', edit: 'Edit', del: 'Delete',
+        reviews: 'Reviews', commentsBtn: 'Written comments', commentsTitle: 'Written comments', noComments: 'No written comments yet.',
+        writeBtn: 'Write a review', close: 'Close', edit: 'Edit', del: 'Delete',
         editCompany: 'Edit company', currentLogo: 'Current logo:', replaceLogo: 'Replace logo (optional):',
         save: 'Save', cancel: 'Cancel', nameRequired: 'Company name is required',
         logoTooBig: 'Logo is too big (max 2 MB)',
@@ -396,12 +402,13 @@
         created: 'אַקאַונט באַשאַפֿן', createdConfirm: 'אַקאַונט באַשאַפֿן. קוקט אין אימעיל צו באַשטעטיקן, דערנאָך לאָגירט אײַן.',
         companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
         companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
-        cityPh: 'שטאָט / געגנט (צ.ב. מאַנסי)', allCities: 'אַלע שטעט',
+        cityPh: 'שטאָט / געגנט', allCities: 'אַלע שטעט',
         logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני',
         search: 'זוכט קאָמפּאַניעס...',
         sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
         noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
-        reviews: 'רעוויוס', writeBtn: 'שרײַבט אַ רעוויו', close: 'צומאַכן', edit: 'ענדערן', del: 'אויסמעקן',
+        reviews: 'רעוויוס', commentsBtn: 'געשריבענע רעוויוס', commentsTitle: 'געשריבענע רעוויוס', noComments: 'נאָך קיין געשריבענע רעוויוס נישט.',
+        writeBtn: 'שרײַבט אַ רעוויו', close: 'צומאַכן', edit: 'ענדערן', del: 'אויסמעקן',
         editCompany: 'ענדערט קאָמפּאַני', currentLogo: 'איצטיקער לאָגאָ:', replaceLogo: 'ערזעצט לאָגאָ (אָפּציע):',
         save: 'שפּײַכערן', cancel: 'אָפּשטעלן', nameRequired: 'דער נאָמען פֿון קאָמפּאַני איז נייטיק',
         logoTooBig: 'דער לאָגאָ איז צו גרויס (מאַקס 2 MB)',
@@ -451,12 +458,13 @@
         created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
         companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
-        cityPh: 'Город / район (напр. Monsey)', allCities: 'Все города',
+        cityPh: 'Город / район', allCities: 'Все города',
         logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию',
         search: 'Поиск компаний...',
         sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
         noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
-        reviews: 'Отзывы', writeBtn: 'Написать отзыв', close: 'Закрыть', edit: 'Изменить', del: 'Удалить',
+        reviews: 'Отзывы', commentsBtn: 'Письменные отзывы', commentsTitle: 'Письменные отзывы', noComments: 'Письменных отзывов пока нет.',
+        writeBtn: 'Написать отзыв', close: 'Закрыть', edit: 'Изменить', del: 'Удалить',
         editCompany: 'Изменить компанию', currentLogo: 'Текущий логотип:', replaceLogo: 'Заменить логотип (необязательно):',
         save: 'Сохранить', cancel: 'Отмена', nameRequired: 'Укажите название компании',
         logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
@@ -506,12 +514,13 @@
         created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
         companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
-        cityPh: 'Ciudad / zona (ej. Monsey)', allCities: 'Todas las ciudades',
+        cityPh: 'Ciudad / zona', allCities: 'Todas las ciudades',
         logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa',
         search: 'Buscar empresas...',
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
-        reviews: 'Reseñas', writeBtn: 'Escribir una reseña', close: 'Cerrar', edit: 'Editar', del: 'Eliminar',
+        reviews: 'Reseñas', commentsBtn: 'Comentarios escritos', commentsTitle: 'Comentarios escritos', noComments: 'Aún no hay comentarios escritos.',
+        writeBtn: 'Escribir una reseña', close: 'Cerrar', edit: 'Editar', del: 'Eliminar',
         editCompany: 'Editar empresa', currentLogo: 'Logo actual:', replaceLogo: 'Reemplazar logo (opcional):',
         save: 'Guardar', cancel: 'Cancelar', nameRequired: 'El nombre de la empresa es obligatorio',
         logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
@@ -597,6 +606,24 @@
       return String(p ?? '');
     };
 
+    // ---------- Favicon from the logo (left square part) ----------
+    (function makeFavicon() {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const s = img.naturalHeight;
+          const c = document.createElement('canvas');
+          c.width = c.height = 64;
+          const x = c.getContext('2d');
+          x.fillStyle = '#fff';
+          x.fillRect(0, 0, 64, 64);
+          x.drawImage(img, 0, 0, Math.min(s, img.naturalWidth), s, 0, 0, 64, 64);
+          $('favicon').href = c.toDataURL('image/png');
+        } catch (e) {}
+      };
+      img.src = 'logo.png?v=' + Date.now();
+    })();
+
     // ---------- Jewish calendar ----------
     const hf = (d, o) => { try { return new Intl.DateTimeFormat('he-u-ca-hebrew', o).format(d); } catch (e) { return ''; } };
     const hDay = d => {
@@ -676,7 +703,7 @@
       $('bannedBanner').classList.toggle('hidden', !isBanned);
       $('tAddTitle').textContent = t_('addTitle');
       $('cName').placeholder = t_('companyName');
-      $('cCity').placeholder = t_('cityPh');
+      renderCityBox(false);
       $('cDesc').placeholder = t_('description');
       $('cPhone').placeholder = t_('phone');
       $('cEmail').placeholder = t_('email');
@@ -810,7 +837,7 @@
         const phoneRaw = $('cPhone').value.trim();
         const row = {
           name,
-          city: $('cCity').value.trim() || null,
+          city: readPlace('cCity'),
           description: $('cDesc').value.trim() || null,
           phone: phoneRaw ? fmtPhone(phoneRaw) : null,
           email: $('cEmail').value.trim() || null,
@@ -818,7 +845,8 @@
         };
         const { error } = await sb.from('companies').insert(row);
         if (error) throw error;
-        ['cName','cCity','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
+        ['cName','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
+        renderCityBox(true);
         $('addMsg').style.display = 'none';
         $('addForm').classList.add('hidden');
         loadCompanies();
@@ -889,15 +917,20 @@
       const ov = c => stats[c.id] ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
 
-      const cities = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      // city filter: ALL known places + any custom city already used by a company
+      const known = PLACES.map(p => p[0]);
+      const extra = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(x => x && !known.includes(x)))]
+        .sort((a, b) => a.localeCompare(b));
       const citySel = $('cityFilter');
       const curCity = citySel.value;
-      citySel.innerHTML = `<option value="">${esc(t_('allCities'))}</option>` + cities.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
-      citySel.value = cities.includes(curCity) ? curCity : '';
+      citySel.innerHTML = `<option value="">${esc(t_('allCities'))}</option>` +
+        known.map(v => `<option value="${esc(v)}">${esc(placeLabel(v))}</option>`).join('') +
+        extra.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+      citySel.value = (known.includes(curCity) || extra.includes(curCity)) ? curCity : '';
       const cityQ = citySel.value;
 
       let list = allCompanies.filter(c =>
-        (!q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q)) &&
+        (!q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q)) &&
         (!cityQ || (c.city || '').trim() === cityQ));
 
       if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
@@ -912,7 +945,7 @@
             <h4>${esc(t_('editCompany'))}</h4>
             <div id="editMsg" class="msg"></div>
             <input id="eName" type="text" value="${esc(c.name)}" placeholder="${esc(t_('companyName'))}">
-            <input id="eCity" type="text" value="${esc(c.city || '')}" placeholder="${esc(t_('cityPh'))}">
+            ${placeSelect('eCity', (c.city || '').trim(), t_('cityPh'))}
             <textarea id="eDesc" rows="3" placeholder="${esc(t_('description'))}">${esc(c.description || '')}</textarea>
             <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="${esc(t_('phone'))}">
             <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="${esc(t_('email'))}">
@@ -931,6 +964,7 @@
           : `<div class="score"><div class="meta">${esc(t_('noReviewsYet'))}</div></div>`;
         const viewOpen = openId === c.id && openMode === 'view';
         const writeOpen = openId === c.id && openMode === 'write';
+        const commOpen = openId === c.id && openMode === 'comments';
 
         const sugs = (isAdmin && sugMap[c.id]) ? sugMap[c.id] : [];
         const sugHtml = sugs.length ? `
@@ -963,13 +997,14 @@
               ${scoreBox}
             </div>
             <div class="contact">
-              ${c.city ? `<span>${ic('pin')}${esc(c.city)}</span>` : ''}
+              ${c.city ? `<span>${ic('pin')}${esc(placeLabel((c.city || '').trim()))}</span>` : ''}
               ${c.phone ? `<span>${ic('phone')}${esc(fmtPhone(c.phone))}</span>` : ''}
               ${c.email ? `<span>${ic('mail')}${esc(c.email)}</span>` : ''}
             </div>
             ${sugHtml}
             <div class="actions">
               <button data-open="${c.id}">${esc(viewOpen ? t_('close') : t_('reviews'))}</button>
+              <button class="ghost" data-comments="${c.id}">${ic('chat')} ${esc(commOpen ? t_('close') : t_('commentsBtn'))}</button>
               ${isBanned ? '' : `<button class="green" data-write="${c.id}">${ic('edit')} ${esc(writeOpen ? t_('close') : t_('writeBtn'))}</button>`}
               ${(!isAdmin && !isBanned) ? `<button class="ghost" data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
               ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
@@ -995,6 +1030,20 @@
       if (r.price_paid !== null && r.price_paid !== undefined) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
       return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
     }
+
+    function authorHtml(r) {
+      if (!isAdmin) return '';
+      const u = userMap[r.user_id];
+      const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta" style="margin:0">${esc(u.email)}</span>` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
+      const isB = u && u.banned;
+      return `<div class="author">${ic('user')} ${esc(t_('by'))}: ${who}
+        ${isB ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}
+        ${r.user_id !== myUid ? (isB
+          ? `<button class="ghost small" style="margin:0" data-unban="${r.user_id}">${esc(t_('unban'))}</button>`
+          : `<button class="danger small" style="margin:0" data-ban="${r.user_id}">${ic('ban')} ${esc(t_('ban'))}</button>`) : ''}
+      </div>`;
+    }
+    const delRevBtn = r => (isAdmin && r.user_id !== myUid) ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '';
 
     async function loadDetail(companyId) {
       const el = $('detail');
@@ -1081,6 +1130,26 @@
         return;
       }
 
+      // ================= WRITTEN COMMENTS MODE =================
+      if (openMode === 'comments') {
+        const withC = data.filter(r => r.comment && String(r.comment).trim());
+        const items = withC.length ? withC.map(r => {
+          const core = coreOf(r);
+          return `<div class="rev">
+            <div class="rh">
+              <span class="badge bg-${tone(core)}">${core.toFixed(1)}</span>
+              <span class="stars">${stars(core)}</span>
+              <span class="meta" style="margin:0; margin-inline-start:auto">${new Date(r.created_at).toLocaleDateString(dl())}</span>
+            </div>
+            <div class="cmt">${esc(r.comment)}</div>
+            ${authorHtml(r)}
+            ${delRevBtn(r)}
+          </div>`;
+        }).join('') : `<p class="meta">${esc(t_('noComments'))}</p>`;
+        el.innerHTML = closeTop + `<h4>${ic('chat')} ${esc(t_('commentsTitle'))} (${withC.length})</h4>` + items + closeBottom;
+        return;
+      }
+
       // ================= VIEW MODE =================
       const avgOf = k => {
         const vals = data.map(r => r[k]).filter(v => v !== null && v !== undefined);
@@ -1116,18 +1185,6 @@
                        : r.recommend === false ? `<span class="yn bad">${ic('down')} ${esc(t_('no'))}</span>` : '';
         const mini = ALL_KEYS.filter(k => r[k] !== null && r[k] !== undefined)
           .map(k => `<span>${ic(KEY_ICON[k])} ${esc(t_(k))} <b>${r[k]}</b></span>`).join('');
-        let author = '';
-        if (isAdmin) {
-          const u = userMap[r.user_id];
-          const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta" style="margin:0">${esc(u.email)}</span>` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
-          const isB = u && u.banned;
-          author = `<div class="author">${ic('user')} ${esc(t_('by'))}: ${who}
-            ${isB ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}
-            ${r.user_id !== myUid ? (isB
-              ? `<button class="ghost small" style="margin:0" data-unban="${r.user_id}">${esc(t_('unban'))}</button>`
-              : `<button class="danger small" style="margin:0" data-ban="${r.user_id}">${ic('ban')} ${esc(t_('ban'))}</button>`) : ''}
-          </div>`;
-        }
         return `
         <div class="rev">
           <div class="rh">
@@ -1139,10 +1196,9 @@
           ${tripBits.length ? `<div class="meta">${ic('cal')} ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
           ${rideHtml(r)}
           ${rtags ? `<div class="chips">${rtags}</div>` : ''}
-          ${r.comment ? `<div style="margin-top:6px"><b>${esc(t_('otherIssue'))}:</b> ${esc(r.comment)}</div>` : ''}
           <div class="mini">${mini}</div>
-          ${author}
-          ${isAdmin && r.user_id !== myUid ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : ''}
+          ${authorHtml(r)}
+          ${delRevBtn(r)}
         </div>`;
       }).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
 
@@ -1242,9 +1298,10 @@
         return;
       }
 
-      if (ds.open || ds.write) {
-        const id = ds.open || ds.write;
-        const m = ds.open ? 'view' : 'write';
+      // open / close panels: reviews, written comments, write
+      if (ds.open || ds.write || ds.comments) {
+        const id = ds.open || ds.write || ds.comments;
+        const m = ds.open ? 'view' : (ds.write ? 'write' : 'comments');
         if (openId === id && openMode === m) openId = null;
         else { openId = id; openMode = m; }
         draft = {};
@@ -1312,7 +1369,7 @@
           const ph = $('ePhone').value.trim();
           const row = {
             name,
-            city: $('eCity').value.trim() || null,
+            city: readPlace('eCity'),
             description: $('eDesc').value.trim() || null,
             phone: ph ? fmtPhone(ph) : null,
             email: $('eEmail').value.trim() || null
