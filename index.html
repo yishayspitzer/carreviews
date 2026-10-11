@@ -23,6 +23,11 @@
     svg.ic { width:1em; height:1em; vertical-align:-0.15em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex:none; }
     button svg, .chip svg { pointer-events:none; }
 
+    /* emails and phone numbers always read left-to-right, even inside a Yiddish (RTL) page */
+    .ltr, .contact span.em, #userbar .em, input[type=email], input[type=tel] { direction:ltr; unicode-bidi:plaintext; }
+    input[type=email]::placeholder, input[type=tel]::placeholder { direction:rtl; }
+    .em { unicode-bidi:isolate; direction:ltr; display:inline-block; }
+
     /* top bar: bright color, always visible (sticky) */
     .topbar { position:sticky; top:0; z-index:60; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; background:var(--top); color:#fff; padding:8px 14px; border-radius:0 0 14px 14px; box-shadow:0 4px 14px rgba(8,80,140,.3); }
     .topbar select { background:#fff; }
@@ -374,7 +379,7 @@
     <div id="companies"></div>
   </div>
 
-  <div id="ver">CarReviews v7.8</div>
+  <div id="ver">CarReviews v7.9</div>
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
@@ -1103,7 +1108,7 @@
       opts[2].textContent = t_('sortNew');
       opts[3].textContent = t_('sortName');
       if (loggedIn) {
-        $('userinfo').innerHTML = `${esc(myEmail)} <button id="logoutBtn">${esc(t_('logout'))}</button>`;
+        $('userinfo').innerHTML = `<span class="em" dir="ltr">${esc(myEmail)}</span> <button id="logoutBtn">${esc(t_('logout'))}</button>`;
         $('logoutBtn').onclick = logout;
       } else {
         $('userinfo').innerHTML = '';
@@ -1428,7 +1433,7 @@
       box.innerHTML = `<div class="row"><h4>${ic('users')} ${esc(t_('usersTitle'))} (${list.length})</h4><button class="ghost small" style="margin:0" data-usersclose="1">${ic('x')} ${esc(t_('close'))}</button></div>` +
         (list.length ? list.map(u => `
           <div class="urow">
-            <div>${ic('user')} <b>${esc(u.full_name || '—')}</b> <span class="meta">${esc(u.email)}</span>
+            <div>${ic('user')} <b>${esc(u.full_name || '—')}</b> <span class="meta em">${esc(u.email)}</span>
               ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}</div>
             ${u.id === myUid ? '' : (u.banned
               ? `<button class="ghost small" data-unban="${u.id}">${esc(t_('unban'))}</button>`
@@ -1547,8 +1552,8 @@
             </div>
             <div class="contact">
               ${c.city ? `<span>${ic('pin')}${esc(placeLabel((c.city || '').trim()))}</span>` : ''}
-              ${c.phone ? `<span>${ic('phone')}${esc(fmtPhone(c.phone))}</span>` : ''}
-              ${c.email ? `<span>${ic('mail')}${esc(c.email)}</span>` : ''}
+              ${c.phone ? `<span class="em">${ic('phone')}${esc(fmtPhone(c.phone))}</span>` : ''}
+              ${c.email ? `<span class="em">${ic('mail')}${esc(c.email)}</span>` : ''}
             </div>
             ${sugHtml}
             <div class="tabs">
@@ -1588,7 +1593,7 @@
     function authorHtml(r) {
       if (!isAdmin) return '';
       const u = userMap[r.user_id];
-      const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta" style="margin:0">${esc(u.email)}</span>` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
+      const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta em" style="margin:0">${esc(u.email)}</span>` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
       const isB = u && u.banned;
       const pend = r.approved === false
         ? `<span class="tagban" style="background:#e8660a">${esc(t_('pendingTag'))}</span>
