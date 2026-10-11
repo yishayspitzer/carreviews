@@ -73,6 +73,7 @@
     h2 { margin:10px 0; color:var(--navy); }
     h4 { margin:0 0 8px; color:var(--navy); font-size:15px; display:flex; align-items:center; gap:8px; }
     .fileline { font-size:13px; color:#555; margin:6px 0 2px; }
+    #ver { text-align:center; color:#9aa7b8; font-size:12px; margin-top:28px; }
 
     .filters { display:flex; gap:10px; margin:6px 0; flex-wrap:wrap; }
     .filters .sw { position:relative; flex:2 1 220px; }
@@ -142,7 +143,7 @@
     .catrow .lbl { display:flex; align-items:center; gap:8px; font-weight:600; padding-bottom:4px; }
     .pick { direction:ltr; display:flex; }
     .pick .st { cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; padding:0 3px; user-select:none; }
-    .pick .st .sn { font-style:normal; font-size:11px; font-weight:700; color:#8896a8; line-height:1; margin-bottom:1px; }
+    .pick .st .sn { font-style:normal; font-size:13px; font-weight:800; color:#5b6776; line-height:1; margin-bottom:2px; }
     .pick .st .sg { font-size:28px; line-height:1; color:#cfd6df; }
     .pick .st.on .sg { color:var(--gold); }
     .pick .st.on .sn { color:var(--navy); }
@@ -361,10 +362,19 @@
     <div id="companies"></div>
   </div>
 
+  <div id="ver">CarReviews v7.6</div>
+
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ---------- Yiddish without any marks (no nekudos / pasekh / komets / rafe / dots / lines) ----------
+    function cleanYi(s) {
+      return String(s).normalize('NFD')
+        .replace(/[\u0591-\u05C7]/g, '')
+        .replace(/\u05F2/g, 'יי').replace(/\u05F0/g, 'וו').replace(/\u05F1/g, 'וי');
+    }
 
     // ---------- Icons ----------
     const P = {
@@ -424,11 +434,11 @@
     const placeLabel = v => {
       if (lang !== 'yi') return v;
       const p = PLACES.find(x => x[0] === v);
-      return p ? p[1] : v;
+      return p ? cleanYi(p[1]) : v;
     };
     // alphabetical: Yiddish order when language = yi, otherwise English order
     const sortedPlaces = () => [...PLACES].sort((a, b) =>
-      lang === 'yi' ? a[1].localeCompare(b[1], 'he') : a[0].localeCompare(b[0]));
+      lang === 'yi' ? cleanYi(a[1]).localeCompare(cleanYi(b[1]), 'he') : a[0].localeCompare(b[0]));
 
     // label = bold text above the field; the light-gray text inside is NOT an option
     function placeSelect(id, val, label) {
@@ -495,10 +505,10 @@
         confirmDelCo: 'Delete this company and ALL its reviews? This cannot be undone.',
         confirmDelAnyRev: 'Delete this review? This cannot be undone.',
         ratingsByCat: 'Ratings overview', writeReview: 'Write a review', editReview: 'Edit your review',
-        anonymous: '(anonymous)', otherIssue: 'Other issue',
+        anonymous: '(anonymous)', otherIssue: 'Anything else you want to write',
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
         confirmDelRev: 'Delete your review?',
-        allReq: 'All fields are required, except "What stood out?" and "Other issue".',
+        allReq: 'All fields are required, except "What stood out?" and the last free-text box.',
         starsHint: 'Stars: 1 = lowest · 5 = highest',
         fillAll: 'Please fill in everything before saving. Missing:',
         f_rec: 'Recommendation', f_date: 'Trip date',
@@ -519,11 +529,11 @@
         todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
         trip: 'Trip',
-        tag_on_time: 'On time', tag_polite: 'Polite driver', tag_clean: 'Clean car',
+        tag_polite: 'Polite driver', tag_clean: 'Clean car',
         tag_fair_price: 'Fair price', tag_safe: 'Safe driving', tag_great_service: 'Great service',
-        tag_late: 'Late', tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
+        tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
         tag_overcharged: 'Overcharged', tag_unsafe: 'Unsafe driving', tag_no_answer: 'Hard to reach',
-        calToday: 'Today', calClose: 'Close', calPick: 'Choose the trip date',
+        calToday: 'Back to today', calPickToday: 'Choose today', calClose: 'Close', calPick: 'Choose the trip date',
         users: 'Users', usersTitle: 'All users', noUsers: 'No users',
         ban: 'Ban', unban: 'Unban', banned: 'Banned', by: 'By',
         bannedMsg: 'You are banned and cannot write reviews or add companies.',
@@ -564,12 +574,12 @@
         confirmDelCo: 'אויסמעקן די קאָמפּאַני און ALLE איר רעוויוס? מען קען עס נישט צוריקבײַטן.',
         confirmDelAnyRev: 'אויסמעקן דעם רעוויו? מען קען עס נישט צוריקבײַטן.',
         ratingsByCat: 'איבערבליק פֿון באַוואַרטונגען', writeReview: 'שרײַבט אַ רעוויו', editReview: 'ענדערט אײַער רעוויו',
-        anonymous: '(אַנאָנים)', otherIssue: 'אַנדער פּראָבלעם',
+        anonymous: '(אַנאָנים)', otherIssue: 'נאך עפעס וואס איר ווילט שרייבן',
         submit: 'שיקט רעוויו', update: 'דערהײַנטיקט רעוויו', delMine: 'מעקט אויס מײַן רעוויו',
         confirmDelRev: 'אויסמעקן אײַער רעוויו?',
-        allReq: 'אַלע פֿעלדער זענען נייטיק, חוץ "וואָס איז אײַך אויפֿגעפֿאַלן?" און "אַנדער פּראָבלעם".',
+        allReq: 'אלע פעלדער זענען נייטיק, חוץ "וואס איז אייך אויפגעפאלן?" און דעם לעצטן פרייען קעסטל.',
         starsHint: 'ביי די שטערן: 1 = נידעריגסט · 5 = העכסטע',
-        fillAll: 'ביטע פֿילט אויס אַלץ פֿאַרן שפּײַכערן. עס פֿעלט:',
+        fillAll: 'ביטע פילט אויס אלץ פארן שפייכערן. עס פעלט:',
         f_rec: 'רעקאָמענדאַציע', f_date: 'דאַטום פֿון דער נסיעה',
         badPrice: 'דער פּרײַז מוז זײַן אַ ריכטיקע צאָל',
         saved: 'געשפּײַכערט', deleted: 'רעוויו אויסגעמעקט', notSaved: 'נישט געשפּײַכערט. לאָגירט אַרויס, לאָגירט ווידער אַרײַן און פּרוּווט נאָכאַמאָל.',
@@ -588,11 +598,11 @@
         todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
         trip: 'נסיעה',
-        tag_on_time: 'פּינקטלעך', tag_polite: 'העפֿלעכער דרײַווער', tag_clean: 'רײנע קאַר',
+        tag_polite: 'העפֿלעכער דרײַווער', tag_clean: 'רײנע קאַר',
         tag_fair_price: 'ריכטיקער פּרײַז', tag_safe: 'זיכער געפֿאָרן', tag_great_service: 'אויסגעצייכנט סערוויס',
-        tag_late: 'פֿאַרשפּעטיקט', tag_rude: 'אומהעפֿלעכער דרײַווער', tag_dirty: 'שמוציקע קאַר',
+        tag_rude: 'אומהעפֿלעכער דרײַווער', tag_dirty: 'שמוציקע קאַר',
         tag_overcharged: 'צו טײַער', tag_unsafe: 'נישט זיכער געפֿאָרן', tag_no_answer: 'שווער צו דערגרייכן',
-        calToday: 'הײַנט', calClose: 'צומאַכן', calPick: 'קלײַבט דעם טאָג פֿון דער נסיעה',
+        calToday: 'צוריק צו היינט', calPickToday: 'קלײַבט היינט', calClose: 'צומאַכן', calPick: 'קלײַבט דעם טאָג פֿון דער נסיעה',
         users: 'באַניצער', usersTitle: 'אַלע באַניצער', noUsers: 'קיין באַניצער נישט',
         ban: 'אַרויסשליסן', unban: 'צוריקלאָזן', banned: 'אַרויסגעשלאָסן', by: 'פֿון',
         bannedMsg: 'איר זענט אַרויסגעשלאָסן און קענט נישט שרײַבן רעוויוס אָדער לייגן קאָמפּאַניעס.',
@@ -633,10 +643,10 @@
         confirmDelCo: 'Удалить эту компанию и ВСЕ её отзывы? Это нельзя отменить.',
         confirmDelAnyRev: 'Удалить этот отзыв? Это нельзя отменить.',
         ratingsByCat: 'Обзор оценок', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
-        anonymous: '(анонимно)', otherIssue: 'Другая проблема',
+        anonymous: '(анонимно)', otherIssue: 'Что ещё вы хотите написать',
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
         confirmDelRev: 'Удалить ваш отзыв?',
-        allReq: 'Все поля обязательны, кроме «Что запомнилось?» и «Другая проблема».',
+        allReq: 'Все поля обязательны, кроме «Что запомнилось?» и последнего свободного поля.',
         starsHint: 'Звёзды: 1 = самая низкая · 5 = самая высокая',
         fillAll: 'Заполните всё перед сохранением. Не хватает:',
         f_rec: 'Рекомендация', f_date: 'Дата поездки',
@@ -657,11 +667,11 @@
         todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
         trip: 'Поездка',
-        tag_on_time: 'Вовремя', tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
+        tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
         tag_fair_price: 'Честная цена', tag_safe: 'Безопасная езда', tag_great_service: 'Отличный сервис',
-        tag_late: 'Опоздание', tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
+        tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
         tag_overcharged: 'Завышенная цена', tag_unsafe: 'Опасная езда', tag_no_answer: 'Не дозвониться',
-        calToday: 'Сегодня', calClose: 'Закрыть', calPick: 'Выберите дату поездки',
+        calToday: 'К сегодняшнему дню', calPickToday: 'Выбрать сегодня', calClose: 'Закрыть', calPick: 'Выберите дату поездки',
         users: 'Пользователи', usersTitle: 'Все пользователи', noUsers: 'Нет пользователей',
         ban: 'Заблокировать', unban: 'Разблокировать', banned: 'Заблокирован', by: 'Автор',
         bannedMsg: 'Вы заблокированы и не можете писать отзывы или добавлять компании.',
@@ -702,10 +712,10 @@
         confirmDelCo: '¿Eliminar esta empresa y TODAS sus reseñas? No se puede deshacer.',
         confirmDelAnyRev: '¿Eliminar esta reseña? No se puede deshacer.',
         ratingsByCat: 'Resumen de calificaciones', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
-        anonymous: '(anónima)', otherIssue: 'Otro problema',
+        anonymous: '(anónima)', otherIssue: 'Algo más que quieras escribir',
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
         confirmDelRev: '¿Eliminar tu reseña?',
-        allReq: 'Todos los campos son obligatorios, excepto «¿Qué destacó?» y «Otro problema».',
+        allReq: 'Todos los campos son obligatorios, excepto «¿Qué destacó?» y el último cuadro libre.',
         starsHint: 'Estrellas: 1 = la más baja · 5 = la más alta',
         fillAll: 'Completa todo antes de guardar. Falta:',
         f_rec: 'Recomendación', f_date: 'Fecha del viaje',
@@ -726,11 +736,11 @@
         todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
         trip: 'Viaje',
-        tag_on_time: 'Puntual', tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
+        tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
         tag_fair_price: 'Precio justo', tag_safe: 'Conducción segura', tag_great_service: 'Gran servicio',
-        tag_late: 'Tarde', tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
+        tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
         tag_overcharged: 'Cobro excesivo', tag_unsafe: 'Conducción peligrosa', tag_no_answer: 'Difícil de contactar',
-        calToday: 'Hoy', calClose: 'Cerrar', calPick: 'Elige la fecha del viaje',
+        calToday: 'Volver a hoy', calPickToday: 'Elegir hoy', calClose: 'Cerrar', calPick: 'Elige la fecha del viaje',
         users: 'Usuarios', usersTitle: 'Todos los usuarios', noUsers: 'Sin usuarios',
         ban: 'Bloquear', unban: 'Desbloquear', banned: 'Bloqueado', by: 'Por',
         bannedMsg: 'Estás bloqueado y no puedes escribir reseñas ni agregar empresas.',
@@ -747,7 +757,11 @@
       return T[n] ? n : 'en';
     }
     let lang = detectLang();
-    const t_ = k => (T[lang] && T[lang][k]) || T.en[k] || k;
+    // Yiddish strings are cleaned of all marks on the fly
+    const t_ = k => {
+      const v = (T[lang] && T[lang][k]) || T.en[k] || k;
+      return lang === 'yi' ? cleanYi(v) : v;
+    };
     const dl = () => lang === 'yi' ? 'he' : lang;
 
     // the overall score is computed from these 4 (same as the database view)
@@ -758,8 +772,10 @@
     ];
     // all 5 answers are required to save a review
     const ALL_KEYS = ['punctuality', 'service', 'driver_service', 'cleanliness', 'driving'];
-    const POS_TAGS = ['on_time', 'polite', 'clean', 'fair_price', 'safe', 'great_service'];
-    const NEG_TAGS = ['late', 'rude', 'dirty', 'overcharged', 'unsafe', 'no_answer'];
+    // on_time / late were removed (the arrival-time question covers them); old reviews may still contain them
+    const POS_TAGS = ['polite', 'clean', 'fair_price', 'safe', 'great_service'];
+    const NEG_TAGS = ['rude', 'dirty', 'overcharged', 'unsafe', 'no_answer'];
+    const LEGACY_TAGS = ['on_time', 'late'];
     const TODS = ['morning', 'afternoon', 'evening', 'night'];
     const isPos = k => POS_TAGS.includes(k);
 
@@ -839,7 +855,7 @@
     }
     const gemYear = d => gem(hYearNum(d) % 1000);
 
-    // [prefix to match Intl month name, key, Yiddish display name]
+    // [prefix to match the Intl month name, key, Yiddish display name]
     const MONTHS = [
       ['אדר א','adar1','אדר ראשון'], ['אדר ב','adar2','אדר שני'], ['תשרי','tishri','תשרי'],
       ['חשו','cheshvan','חשוון'], ['מרחשו','cheshvan','חשוון'], ['כסלו','kislev','כסלו'], ['טבת','tevet','טבת'],
@@ -851,7 +867,7 @@
       for (const [pre, key, name] of MONTHS) if (n.startsWith(pre)) return { key, name };
       return { key: n, name: n };
     }
-    const hMonth = d => hf(d, { month: 'long', year: 'numeric' });   // used as a month identity label
+    const hMonth = d => hf(d, { month: 'long', year: 'numeric' });   // month identity label
 
     const WD_YI = ['זונטיק','מאנטיק','דינסטיק','מיטוואך','דאנערשטיק','פרייטיק','שבת קודש'];
     const WD_HE = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת קודש'];
@@ -957,6 +973,7 @@
       $('calSub').textContent = calFirst.toLocaleDateString(dl(), o) + ' – ' + calLast.toLocaleDateString(dl(), o);
       $('calHint').textContent = t_('calPick');
       $('calHint').classList.toggle('hidden', !pickMode);
+      $('calTodayBtn').textContent = pickMode ? t_('calPickToday') : t_('calToday');
     }
     function openCal() { pickMode = false; calAnchor = noon(new Date()); renderCal(); $('calModal').style.display = 'flex'; }
     function openPick() {
@@ -967,6 +984,15 @@
       $('calModal').style.display = 'flex';
     }
     function closeCal() { $('calModal').style.display = 'none'; pickMode = false; }
+    // put a chosen trip date into the review form
+    function setTripDate(iso) {
+      const inp = $('revDate');
+      if (!inp) return;
+      inp.value = iso;
+      draft.trip_date = iso;
+      const txt = $('revDateTxt');
+      if (txt) { txt.textContent = dateLabel(iso); txt.parentElement.classList.add('has'); }
+    }
 
     let toastTimer;
     function toast(text, isErr) {
@@ -983,7 +1009,7 @@
       document.documentElement.dir = lang === 'yi' ? 'rtl' : 'ltr';
       $('langSel').value = lang;
       $('calBtn').innerHTML = ic('cal') + ' ' + esc(hebStr(new Date()));
-      $('calTodayBtn').textContent = t_('calToday');
+      $('calTodayBtn').textContent = pickMode ? t_('calPickToday') : t_('calToday');
       $('calCloseBtn').textContent = t_('calClose');
       $('authTitle').textContent = isSignup ? t_('signup') : t_('login');
       $('authBtn').textContent = isSignup ? t_('signup') : t_('login');
@@ -1471,7 +1497,7 @@
       </div></div>`;
     }
 
-    // ---------- review form: everything required (except tags + "other issue") ----------
+    // ---------- review form: everything required (except tags + the last free-text box) ----------
     function syncDraft() {
       if (openMode !== 'write' || !$('revDate') || !$('revFrom')) return;
       draft.trip_date = $('revDate').value;
@@ -1520,7 +1546,7 @@
         draft.punctuality = normP(mine.punctuality);
         draft.comment = mine.comment || '';
         draft.rec = mine.recommend;
-        draft.tags = Array.isArray(mine.tags) ? mine.tags.slice() : [];
+        draft.tags = Array.isArray(mine.tags) ? mine.tags.filter(k => POS_TAGS.includes(k) || NEG_TAGS.includes(k)) : [];
         draft.trip_date = mine.trip_date || '';
         draft.tod = mine.time_of_day || '';
         draft.from = mine.trip_from || '';
@@ -1675,7 +1701,7 @@
         <div><div class="grp">${ic(gi)} ${esc(t_(g))}</div>${keys.map(k => { const r = avgOf(k); return barRow(k, r.a, r.n); }).join('')}</div>`).join('')}</div>`;
 
       const counts = {};
-      data.forEach(r => (r.tags || []).forEach(tg => counts[tg] = (counts[tg] || 0) + 1));
+      data.forEach(r => (r.tags || []).forEach(tg => { if (!LEGACY_TAGS.includes(tg)) counts[tg] = (counts[tg] || 0) + 1; }));
       const tagKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
       const tagSummary = tagKeys.length
         ? `<div class="sect"><h4>${ic('chat')} ${esc(t_('saidTags'))}</h4><div class="chips">${tagKeys.map(k =>
@@ -1683,7 +1709,7 @@
 
       const list = data.length ? data.slice(0, showN).map(r => {
         const core = coreOf(r);
-        const rtags = (r.tags || []).map(k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`).join('');
+        const rtags = (r.tags || []).filter(k => !LEGACY_TAGS.includes(k)).map(k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`).join('');
         const tripBits = [];
         if (r.trip_date) { tripBits.push(new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl())); tripBits.push(hebFromStr(r.trip_date)); }
         if (r.time_of_day && TODS.includes(r.time_of_day)) tripBits.push(t_('tod_' + r.time_of_day));
@@ -1797,14 +1823,7 @@
       // calendar: a day was chosen for the trip date
       const dayEl = e.target.closest ? e.target.closest('[data-day]') : null;
       if (dayEl && pickMode) {
-        const v = dayEl.dataset.day;
-        const inp = $('revDate');
-        if (inp) {
-          inp.value = v;
-          draft.trip_date = v;
-          const txt = $('revDateTxt');
-          if (txt) { txt.textContent = dateLabel(v); txt.parentElement.classList.add('has'); }
-        }
+        setTripDate(dayEl.dataset.day);
         closeCal();
         return;
       }
@@ -1812,7 +1831,11 @@
 
       if (ds.cal) {
         if (ds.cal === 'close') { closeCal(); return; }
-        if (ds.cal === 'today') calAnchor = noon(new Date());
+        if (ds.cal === 'today') {
+          // while choosing a trip date this button picks today; otherwise it jumps back to the current month
+          if (pickMode && $('revDate')) { setTripDate(isoOf(new Date())); closeCal(); return; }
+          calAnchor = noon(new Date());
+        }
         if (ds.cal === 'next') { calAnchor = new Date(calLast); calAnchor.setDate(calAnchor.getDate() + 1); }
         if (ds.cal === 'prev') { calAnchor = new Date(calFirst); calAnchor.setDate(calAnchor.getDate() - 1); }
         renderCal();
