@@ -32,7 +32,7 @@
     .logoBox img { display:block; width:100%; height:auto; mix-blend-mode:multiply; }
 
     .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin:12px 0; box-shadow:0 2px 8px rgba(16,24,40,.06); }
-    .card.co { border-inline-start:5px solid var(--navy); }
+    .card.co { border-inline-start:5px solid var(--navy); padding:18px; margin:16px 0; box-shadow:0 4px 14px rgba(16,24,40,.08); }
     .box { max-width:400px; margin:10px auto 30px; }
     input, textarea, select { width:100%; padding:10px 12px; margin:6px 0; border:1px solid #cdd5df; border-radius:8px; font-family:inherit; font-size:14px; background:#fff; }
     input:focus, textarea:focus, select:focus { outline:2px solid #c7d6ee; border-color:var(--navy); }
@@ -47,7 +47,7 @@
     .pricewrap input { border:0; margin:0; outline:none !important; background:transparent; }
 
     button { padding:9px 16px; border:0; border-radius:8px; background:var(--navy); color:#fff; cursor:pointer; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:6px; font-family:inherit; }
-    button:hover { filter:brightness(1.12); }
+    button:hover { filter:brightness(1.1); }
     button:disabled { opacity:.6; cursor:default; }
     button.link { background:none; color:var(--navy); text-decoration:underline; padding:4px; font-weight:500; }
     button.gold { background:var(--gold); }
@@ -75,14 +75,15 @@
     .filters .sw input { padding-inline-start:36px; margin:6px 0; }
     .filters select { flex:1 1 150px; }
 
-    .chead { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
-    .cinfo { display:flex; align-items:center; gap:12px; min-width:0; }
-    .clogo { width:56px; height:56px; object-fit:contain; border-radius:10px; border:1px solid #eee; background:#fff; }
-    .cname { font-weight:700; color:var(--navy); font-size:19px; }
+    /* ----- company card ----- */
+    .chead { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
+    .cinfo { display:flex; align-items:center; gap:14px; min-width:0; }
+    .clogo { width:60px; height:60px; object-fit:contain; border-radius:10px; border:1px solid #eee; background:#fff; flex:none; }
+    .cname { font-weight:800; color:var(--navy); font-size:20px; line-height:1.2; }
     .meta { color:#5b6776; font-size:14px; margin-top:4px; }
-    .contact { display:flex; flex-wrap:wrap; gap:6px 16px; color:#5b6776; font-size:14px; margin-top:8px; }
+    .contact { display:flex; flex-wrap:wrap; gap:6px 18px; color:#5b6776; font-size:14px; margin-top:10px; }
     .contact span { display:inline-flex; align-items:center; gap:6px; }
-    .score { text-align:center; min-width:84px; }
+    .score { text-align:center; min-width:92px; background:var(--soft); border-radius:12px; padding:8px 10px; }
     .score .big { font-size:30px; font-weight:800; line-height:1; }
     .score .cnt { font-size:12px; color:#5b6776; margin-top:2px; }
     .good { color:var(--green); } .mid { color:#c98a00; } .bad { color:var(--red); }
@@ -90,15 +91,28 @@
     .stars { color:var(--gold); letter-spacing:1px; font-size:15px; }
     .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:600; background:#e6f4ea; color:var(--green); margin-top:8px; }
     .pill.low { background:#fde8e8; color:var(--red); }
-    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-    .actions button[data-open] { background:#1a3c6e; }
-    .actions button[data-comments] { background:#7b3fa0; color:#fff; border:0; }
-    .actions button[data-write] { background:#1e8e3e; }
-    .actions button[data-sendlogo] { background:#0e8a9a; color:#fff; border:0; }
-    .actions button[data-edco]:not(.gold) { background:#e8660a; color:#fff; border:0; }
 
-    .detail { margin-top:14px; border-top:1px solid var(--line); padding-top:14px; }
-    .dtop { display:flex; justify-content:flex-end; margin-bottom:8px; }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    .tabs button { background:#fff; color:var(--c); border:1.5px solid var(--c); padding:8px 14px; }
+    .tabs button.on { background:var(--c); color:#fff; }
+    .tabs button .n { background:rgba(0,0,0,.08); border-radius:10px; padding:0 7px; font-size:12px; font-weight:700; }
+    .tabs button.on .n { background:rgba(255,255,255,.28); }
+    .tabs button[data-open] { --c:#1a3c6e; }
+    .tabs button[data-prices] { --c:#0e8a9a; }
+    .tabs button[data-comments] { --c:#7b3fa0; }
+    .tabs button[data-write] { --c:#1e8e3e; }
+    .more { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .more button { font-size:12px; padding:5px 12px; background:#fff; color:var(--c); border:1px solid var(--c); }
+    .more button[data-sendlogo] { --c:#b83280; }
+    .more button[data-edco] { --c:#e8660a; }
+    .more button.gold { background:var(--gold); color:#fff; border:0; }
+    .more button.danger { background:var(--red); color:#fff; border:0; }
+
+    /* ----- opened panel ----- */
+    .detail { margin-top:16px; border-top:1px solid var(--line); padding-top:14px; }
+    .dhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
+    .dhead h4 { margin:0; font-size:17px; }
+    .dhead button { margin:0; }
     .sect { background:var(--soft); border-radius:12px; padding:14px; margin:12px 0; }
     .sect.white { background:#fff; border:1px solid var(--line); }
     .sect.ride { background:#eef6ff; border:1px solid #cfe2fb; }
@@ -136,19 +150,33 @@
     .placebox input { margin-top:0; }
     .heb { color:var(--navy); font-weight:600; font-size:13px; min-height:18px; margin-top:4px; }
 
-    .rev { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin:8px 0; }
+    /* ----- reviews list ----- */
+    .rev { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:8px 0; }
     .rev .rh { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .badge { color:#fff; font-weight:800; border-radius:8px; padding:4px 10px; font-size:15px; }
     .rev .mini { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:13px; color:#5b6776; margin-top:8px; }
     .rev .mini b { color:#1f2a37; }
     .rev .mini span { display:inline-flex; align-items:center; gap:5px; }
+    .rev details { margin-top:8px; }
+    .rev summary { cursor:pointer; font-size:13px; color:#5b6776; }
     .cmt { background:#fffdf5; border-inline-start:3px solid var(--gold); padding:8px 10px; border-radius:6px; margin-top:8px; white-space:pre-wrap; word-break:break-word; }
     .yn { font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
     .ridebox { background:#eef6ff; border:1px solid #cfe2fb; border-radius:8px; padding:8px 10px; margin-top:8px; font-size:14px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; }
     .ridebox span { display:inline-flex; align-items:center; gap:6px; }
-    .price { background:var(--navy); color:#fff; border-radius:6px; padding:2px 10px; font-weight:800; direction:ltr; }
-    .prow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid #dfe5ee; flex-wrap:wrap; font-size:14px; }
+    .price { background:var(--navy); color:#fff; border-radius:6px; padding:2px 10px; font-weight:800; direction:ltr; white-space:nowrap; }
+    .showmore { text-align:center; margin-top:10px; }
+
+    /* ----- prices tab ----- */
+    .rtgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:10px; margin-bottom:6px; }
+    .rt { background:#eef6ff; border:1px solid #cfe2fb; border-radius:12px; padding:12px; }
+    .rt-route { font-weight:700; color:var(--navy); font-size:14px; display:flex; align-items:center; gap:6px; }
+    .rt-price { font-size:26px; font-weight:800; color:#0e8a9a; margin-top:4px; direction:ltr; }
+    .rt-sub { font-size:12px; color:#5b6776; margin-top:2px; }
+    .prow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid #e3e8ef; font-size:14px; }
     .prow:last-child { border-bottom:0; }
+    .pr-route { font-weight:600; color:#1f2a37; }
+    .pr-meta { font-size:12px; color:#7a8798; margin-top:2px; }
+
     .author { background:#fff7e0; border:1px dashed var(--gold); border-radius:8px; padding:6px 10px; margin-top:8px; font-size:13px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .tagban { background:var(--red); color:#fff; border-radius:6px; padding:1px 8px; font-size:12px; font-weight:700; }
     .sugrow { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid #f0e2b8; flex-wrap:wrap; }
@@ -265,7 +293,6 @@
       <div class="fileline" id="tLogoOpt"></div>
       <input id="cLogoFile" type="file" accept="image/*">
       <button id="saveCompany"></button>
-      <button class="link" id="addCancel" type="button"></button>
     </div>
 
     <div class="filters">
@@ -390,6 +417,9 @@
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
         reviews: 'Reviews', commentsBtn: 'Written comments', commentsTitle: 'Written comments', noComments: 'No written comments yet.',
+        pricesBtn: 'Prices', pricesTitle: 'What people paid', byRoute: 'By route', avg: 'avg', reportsWord: 'reports',
+        allPriceReports: 'All price reports', noPrices: 'No prices reported yet.', routeUnknown: 'Route not specified',
+        showMore: 'Show more', detailsWord: 'Details',
         writeBtn: 'Write a review', close: 'Close', edit: 'Edit', del: 'Delete',
         editCompany: 'Edit company', currentLogo: 'Current logo:', replaceLogo: 'Replace logo (optional):',
         save: 'Save', cancel: 'Cancel', nameRequired: 'Company name is required',
@@ -414,7 +444,6 @@
         tagsTitle: 'What stood out?', saidTags: 'What people say',
         rideTitle: 'Your ride & price', fromPh: 'From (pick-up area)', toPh: 'To (drop-off area)', pricePh: 'Price paid',
         otherPlace: 'Other place...', otherPlaceType: 'Type the place',
-        pricesTitle: 'Reported prices',
         tripWhen: 'When was your trip?', todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
         trip: 'Trip',
@@ -450,6 +479,9 @@
         sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
         noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
         reviews: 'רעוויוס', commentsBtn: 'געשריבענע רעוויוס', commentsTitle: 'געשריבענע רעוויוס', noComments: 'נאָך קיין געשריבענע רעוויוס נישט.',
+        pricesBtn: 'פּרײַזן', pricesTitle: 'וויפֿל מענטשן האָבן באַצאָלט', byRoute: 'לויט נסיעה', avg: 'דורכשניט', reportsWord: 'באַריכטן',
+        allPriceReports: 'אַלע פּרײַז־באַריכטן', noPrices: 'נאָך קיין פּרײַזן נישט באַריכט.', routeUnknown: 'נסיעה נישט אָנגעגעבן',
+        showMore: 'ווײַזט מער', detailsWord: 'פּרטים',
         writeBtn: 'שרײַבט אַ רעוויו', close: 'צומאַכן', edit: 'ענדערן', del: 'אויסמעקן',
         editCompany: 'ענדערט קאָמפּאַני', currentLogo: 'איצטיקער לאָגאָ:', replaceLogo: 'ערזעצט לאָגאָ (אָפּציע):',
         save: 'שפּײַכערן', cancel: 'אָפּשטעלן', nameRequired: 'דער נאָמען פֿון קאָמפּאַני איז נייטיק',
@@ -474,7 +506,6 @@
         tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
         rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואַנען (געגנט)', toPh: 'וווּהין (געגנט)', pricePh: 'וויפֿל באַצאָלט',
         otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
-        pricesTitle: 'באַריכטעטע פּרײַזן',
         tripWhen: 'ווען איז געווען די נסיעה?', todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
         trip: 'נסיעה',
@@ -510,6 +541,9 @@
         sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
         noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
         reviews: 'Отзывы', commentsBtn: 'Письменные отзывы', commentsTitle: 'Письменные отзывы', noComments: 'Письменных отзывов пока нет.',
+        pricesBtn: 'Цены', pricesTitle: 'Сколько платили люди', byRoute: 'По маршрутам', avg: 'средн.', reportsWord: 'сообщ.',
+        allPriceReports: 'Все сообщения о ценах', noPrices: 'Цен пока нет.', routeUnknown: 'Маршрут не указан',
+        showMore: 'Показать ещё', detailsWord: 'Подробнее',
         writeBtn: 'Написать отзыв', close: 'Закрыть', edit: 'Изменить', del: 'Удалить',
         editCompany: 'Изменить компанию', currentLogo: 'Текущий логотип:', replaceLogo: 'Заменить логотип (необязательно):',
         save: 'Сохранить', cancel: 'Отмена', nameRequired: 'Укажите название компании',
@@ -534,7 +568,6 @@
         tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
         rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда (район)', toPh: 'Куда (район)', pricePh: 'Оплачено',
         otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
-        pricesTitle: 'Сообщённые цены',
         tripWhen: 'Когда была поездка?', todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
         trip: 'Поездка',
@@ -570,6 +603,9 @@
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
         reviews: 'Reseñas', commentsBtn: 'Comentarios escritos', commentsTitle: 'Comentarios escritos', noComments: 'Aún no hay comentarios escritos.',
+        pricesBtn: 'Precios', pricesTitle: 'Lo que pagó la gente', byRoute: 'Por ruta', avg: 'prom.', reportsWord: 'reportes',
+        allPriceReports: 'Todos los precios reportados', noPrices: 'Aún no hay precios.', routeUnknown: 'Ruta no indicada',
+        showMore: 'Ver más', detailsWord: 'Detalles',
         writeBtn: 'Escribir una reseña', close: 'Cerrar', edit: 'Editar', del: 'Eliminar',
         editCompany: 'Editar empresa', currentLogo: 'Logo actual:', replaceLogo: 'Reemplazar logo (opcional):',
         save: 'Guardar', cancel: 'Cancelar', nameRequired: 'El nombre de la empresa es obligatorio',
@@ -594,7 +630,6 @@
         tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
         rideTitle: 'Tu viaje y precio', fromPh: 'Desde (zona)', toPh: 'Hasta (zona)', pricePh: 'Precio pagado',
         otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
-        pricesTitle: 'Precios reportados',
         tripWhen: '¿Cuándo fue tu viaje?', todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
         trip: 'Viaje',
@@ -636,10 +671,11 @@
 
     let isSignup = false, openId = null, openMode = 'view', editingId = null, draft = {};
     let myUid = null, myEmail = '', isAdmin = false, isBanned = false, loggedIn = false;
-    let allCompanies = [], stats = {}, recStats = {}, myReviewId = null;
+    let allCompanies = [], stats = {}, recStats = {}, cnts = {}, myReviewId = null;
     let userMap = {}, usersOpen = false;
     let sugMap = {}, sugList = [], sugTarget = null;
     let reqList = [], reqOpen = true;
+    let detailData = [], showN = 8;
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -757,7 +793,6 @@
       $('bannedBanner').classList.toggle('hidden', !isBanned);
       $('tAddTitle').textContent = t_('addTitle');
       $('addClose').innerHTML = ic('x') + ' ' + esc(t_('close'));
-      $('addCancel').textContent = t_('cancel');
       $('tApprNote').textContent = t_('apprNote');
       $('tApprNote').classList.toggle('hidden', isAdmin);
       $('cName').placeholder = t_('companyName');
@@ -882,14 +917,13 @@
 
     async function logout() { openId = null; editingId = null; await sb.auth.signOut(); }
 
-    // ----- add-company form: open / close -----
+    // ----- add-company form: open / close (single Close button) -----
     function closeAdd() {
       $('addForm').classList.add('hidden');
       $('addMsg').style.display = 'none';
     }
     $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
     $('addClose').onclick = closeAdd;
-    $('addCancel').onclick = closeAdd;
     $('usersToggle').onclick = () => { usersOpen = !usersOpen; renderUsers(); };
 
     $('saveCompany').onclick = async () => {
@@ -1004,10 +1038,11 @@
 
     async function loadCompanies() {
       const box = $('companies');
-      const [cRes, sRes, rRes] = await Promise.all([
+      const [cRes, sRes, rRes, xRes] = await Promise.all([
         sb.from('companies').select('*').order('created_at', { ascending: false }),
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
+        sb.from('reviews').select('company_id,price_paid,comment'),
         loadUsers(),
         loadSuggestions(),
         loadRequests()
@@ -1016,6 +1051,12 @@
       allCompanies = cRes.data;
       stats = {}; (sRes.data || []).forEach(s => stats[s.company_id] = s);
       recStats = {}; (rRes.data || []).forEach(s => recStats[s.company_id] = s);
+      cnts = {};
+      (xRes.data || []).forEach(r => {
+        const o = cnts[r.company_id] = cnts[r.company_id] || { p: 0, c: 0 };
+        if (r.price_paid !== null && r.price_paid !== undefined) o.p++;
+        if (r.comment && String(r.comment).trim()) o.c++;
+      });
       renderUsers();
       renderRequests();
       renderCompanies();
@@ -1068,18 +1109,16 @@
               <div class="fileline">${esc(c.logo_url ? t_('replaceLogo') : t_('logoOpt'))}</div>
               <input id="eLogoFile" type="file" accept="image/*">` : ''}
             <button data-saveedit="${c.id}">${esc(isAdmin ? t_('save') : t_('sendForApproval'))}</button>
-            <button class="link" data-canceledit="1">${esc(t_('cancel'))}</button>
           </div>`;
         }
-        const s = stats[c.id], rc = recStats[c.id], overall = ov(c);
+        const s = stats[c.id], rc = recStats[c.id], overall = ov(c), cc = cnts[c.id] || { p: 0, c: 0 };
         const recPill = rc && rc.rec_votes > 0
           ? `<div class="pill ${Number(rc.rec_pct) < 50 ? 'low' : ''}">${ic(Number(rc.rec_pct) < 50 ? 'down' : 'up')} ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</div>` : '';
         const scoreBox = s
           ? `<div class="score"><div class="big ${tone(overall)}">${overall.toFixed(1)}</div><div class="stars">${stars(overall)}</div><div class="cnt">${s.review_count} ${esc(t_('reviews'))}</div></div>`
-          : `<div class="score"><div class="meta">${esc(t_('noReviewsYet'))}</div></div>`;
-        const viewOpen = openId === c.id && openMode === 'view';
-        const writeOpen = openId === c.id && openMode === 'write';
-        const commOpen = openId === c.id && openMode === 'comments';
+          : `<div class="score"><div class="meta" style="margin:0">${esc(t_('noReviewsYet'))}</div></div>`;
+        const on = m => openId === c.id && openMode === m ? 'on' : '';
+        const nb = n => n ? `<span class="n">${n}</span>` : '';
 
         const sugs = (isAdmin && sugMap[c.id]) ? sugMap[c.id] : [];
         const sugHtml = sugs.length ? `
@@ -1117,12 +1156,15 @@
               ${c.email ? `<span>${ic('mail')}${esc(c.email)}</span>` : ''}
             </div>
             ${sugHtml}
-            <div class="actions">
-              <button data-open="${c.id}">${esc(viewOpen ? t_('close') : t_('reviews'))}</button>
-              <button class="ghost" data-comments="${c.id}">${ic('chat')} ${esc(commOpen ? t_('close') : t_('commentsBtn'))}</button>
-              ${isBanned ? '' : `<button class="green" data-write="${c.id}">${ic('edit')} ${esc(writeOpen ? t_('close') : t_('writeBtn'))}</button>`}
-              ${(!isAdmin && !isBanned) ? `<button class="ghost" data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
-              ${(!isAdmin && !isBanned) ? `<button class="ghost" data-edco="${c.id}">${ic('edit')} ${esc(t_('suggestChange'))}</button>` : ''}
+            <div class="tabs">
+              <button class="${on('view')}" data-open="${c.id}">${esc(t_('reviews'))}${nb(s ? s.review_count : 0)}</button>
+              <button class="${on('prices')}" data-prices="${c.id}">${ic('dollar')} ${esc(t_('pricesBtn'))}${nb(cc.p)}</button>
+              <button class="${on('comments')}" data-comments="${c.id}">${ic('chat')} ${esc(t_('commentsBtn'))}${nb(cc.c)}</button>
+              ${isBanned ? '' : `<button class="${on('write')}" data-write="${c.id}">${ic('edit')} ${esc(t_('writeBtn'))}</button>`}
+            </div>
+            <div class="more">
+              ${(!isAdmin && !isBanned) ? `<button data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
+              ${(!isAdmin && !isBanned) ? `<button data-edco="${c.id}">${ic('edit')} ${esc(t_('suggestChange'))}</button>` : ''}
               ${isAdmin ? `<button class="gold" data-edco="${c.id}">${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
             </div>
             ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
@@ -1160,13 +1202,19 @@
       </div>`;
     }
     const delRevBtn = r => (isAdmin && r.user_id !== myUid) ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '';
+    const moreBtn = total => total > showN
+      ? `<div class="showmore"><button class="ghost" data-more="1">${esc(t_('showMore'))} (${total - showN})</button></div>` : '';
+    const routeName = r => (r.trip_from || r.trip_to)
+      ? `${placeLabel(r.trip_from || '?')} → ${placeLabel(r.trip_to || '?')}` : t_('routeUnknown');
 
+    // Fetch the reviews of one company, then paint the opened panel
     async function loadDetail(companyId) {
       const el = $('detail');
       if (!el) return;
       el.innerHTML = esc(t_('loading'));
       const { data, error } = await sb.from('reviews').select('*').eq('company_id', companyId).order('created_at', { ascending: false });
       if (error) { el.innerHTML = esc(t_('error')) + ': ' + esc(error.message); return; }
+      detailData = data;
 
       const mine = data.find(r => r.user_id === myUid);
       myReviewId = mine ? mine.id : null;
@@ -1181,13 +1229,22 @@
         draft.to = mine.trip_to || '';
         draft.price = (mine.price_paid !== null && mine.price_paid !== undefined) ? String(mine.price_paid) : '';
       }
+      paintDetail();
+    }
 
-      const closeTop = `<div class="dtop"><button class="ghost small" data-close="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>`;
-      const closeBottom = `<div class="dtop" style="margin-top:10px"><button class="ghost" data-close="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>`;
+    function paintDetail() {
+      const el = $('detail');
+      if (!el || !openId) return;
+      const companyId = openId;
+      const data = detailData;
+      const mine = data.find(r => r.user_id === myUid);
 
-      // ================= WRITE MODE =================
+      // ONE close button per opened panel (top-right of its header row)
+      const head = title => `<div class="dhead"><h4>${title}</h4><button class="ghost small" data-close="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>`;
+
+      // ================= WRITE =================
       if (openMode === 'write') {
-        if (isBanned) { el.innerHTML = closeTop + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
+        if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
         const dTags = draft.tags || [];
 
         const form = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
@@ -1198,7 +1255,7 @@
             </div>`).join('')}</div>`).join('')}</div>`;
 
         const recForm = `
-          <h4 style="margin-top:14px">${esc(t_('recommendQ'))}</h4>
+          <h4 style="margin-top:16px">${esc(t_('recommendQ'))}</h4>
           <div class="recbtns">
             <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
             <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
@@ -1225,15 +1282,14 @@
           </div>`;
 
         const tagForm = `
-          <h4 style="margin-top:14px">${esc(t_('tagsTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
+          <h4 style="margin-top:16px">${esc(t_('tagsTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
           <div class="chips">
             ${POS_TAGS.map(k => `<button type="button" class="chip pos ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
             ${NEG_TAGS.map(k => `<button type="button" class="chip neg ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
           </div>`;
 
-        el.innerHTML = closeTop + `
+        el.innerHTML = head(`${esc(mine ? t_('editReview') : t_('writeReview'))} <span class="opt">${esc(t_('anonymous'))}</span>`) + `
           <div class="sect white">
-            <h4>${esc(mine ? t_('editReview') : t_('writeReview'))} ${esc(t_('anonymous'))}</h4>
             <div id="revMsg" class="msg"></div>
             ${form}
             ${recForm}
@@ -1241,16 +1297,50 @@
             ${tagForm}
             <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
             <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
-            <button type="button" class="ghost" data-close="${companyId}">${esc(t_('cancel'))}</button>
             ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
-          </div>` + closeBottom;
+          </div>`;
         return;
       }
 
-      // ================= WRITTEN COMMENTS MODE =================
+      // ================= PRICES =================
+      if (openMode === 'prices') {
+        const priced = data.filter(r => r.price_paid !== null && r.price_paid !== undefined);
+        if (!priced.length) {
+          el.innerHTML = head(`${ic('dollar')} ${esc(t_('pricesTitle'))}`) + `<p class="meta">${esc(t_('noPrices'))}</p>`;
+          return;
+        }
+        const groups = {};
+        priced.forEach(r => { const k = (r.trip_from || '') + '|' + (r.trip_to || ''); (groups[k] = groups[k] || []).push(r); });
+        const gl = Object.values(groups).sort((a, b) => b.length - a.length);
+        const cards = gl.map(arr => {
+          const ps = arr.map(r => Number(r.price_paid));
+          const avg = ps.reduce((a, b) => a + b, 0) / ps.length;
+          const mn = Math.min(...ps), mx = Math.max(...ps);
+          return `<div class="rt">
+            <div class="rt-route">${ic('pin')} ${esc(routeName(arr[0]))}</div>
+            <div class="rt-price">${esc(money(Math.round(avg)))}</div>
+            <div class="rt-sub">${arr.length > 1 ? `${esc(t_('avg'))} · ${esc(money(mn))}–${esc(money(mx))} · ` : ''}${arr.length} ${esc(t_('reportsWord'))}</div>
+          </div>`;
+        }).join('');
+        const rows = priced.slice(0, showN).map(r => {
+          const bits = [];
+          bits.push(r.trip_date ? new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl()) : new Date(r.created_at).toLocaleDateString(dl()));
+          if (r.time_of_day && TODS.includes(r.time_of_day)) bits.push(t_('tod_' + r.time_of_day));
+          return `<div class="prow">
+            <div><div class="pr-route">${esc(routeName(r))}</div><div class="pr-meta">${esc(bits.join(' · '))}</div></div>
+            <span class="price">${esc(money(r.price_paid))}</span>
+          </div>`;
+        }).join('');
+        el.innerHTML = head(`${ic('dollar')} ${esc(t_('pricesTitle'))} (${priced.length})`) + `
+          <div class="sect ride"><h4>${esc(t_('byRoute'))}</h4><div class="rtgrid">${cards}</div></div>
+          <div class="sect white"><h4>${esc(t_('allPriceReports'))}</h4>${rows}${moreBtn(priced.length)}</div>`;
+        return;
+      }
+
+      // ================= WRITTEN COMMENTS =================
       if (openMode === 'comments') {
         const withC = data.filter(r => r.comment && String(r.comment).trim());
-        const items = withC.length ? withC.map(r => {
+        const items = withC.length ? withC.slice(0, showN).map(r => {
           const core = coreOf(r);
           return `<div class="rev">
             <div class="rh">
@@ -1262,12 +1352,12 @@
             ${authorHtml(r)}
             ${delRevBtn(r)}
           </div>`;
-        }).join('') : `<p class="meta">${esc(t_('noComments'))}</p>`;
-        el.innerHTML = closeTop + `<h4>${ic('chat')} ${esc(t_('commentsTitle'))} (${withC.length})</h4>` + items + closeBottom;
+        }).join('') + moreBtn(withC.length) : `<p class="meta">${esc(t_('noComments'))}</p>`;
+        el.innerHTML = head(`${ic('chat')} ${esc(t_('commentsTitle'))} (${withC.length})`) + items;
         return;
       }
 
-      // ================= VIEW MODE =================
+      // ================= REVIEWS (summary + compact list) =================
       const avgOf = k => {
         const vals = data.map(r => r[k]).filter(v => v !== null && v !== undefined);
         return { a: vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : 0, n: vals.length };
@@ -1282,17 +1372,7 @@
         ? `<div class="sect"><h4>${ic('chat')} ${esc(t_('saidTags'))}</h4><div class="chips">${tagKeys.map(k =>
             `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))} · ${counts[k]}</span>`).join('')}</div></div>` : '';
 
-      const priced = data.filter(r => r.price_paid !== null && r.price_paid !== undefined);
-      const priceSummary = priced.length
-        ? `<div class="sect ride"><h4>${ic('dollar')} ${esc(t_('pricesTitle'))} (${priced.length})</h4>
-            ${priced.map(r => `<div class="prow">
-              <span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>
-              <span><span class="price">${esc(money(r.price_paid))}</span>
-              ${r.trip_date ? `<span class="meta" style="margin:0 8px">${esc(new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl()))}</span>` : ''}</span>
-            </div>`).join('')}
-          </div>` : '';
-
-      const list = data.length ? data.map(r => {
+      const list = data.length ? data.slice(0, showN).map(r => {
         const core = coreOf(r);
         const rtags = (r.tags || []).map(k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`).join('');
         const tripBits = [];
@@ -1313,17 +1393,16 @@
           ${tripBits.length ? `<div class="meta">${ic('cal')} ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
           ${rideHtml(r)}
           ${rtags ? `<div class="chips">${rtags}</div>` : ''}
-          <div class="mini">${mini}</div>
+          <details><summary>${esc(t_('detailsWord'))}</summary><div class="mini">${mini}</div></details>
           ${authorHtml(r)}
           ${delRevBtn(r)}
         </div>`;
-      }).join('') : `<p class="meta">${esc(t_('beFirst'))}</p>`;
+      }).join('') + moreBtn(data.length) : `<p class="meta">${esc(t_('beFirst'))}</p>`;
 
-      el.innerHTML = closeTop + `
+      el.innerHTML = head(`${esc(t_('allReviews'))} (${data.length})`) + `
         <div class="sect"><h4>${esc(t_('ratingsByCat'))}</h4>${overview}</div>
         ${tagSummary}
-        ${priceSummary}
-        <h4>${esc(t_('allReviews'))} (${data.length})</h4>${list}` + closeBottom;
+        ${list}`;
     }
 
     document.addEventListener('input', (e) => {
@@ -1367,6 +1446,7 @@
 
       if (ds.usersclose) { usersOpen = false; renderUsers(); return; }
       if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
+      if (ds.more) { showN += 10; paintDetail(); return; }
 
       // admin: approve / reject requests
       if (ds.approve) {
@@ -1450,12 +1530,14 @@
         return;
       }
 
-      if (ds.open || ds.write || ds.comments) {
-        const id = ds.open || ds.write || ds.comments;
-        const m = ds.open ? 'view' : (ds.write ? 'write' : 'comments');
+      // company tabs: reviews / prices / comments / write (click the active tab again = close)
+      if (ds.open || ds.prices || ds.comments || ds.write) {
+        const id = ds.open || ds.prices || ds.comments || ds.write;
+        const m = ds.open ? 'view' : (ds.prices ? 'prices' : (ds.comments ? 'comments' : 'write'));
         if (openId === id && openMode === m) openId = null;
         else { openId = id; openMode = m; }
         draft = {};
+        showN = 8;
         renderCompanies();
         scrollToCard(id);
         return;
