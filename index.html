@@ -141,11 +141,8 @@
     .bar .val { font-weight:700; text-align:end; }
     @media (max-width:640px) { .bar { grid-template-columns:22px 1fr 80px 30px; } }
 
-    /* every question sits in a clear bordered box; missing = red */
-    .field { border:2px solid #d3dcea; background:#fbfcff; border-radius:12px; padding:10px 12px; margin:10px 0; transition:border-color .15s, background .15s; }
-    .field.missing { border-color:#e53935; background:#fff1f1; }
-    .field.missing .plabel, .field.missing .ptq, .field.missing h4, .field.missing .lbl { color:#c62828; }
-    .field.missing select, .field.missing .datebtn, .field.missing .pricewrap { border-color:#e53935; }
+    /* every question sits in a clear bordered box */
+    .field { border:2px solid #d3dcea; background:#fbfcff; border-radius:12px; padding:10px 12px; margin:10px 0; }
     .optbox { border:2px dashed #d3dcea; border-radius:12px; padding:10px 12px; margin:12px 0; background:#fcfdff; }
 
     .catrow { display:flex; justify-content:space-between; align-items:flex-end; padding:2px 0; gap:8px; font-size:14px; }
@@ -379,7 +376,7 @@
     <div id="companies"></div>
   </div>
 
-  <div id="ver">CarReviews v7.9</div>
+  <div id="ver">CarReviews v8.1</div>
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
@@ -509,8 +506,14 @@
         confirmReject: 'Reject this request?',
         revKind: 'Review to approve', pendingTag: 'Waiting',
         revPending: 'Waiting for admin approval. For now only you can see it.',
-        firstNote: 'Your first review is checked by the admin before it appears. After that, your reviews appear right away.',
-        savedPending: 'Saved. The admin will check your first review before it appears.',
+        permKind: 'Permission to write',
+        needPermTitle: 'You need permission to write reviews',
+        needPermText: 'You can see everything on the site. To write reviews, the admin must approve you first. Write a few words about who you are (for example: your area and who sent you). The admin may call you.',
+        reqPermPh: 'Who are you? Where are you from? Who sent you?',
+        reqPermBtn: 'Ask for permission', reqPermShort: 'Please write a few words about who you are',
+        reqPermSent: 'Request sent. The admin will check it.',
+        reqPermWaiting: 'Your request was sent. The admin will check it, and may call you.',
+        noPermNow: 'You do not have permission to write reviews yet.',
         sig_perfect: 'All 5 stars + recommend', sig_burst: '3+ reviews by this user in 24h',
         sig_cluster: '4+ reviews on this company in 48h', sig_dupe: 'Same text as another review',
         msgBtn: 'Message to admin', msgTitle: 'Send a note to the admin', msgPh: 'Write your note...', msgSend: 'Send',
@@ -534,10 +537,10 @@
         anonymous: '(anonymous)', otherIssue: 'Anything else you want to write',
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
         confirmDelRev: 'Delete your review?',
-        allReq: 'All fields are required, except "What stood out?" and the last free-text box.',
-        starsHint: 'Stars: 1 = lowest · 5 = highest',
-        fillAll: 'Please fill in everything before saving. Missing:',
-        f_rec: 'Recommendation', f_date: 'Trip date',
+        optNote: 'Fill in only what you want. Everything is optional, but please answer at least one thing.',
+        needOne: 'Please fill in at least one thing before saving.',
+        priceNeedsRoute: 'To add a price, please fill in both "From where" and "To where".',
+        starsHint: 'Stars: 1 = lowest · 5 = highest. Click a choice again to remove it.',
         badPrice: 'Price must be a valid number',
         saved: 'Saved', deleted: 'Review deleted', notSaved: 'Not saved. Please log out, log in again and retry.',
         allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
@@ -550,7 +553,7 @@
         recommendQ: 'Would you recommend this company?', yes: 'Yes', no: 'No',
         recommendWord: 'recommend',
         tagsTitle: 'What stood out?', saidTags: 'What people say',
-        rideTitle: 'Your ride & price', fromPh: 'From where', toPh: 'To where', pricePh: 'Price',
+        rideTitle: 'Your ride & price', f_date: 'Trip date', fromPh: 'From where', toPh: 'To where', pricePh: 'Price',
         otherPlace: 'Other place...', otherPlaceType: 'Type the place',
         todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
@@ -587,8 +590,14 @@
         confirmReject: 'אָפּוואַרפֿן די בקשה?',
         revKind: 'רעוויו צו באשטעטיקן', pendingTag: 'וואארט',
         revPending: 'וואארט אויף באשטעטיקונג פונעם אדמין. פארן מאמענט זעט עס נאר איר.',
-        firstNote: 'אייער ערשטער רעוויו ווערט איבערגעקוקט פונעם אדמין איידער עס ווייזט זיך. נאכדעם ווייזן זיך אייערע רעוויוס גלייך.',
-        savedPending: 'געשפייכערט. דער אדמין וועט איבערקוקן אייער ערשטן רעוויו איידער עס ווייזט זיך.',
+        permKind: 'רשות צו שרייבן',
+        needPermTitle: 'איר דארפט רשות צו שרייבן רעוויוס',
+        needPermText: 'איר קענט זען אלעס אויף דער זייט. כדי צו שרייבן רעוויוס מוז דער אדמין אייך ערשט באשטעטיקן. שרייבט א פאר ווערטער ווער איר זענט (למשל: פון וואו איר זענט און ווער האט אייך געשיקט). דער אדמין קען אייך רופן.',
+        reqPermPh: 'ווער זענט איר? פון וואו? ווער האט אייך געשיקט?',
+        reqPermBtn: 'בעט רשות', reqPermShort: 'ביטע שרייבט א פאר ווערטער ווער איר זענט',
+        reqPermSent: 'די בקשה איז געשיקט. דער אדמין וועט עס איבערקוקן.',
+        reqPermWaiting: 'אייער בקשה איז געשיקט. דער אדמין וועט עס איבערקוקן, און קען אייך רופן.',
+        noPermNow: 'איר האט נאך נישט קיין רשות צו שרייבן רעוויוס.',
         sig_perfect: 'אלע 5 שטערן + רעקאמענדירט', sig_burst: '3+ רעוויוס פון דעם באניצער אין 24 שעה',
         sig_cluster: '4+ רעוויוס אויף דער קאמפאני אין 48 שעה', sig_dupe: 'דער זעלבער טעקסט ווי אן אנדערער רעוויו',
         msgBtn: 'שיקט אַ הערה צום אַדמין', msgTitle: 'שיקט אַ הערה צום אַדמין', msgPh: 'שרײַבט דאָ אײַער הערה...', msgSend: 'שיקן',
@@ -612,10 +621,10 @@
         anonymous: '(אַנאָנים)', otherIssue: 'נאך עפעס וואס איר ווילט שרייבן',
         submit: 'שיקט רעוויו', update: 'דערהײַנטיקט רעוויו', delMine: 'מעקט אויס מײַן רעוויו',
         confirmDelRev: 'אויסמעקן אײַער רעוויו?',
-        allReq: 'אלע פעלדער זענען נייטיק, חוץ "וואס איז אייך אויפגעפאלן?" און דעם לעצטן פרייען קעסטל.',
-        starsHint: 'ביי די שטערן: 1 = נידעריגסט · 5 = העכסטע',
-        fillAll: 'ביטע פילט אויס אלץ פארן שפייכערן. עס פעלט:',
-        f_rec: 'רעקאָמענדאַציע', f_date: 'דאַטום פֿון דער נסיעה',
+        optNote: 'פילט נאר אויס וואס איר ווילט. אלעס איז אפציע, נאר ביטע ענטפערט אויף לכל הפחות איין זאך.',
+        needOne: 'ביטע פילט אויס לכל הפחות איין זאך פארן שפייכערן.',
+        priceNeedsRoute: 'כדי צוצולייגן א פרייז, פילט אויס "פון וואו" און "צו וואו".',
+        starsHint: 'ביי די שטערן: 1 = נידעריגסט · 5 = העכסטע. קליקט נאכאמאל אויף א קלײַבונג כדי עס אפצושטעלן.',
         badPrice: 'דער פּרײַז מוז זײַן אַ ריכטיקע צאָל',
         saved: 'געשפּײַכערט', deleted: 'רעוויו אויסגעמעקט', notSaved: 'נישט געשפּײַכערט. לאָגירט אַרויס, לאָגירט ווידער אַרײַן און פּרוּווט נאָכאַמאָל.',
         allReviews: 'אַלע רעוויוס', beFirst: 'נאָך קיין רעוויוס נישט. זײַט דער ערשטער!', loading: 'לאָדנט...', error: 'טעות',
@@ -628,7 +637,7 @@
         recommendQ: 'וואָלט איר רעקאָמענדירט די קאָמפּאַני?', yes: 'יאָ', no: 'ניין',
         recommendWord: 'רעקאָמענדירן',
         tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
-        rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואו', toPh: 'צו וואו', pricePh: 'פרייז',
+        rideTitle: 'אײַער נסיעה און פּרײַז', f_date: 'דאַטום פֿון דער נסיעה', fromPh: 'פֿון וואו', toPh: 'צו וואו', pricePh: 'פרייז',
         otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
         todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
@@ -665,8 +674,14 @@
         confirmReject: 'Отклонить запрос?',
         revKind: 'Отзыв на одобрение', pendingTag: 'Ожидает',
         revPending: 'Ожидает одобрения админа. Пока его видите только вы.',
-        firstNote: 'Ваш первый отзыв проверяет админ, прежде чем он появится. Дальше ваши отзывы появляются сразу.',
-        savedPending: 'Сохранено. Админ проверит ваш первый отзыв, прежде чем он появится.',
+        permKind: 'Разрешение писать',
+        needPermTitle: 'Нужно разрешение, чтобы писать отзывы',
+        needPermText: 'Вы можете видеть всё на сайте. Чтобы писать отзывы, админ должен сначала вас одобрить. Напишите пару слов о себе (например: из какого вы района и кто вас прислал). Админ может вам позвонить.',
+        reqPermPh: 'Кто вы? Откуда? Кто вас прислал?',
+        reqPermBtn: 'Запросить разрешение', reqPermShort: 'Напишите пару слов о себе',
+        reqPermSent: 'Запрос отправлен. Админ его проверит.',
+        reqPermWaiting: 'Ваш запрос отправлен. Админ его проверит и может вам позвонить.',
+        noPermNow: 'У вас пока нет разрешения писать отзывы.',
         sig_perfect: 'Все 5 звёзд + рекомендует', sig_burst: '3+ отзыва от этого пользователя за 24 ч',
         sig_cluster: '4+ отзыва на эту компанию за 48 ч', sig_dupe: 'Тот же текст, что в другом отзыве',
         msgBtn: 'Сообщение админу', msgTitle: 'Написать админу', msgPh: 'Напишите сообщение...', msgSend: 'Отправить',
@@ -690,10 +705,10 @@
         anonymous: '(анонимно)', otherIssue: 'Что ещё вы хотите написать',
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
         confirmDelRev: 'Удалить ваш отзыв?',
-        allReq: 'Все поля обязательны, кроме «Что запомнилось?» и последнего свободного поля.',
-        starsHint: 'Звёзды: 1 = самая низкая · 5 = самая высокая',
-        fillAll: 'Заполните всё перед сохранением. Не хватает:',
-        f_rec: 'Рекомендация', f_date: 'Дата поездки',
+        optNote: 'Заполняйте только то, что хотите. Всё необязательно, но ответьте хотя бы на один пункт.',
+        needOne: 'Заполните хотя бы один пункт перед сохранением.',
+        priceNeedsRoute: 'Чтобы указать цену, заполните «Откуда» и «Куда».',
+        starsHint: 'Звёзды: 1 = самая низкая · 5 = самая высокая. Нажмите ещё раз, чтобы убрать выбор.',
         badPrice: 'Цена должна быть числом',
         saved: 'Сохранено', deleted: 'Отзыв удалён', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
         allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
@@ -706,7 +721,7 @@
         recommendQ: 'Вы бы порекомендовали эту компанию?', yes: 'Да', no: 'Нет',
         recommendWord: 'рекомендуют',
         tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
-        rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда', toPh: 'Куда', pricePh: 'Цена',
+        rideTitle: 'Ваша поездка и цена', f_date: 'Дата поездки', fromPh: 'Откуда', toPh: 'Куда', pricePh: 'Цена',
         otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
         todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
@@ -743,8 +758,14 @@
         confirmReject: '¿Rechazar esta solicitud?',
         revKind: 'Reseña por aprobar', pendingTag: 'En espera',
         revPending: 'Esperando la aprobación del administrador. Por ahora solo tú la ves.',
-        firstNote: 'Tu primera reseña la revisa el administrador antes de aparecer. Después, tus reseñas aparecen de inmediato.',
-        savedPending: 'Guardado. El administrador revisará tu primera reseña antes de que aparezca.',
+        permKind: 'Permiso para escribir',
+        needPermTitle: 'Necesitas permiso para escribir reseñas',
+        needPermText: 'Puedes ver todo en el sitio. Para escribir reseñas, el administrador debe aprobarte primero. Escribe unas palabras sobre ti (por ejemplo: tu zona y quién te envió). El administrador puede llamarte.',
+        reqPermPh: '¿Quién eres? ¿De dónde eres? ¿Quién te envió?',
+        reqPermBtn: 'Pedir permiso', reqPermShort: 'Escribe unas palabras sobre ti',
+        reqPermSent: 'Solicitud enviada. El administrador la revisará.',
+        reqPermWaiting: 'Tu solicitud fue enviada. El administrador la revisará y puede llamarte.',
+        noPermNow: 'Aún no tienes permiso para escribir reseñas.',
         sig_perfect: 'Las 5 estrellas + recomienda', sig_burst: '3+ reseñas de este usuario en 24 h',
         sig_cluster: '4+ reseñas de esta empresa en 48 h', sig_dupe: 'Mismo texto que otra reseña',
         msgBtn: 'Mensaje al administrador', msgTitle: 'Enviar una nota al administrador', msgPh: 'Escribe tu nota...', msgSend: 'Enviar',
@@ -768,10 +789,10 @@
         anonymous: '(anónima)', otherIssue: 'Algo más que quieras escribir',
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
         confirmDelRev: '¿Eliminar tu reseña?',
-        allReq: 'Todos los campos son obligatorios, excepto «¿Qué destacó?» y el último cuadro libre.',
-        starsHint: 'Estrellas: 1 = la más baja · 5 = la más alta',
-        fillAll: 'Completa todo antes de guardar. Falta:',
-        f_rec: 'Recomendación', f_date: 'Fecha del viaje',
+        optNote: 'Completa solo lo que quieras. Todo es opcional, pero responde al menos una cosa.',
+        needOne: 'Completa al menos una cosa antes de guardar.',
+        priceNeedsRoute: 'Para agregar un precio, completa "Desde dónde" y "Hacia dónde".',
+        starsHint: 'Estrellas: 1 = la más baja · 5 = la más alta. Haz clic otra vez para quitar la elección.',
         badPrice: 'El precio debe ser un número válido',
         saved: 'Guardado', deleted: 'Reseña eliminada', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
         allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
@@ -784,7 +805,7 @@
         recommendQ: '¿Recomendarías esta empresa?', yes: 'Sí', no: 'No',
         recommendWord: 'recomiendan',
         tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
-        rideTitle: 'Tu viaje y precio', fromPh: 'Desde dónde', toPh: 'Hacia dónde', pricePh: 'Precio',
+        rideTitle: 'Tu viaje y precio', f_date: 'Fecha del viaje', fromPh: 'Desde dónde', toPh: 'Hacia dónde', pricePh: 'Precio',
         otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
         todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
@@ -823,7 +844,6 @@
       ['grpOffice', 'office', ['punctuality', 'service']],
       ['grpDriver', 'car', ['driver_service', 'cleanliness', 'driving']]
     ];
-    // all 5 answers are required to save a review
     const ALL_KEYS = ['punctuality', 'service', 'driver_service', 'cleanliness', 'driving'];
     // on_time / late were removed (the arrival-time question covers them); old reviews may still contain them
     const POS_TAGS = ['polite', 'clean', 'fair_price', 'safe', 'great_service'];
@@ -833,19 +853,21 @@
     const isPos = k => POS_TAGS.includes(k);
 
     let isSignup = false, openId = null, openMode = 'view', editingId = null, draft = {};
-    let myUid = null, myEmail = '', isAdmin = false, isBanned = false, loggedIn = false;
-    let allCompanies = [], stats = {}, recStats = {}, cnts = {}, myReviewId = null, myApproved = 0;
+    let myUid = null, myEmail = '', myPhone = '', isAdmin = false, isBanned = false, loggedIn = false;
+    let canReview = false, myReqPending = false, permReqs = [];
+    let allCompanies = [], stats = {}, recStats = {}, cnts = {}, myReviewId = null;
     let userMap = {}, usersOpen = false;
     let sugMap = {}, sugList = [], sugTarget = null;
     let reqList = [], msgList = [], reqOpen = true;
     let pendRevs = [], adminRevs = [], flagMap = {};
-    let detailData = [], showN = 8, triedSubmit = false;
+    let detailData = [], showN = 8;
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const stars = v => { const n = Math.round(Number(v) || 0); return '★'.repeat(n) + '☆'.repeat(5 - n); };
     const tone = v => v >= 4 ? 'good' : v >= 3 ? 'mid' : 'bad';
     const money = v => '$' + (Number(v) % 1 ? Number(v).toFixed(2) : Number(v).toFixed(0));
+    // average of the ratings that were filled in (0 = no rating at all)
     const coreOf = r => {
       const vals = REQ_KEYS.map(k => r[k]).filter(v => v !== null && v !== undefined);
       return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
@@ -1157,13 +1179,15 @@
       }
     };
 
+    // role + permission to write reviews
     async function checkAdmin() {
-      isAdmin = false;
+      isAdmin = false; canReview = false;
       if (!myUid) return;
       try {
-        const { data } = await sb.from('profiles').select('role').eq('id', myUid).maybeSingle();
+        const { data } = await sb.from('profiles').select('role,can_review').eq('id', myUid).maybeSingle();
         isAdmin = !!data && data.role === 'admin';
-      } catch (e) { isAdmin = false; }
+        canReview = isAdmin || !!(data && data.can_review);
+      } catch (e) { isAdmin = false; canReview = false; }
     }
     async function checkBanned() {
       isBanned = false;
@@ -1172,6 +1196,15 @@
         const { data } = await sb.from('banned_users').select('user_id').eq('user_id', myUid).maybeSingle();
         isBanned = !!data;
       } catch (e) { isBanned = false; }
+    }
+    // did I already ask for permission?
+    async function loadMyReq() {
+      myReqPending = false;
+      if (!myUid || isAdmin || canReview) return;
+      try {
+        const { data } = await sb.from('review_requests').select('id').eq('user_id', myUid).maybeSingle();
+        myReqPending = !!data;
+      } catch (e) { myReqPending = false; }
     }
 
     $('showPw').onclick = () => {
@@ -1320,7 +1353,15 @@
       if (!error && data) msgList = data;
     }
 
-    // admin: reviews waiting for approval + signals about suspicious reviews
+    // admin: people asking for permission to write reviews
+    async function loadPermReqs() {
+      permReqs = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('review_requests').select('*').order('created_at', { ascending: true });
+      if (!error && data) permReqs = data;
+    }
+
+    // admin: reviews waiting for approval (old ones) + signals about suspicious reviews
     async function loadReviewAdmin() {
       pendRevs = []; adminRevs = []; flagMap = {};
       if (!isAdmin) return;
@@ -1356,7 +1397,7 @@
 
     function renderRequests() {
       const box = $('reqPanel');
-      const total = reqList.length + msgList.length + pendRevs.length;
+      const total = permReqs.length + reqList.length + msgList.length + pendRevs.length;
       document.title = (isAdmin && total ? '(' + total + ') ' : '') + 'CarReviews';
       const show = isAdmin && total > 0;
       box.classList.toggle('hidden', !show);
@@ -1367,7 +1408,23 @@
         </div>`;
       if (!reqOpen) { box.innerHTML = head; return; }
 
-      // reviews waiting for approval
+      // people asking for permission to write reviews
+      const permHtml = permReqs.map(p => {
+        const u = userMap[p.user_id];
+        return `<div class="reqitem">
+          <div><span class="tagkind" style="background:#0e8a9a">${esc(t_('permKind'))}</span>
+            <b>${u ? esc(u.full_name || '—') : ''}</b>
+            <span class="meta em">${u ? esc(u.email) : ''}</span>
+            ${p.phone ? `<span class="meta em">${ic('phone')} ${esc(p.phone)}</span>` : ''}</div>
+          <div class="cmt">${esc(p.note)}</div>
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:6px 0 0" data-permok="${p.user_id}">${ic('check')} ${esc(t_('approve'))}</button>
+            <button class="danger small" style="margin:6px 0 0" data-permno="${p.user_id}">${ic('x')} ${esc(t_('reject'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      // reviews waiting for approval (only old ones from before v8.0)
       const revHtml = pendRevs.map(r => {
         const u = userMap[r.user_id];
         const co = allCompanies.find(c => c.id === r.company_id) || {};
@@ -1377,7 +1434,7 @@
           <div><span class="tagkind" style="background:#1e8e3e">${esc(t_('revKind'))}</span>
             <b>${esc(co.name || '?')}</b>
             <span class="meta">${u ? esc(u.full_name || u.email) : ''}</span></div>
-          <div class="kv"><span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>
+          <div class="kv">${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>` : ''}
             ${r.recommend === true ? `<span class="yn good">${ic('up')} ${esc(t_('yes'))}</span>` : (r.recommend === false ? `<span class="yn bad">${ic('down')} ${esc(t_('no'))}</span>` : '')}
             <span class="meta" style="margin:0">${esc(punctLabel(r.punctuality) || '')}</span></div>
           ${rideHtml(r)}
@@ -1422,7 +1479,7 @@
           </div>
         </div>`;
       }).join('');
-      box.innerHTML = head + revHtml + reqHtml + msgHtml;
+      box.innerHTML = head + permHtml + revHtml + reqHtml + msgHtml;
     }
 
     function renderUsers() {
@@ -1443,21 +1500,20 @@
 
     async function loadCompanies() {
       const box = $('companies');
-      const [cRes, sRes, rRes, xRes, mRes] = await Promise.all([
+      const [cRes, sRes, rRes, xRes] = await Promise.all([
         sb.from('companies').select('*').order('created_at', { ascending: false }),
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
         sb.from('reviews').select('company_id,price_paid,comment,trip_from,trip_to,approved'),
-        sb.from('reviews').select('id').eq('user_id', myUid).eq('approved', true),
         loadUsers(),
         loadSuggestions(),
         loadRequests(),
         loadMessages(),
+        loadPermReqs(),
         loadReviewAdmin()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
-      myApproved = (mRes.data || []).length;
       stats = {}; (sRes.data || []).forEach(s => stats[s.company_id] = s);
       recStats = {}; (rRes.data || []).forEach(s => recStats[s.company_id] = s);
       cnts = {};
@@ -1476,7 +1532,7 @@
       const box = $('companies');
       const q = $('search').value.trim().toLowerCase();
       const mode = $('sort').value;
-      const ov = c => stats[c.id] ? Number(stats[c.id].overall) : 0;
+      const ov = c => (stats[c.id] && stats[c.id].overall != null) ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
 
       let list = allCompanies.filter(c =>
@@ -1514,7 +1570,7 @@
         const s = stats[c.id], rc = recStats[c.id], overall = ov(c), cc = cnts[c.id] || { p: 0, c: 0 };
         const recPill = rc && rc.rec_votes > 0
           ? `<div class="pill ${Number(rc.rec_pct) < 50 ? 'low' : ''}">${ic(Number(rc.rec_pct) < 50 ? 'down' : 'up')} ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</div>` : '';
-        const scoreBox = s
+        const scoreBox = (s && s.overall != null)
           ? `<div class="score"><div class="big ${tone(overall)}">${overall.toFixed(1)}</div><div class="stars">${stars(overall)}</div><div class="cnt">${s.review_count} ${esc(t_('reviews'))}</div></div>`
           : `<div class="score"><div class="meta" style="margin:0">${esc(t_('noReviewsYet'))}</div></div>`;
         const on = m => openId === c.id && openMode === m ? 'on' : '';
@@ -1628,7 +1684,7 @@
       </div></div>`;
     }
 
-    // ---------- review form: everything required (except tags + the last free-text box) ----------
+    // ---------- review form: everything is optional (at least one answer is needed) ----------
     function syncDraft() {
       if (openMode !== 'write' || !$('revDate') || !$('revFrom')) return;
       draft.trip_date = $('revDate').value;
@@ -1638,27 +1694,15 @@
       draft.price = $('revPrice').value;
       draft.comment = $('revComment').value;
     }
-    function getMissing() {
-      const m = [];
-      ALL_KEYS.forEach(k => { if (!draft[k]) m.push([k, t_(k)]); });
-      if (draft.rec !== true && draft.rec !== false) m.push(['rec', t_('f_rec')]);
-      const dv = $('revDate') ? $('revDate').value : '';
-      if (!dv || dv > isoOf(new Date())) m.push(['date', t_('f_date')]);
-      if (!($('revTod') && $('revTod').value)) m.push(['tod', t_('todPh')]);
-      if (!($('revFrom') && readPlace('revFrom'))) m.push(['from', t_('fromPh')]);
-      if (!($('revTo') && readPlace('revTo'))) m.push(['to', t_('toPh')]);
-      const p = $('revPrice') ? $('revPrice').value.trim() : '';
-      if (p === '' || !(Number(p) > 0)) m.push(['price', t_('pricePh')]);
-      return m;
-    }
-    function showMissing(list) {
-      document.querySelectorAll('#detail .field').forEach(f =>
-        f.classList.toggle('missing', list.some(x => x[0] === f.dataset.field)));
-    }
-    // keep the red boxes in sync while the user fills the form (after the first failed attempt)
-    function refreshMissing() {
-      if (!triedSubmit || openMode !== 'write' || !$('revDate')) return;
-      showMissing(getMissing());
+    // did the user answer anything at all?
+    function hasAnyAnswer() {
+      if (ALL_KEYS.some(k => draft[k])) return true;
+      if (draft.rec === true || draft.rec === false) return true;
+      if (draft.trip_date || draft.tod || draft.from || draft.to) return true;
+      if (String(draft.price || '').trim() !== '') return true;
+      if ((draft.tags || []).length) return true;
+      if (String(draft.comment || '').trim() !== '') return true;
+      return false;
     }
 
     // Fetch the reviews of one company, then paint the opened panel
@@ -1701,6 +1745,20 @@
       // ================= WRITE =================
       if (openMode === 'write') {
         if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
+
+        // viewers (no permission yet): ask the admin for permission
+        if (!isAdmin && !canReview) {
+          el.innerHTML = head(esc(t_('writeReview'))) + `
+            <div class="sect white">
+              <div class="note warn"><b>${esc(t_('needPermTitle'))}</b><br>${esc(t_('needPermText'))}</div>
+              ${myReqPending
+                ? `<div class="note">${esc(t_('reqPermWaiting'))}</div>`
+                : `<textarea id="permNote" rows="3" maxlength="500" placeholder="${esc(t_('reqPermPh'))}"></textarea>
+                   <button type="button" data-reqperm="1">${ic('check')} ${esc(t_('reqPermBtn'))}</button>`}
+            </div>`;
+          return;
+        }
+
         const dTags = draft.tags || [];
 
         const form = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
@@ -1758,8 +1816,7 @@
 
         el.innerHTML = head(`${esc(mine ? t_('editReview') : t_('writeReview'))} <span class="opt">${esc(t_('anonymous'))}</span>`) + `
           <div class="sect white">
-            ${(!isAdmin && myApproved === 0) ? `<div class="note warn">${esc(t_('firstNote'))}</div>` : ''}
-            <div class="note">${esc(t_('allReq'))}</div>
+            <div class="note">${esc(t_('optNote'))}</div>
             <div class="hintline">${esc(t_('starsHint'))}</div>
             <div id="revMsg" class="msg"></div>
             ${form}
@@ -1769,7 +1826,6 @@
             <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
             ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
           </div>`;
-        if (triedSubmit) showMissing(getMissing());
         return;
       }
 
@@ -1815,8 +1871,7 @@
           const core = coreOf(r);
           return `<div class="rev">
             <div class="rh">
-              <span class="badge bg-${tone(core)}">${core.toFixed(1)}</span>
-              <span class="stars">${stars(core)}</span>
+              ${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>` : ''}
               <span class="meta" style="margin:0; margin-inline-start:auto">${new Date(r.created_at).toLocaleDateString(dl())}</span>
             </div>
             <div class="cmt">${esc(r.comment)}</div>
@@ -1866,8 +1921,7 @@
         return `
         <div class="rev">
           <div class="rh">
-            <span class="badge bg-${tone(core)}">${core.toFixed(1)}</span>
-            <span class="stars">${stars(core)}</span>
+            ${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>` : ''}
             ${recBadge}
             <span class="meta" style="margin:0; margin-inline-start:auto">${new Date(r.created_at).toLocaleDateString(dl())}</span>
           </div>
@@ -1875,7 +1929,8 @@
           ${tripBits.length ? `<div class="meta">${ic('cal')} ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
           ${rideHtml(r)}
           ${rtags}
-          <details><summary>${esc(t_('detailsWord'))}</summary><div class="mini">${mini}</div></details>
+          ${r.comment ? `<div class="cmt">${esc(r.comment)}</div>` : ''}
+          ${mini ? `<details><summary>${esc(t_('detailsWord'))}</summary><div class="mini">${mini}</div></details>` : ''}
           ${authorHtml(r)}
           ${delRevBtn(r)}
         </div>`;
@@ -1887,7 +1942,7 @@
         ${list}`;
     }
 
-    document.addEventListener('input', () => { syncDraft(); refreshMissing(); });
+    document.addEventListener('input', () => { syncDraft(); });
 
     document.addEventListener('change', (e) => {
       const el = e.target;
@@ -1899,11 +1954,7 @@
         }
       }
       syncDraft();
-      refreshMissing();
     });
-
-    // after every click, re-check which required fields are still missing
-    document.addEventListener('click', () => setTimeout(refreshMissing, 0));
 
     $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) closeCal(); });
 
@@ -1919,7 +1970,7 @@
       if (!$('msgForm').classList.contains('hidden')) { closeMsg(); return; }
       if (!$('addForm').classList.contains('hidden')) { closeAdd(); return; }
       if (editingId) { editingId = null; renderCompanies(); return; }
-      if (openId) { const id = openId; openId = null; draft = {}; triedSubmit = false; renderCompanies(); scrollToCard(id); return; }
+      if (openId) { const id = openId; openId = null; draft = {}; renderCompanies(); scrollToCard(id); return; }
       if (usersOpen) { usersOpen = false; renderUsers(); }
     });
 
@@ -1931,7 +1982,37 @@
       if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
       if (ds.more) { showN += 10; paintDetail(); return; }
 
-      // admin: approve / reject a waiting review
+      // viewer: ask the admin for permission to write reviews
+      if (ds.reqperm) {
+        const note = ($('permNote') ? $('permNote').value : '').trim();
+        if (note.length < 5) return toast(t_('reqPermShort'), true);
+        t.disabled = true;
+        const { error } = await sb.from('review_requests').insert({ user_id: myUid, note, phone: myPhone || null });
+        // a duplicate means the request already exists, which is fine
+        if (error && !/duplicate|unique/i.test(error.message)) { t.disabled = false; return toast(error.message, true, 6000); }
+        myReqPending = true;
+        paintDetail();
+        toast(t_('reqPermSent'), false, 4000);
+        return;
+      }
+      // admin: allow / refuse a writer
+      if (ds.permok) {
+        t.disabled = true;
+        const { error } = await sb.rpc('admin_set_reviewer', { target: ds.permok, allow: true });
+        if (error) { alert(error.message); t.disabled = false; return; }
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.permno) {
+        if (!confirm(t_('confirmReject'))) return;
+        const { error } = await sb.from('review_requests').delete().eq('user_id', ds.permno);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
+      // admin: approve / reject an old waiting review
       if (ds.apprev) {
         t.disabled = true;
         const res = await sb.from('reviews').update({ approved: true }).eq('id', ds.apprev).select();
@@ -2046,7 +2127,6 @@
         if (openId === id && openMode === m) openId = null;
         else { openId = id; openMode = m; }
         draft = {};
-        triedSubmit = false;
         showN = 8;
         renderCompanies();
         scrollToCard(id);
@@ -2056,24 +2136,24 @@
         const id = ds.close;
         openId = null;
         draft = {};
-        triedSubmit = false;
         renderCompanies();
         scrollToCard(id);
         return;
       }
 
-      // arrival time option
+      // arrival time option (click the chosen one again = remove it)
       if (ds.punct) {
-        draft.punctuality = Number(ds.punct);
+        const v = Number(ds.punct);
+        draft.punctuality = (draft.punctuality === v) ? undefined : v;
         document.querySelectorAll('.ptbtn').forEach(b => b.classList.toggle('on', Number(b.dataset.punct) === draft.punctuality));
         return;
       }
 
-      // stars (each star holds a small number 1-5 above it)
+      // stars (click the chosen one again = remove it)
       if (t.classList && t.classList.contains('st')) {
         const cat = t.parentElement.dataset.cat;
         const v = Number(t.dataset.v);
-        draft[cat] = v;
+        draft[cat] = (draft[cat] === v) ? null : v;
         t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= (draft[cat] || 0)));
         return;
       }
@@ -2148,37 +2228,39 @@
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
         if (isBanned) return showMsg(msg, t_('bannedMsg'), false, 5000);
+        if (!isAdmin && !canReview) return showMsg(msg, t_('noPermNow'), false, 5000);
         syncDraft();
 
-        // everything must be filled in, otherwise the review is NOT saved
-        const miss = getMissing();
-        if (miss.length) {
-          triedSubmit = true;
-          showMissing(miss);                       // missing boxes turn red (and stay red until filled)
-          const firstBox = document.querySelector('#detail .field.missing');
-          if (firstBox) firstBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return toast(t_('fillAll') + ' ' + miss.map(x => x[1]).join(' · '), true);   // short red message, hides itself
-        }
+        // everything is optional, but at least one thing must be answered
+        if (!hasAnyAnswer()) return toast(t_('needOne'), true);
 
-        const price_paid = Math.round(Number($('revPrice').value) * 100) / 100;
-        if (!isFinite(price_paid) || price_paid <= 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false, 5000);
+        // a price only counts with BOTH places
+        const fromV = readPlace('revFrom'), toV = readPlace('revTo');
+        const priceRaw = $('revPrice').value.trim();
+        let price_paid = null;
+        if (priceRaw !== '') {
+          price_paid = Math.round(Number(priceRaw) * 100) / 100;
+          if (!isFinite(price_paid) || price_paid <= 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false, 5000);
+          if (!fromV || !toV) return toast(t_('priceNeedsRoute'), true, 5000);
+        }
+        const dv = $('revDate').value;
+        if (dv && dv > isoOf(new Date())) return toast(t_('pickDate'), true);
 
         const vals = {
           comment: $('revComment').value.trim() || null,
-          recommend: draft.rec,
+          recommend: (draft.rec === true || draft.rec === false) ? draft.rec : null,
           tags: draft.tags || [],
-          trip_date: $('revDate').value,
-          time_of_day: $('revTod').value,
-          trip_from: readPlace('revFrom'),
-          trip_to: readPlace('revTo'),
+          trip_date: dv || null,
+          time_of_day: $('revTod').value || null,
+          trip_from: fromV,
+          trip_to: toV,
           price_paid,
           price: null,
           updated_at: new Date().toISOString()
         };
-        ALL_KEYS.forEach(k => vals[k] = draft[k]);
+        ALL_KEYS.forEach(k => vals[k] = draft[k] || null);
         t.disabled = true;
 
-        const firstEver = !isAdmin && myApproved === 0;   // the database decides; this is only for the message
         let error = null;
         if (myReviewId) {
           const res = await sb.from('reviews').update(vals).eq('id', myReviewId).eq('user_id', myUid).select();
@@ -2195,11 +2277,9 @@
 
         const cid = openId;
         draft = {};
-        triedSubmit = false;
         openId = null;
         await loadCompanies();
-        if (firstEver && myApproved === 0) toast(t_('savedPending'), false, 6000);
-        else toast(t_('saved'));
+        toast(t_('saved'));
         scrollToCard(cid);
         return;
       }
@@ -2210,7 +2290,6 @@
           .eq('company_id', t.dataset.company).eq('user_id', myUid);
         if (error) return showMsg($('revMsg'), error.message, false, 6000);
         draft = {};
-        triedSubmit = false;
         openId = null;
         await loadCompanies();
         toast(t_('deleted'));
@@ -2221,15 +2300,17 @@
       if (session) {
         myUid = session.user.id;
         myEmail = session.user.email;
+        myPhone = (session.user.user_metadata && session.user.user_metadata.phone) || '';
         loggedIn = true;
         $('authView').classList.add('hidden');
         $('mainView').classList.remove('hidden');
         await checkAdmin();
         await checkBanned();
+        await loadMyReq();
         applyStaticText();
         loadCompanies();
       } else {
-        myUid = null; myEmail = ''; loggedIn = false; isAdmin = false; isBanned = false; usersOpen = false;
+        myUid = null; myEmail = ''; myPhone = ''; loggedIn = false; isAdmin = false; isBanned = false; canReview = false; myReqPending = false; usersOpen = false;
         document.title = 'CarReviews';
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
