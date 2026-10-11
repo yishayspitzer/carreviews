@@ -37,10 +37,10 @@
     input, textarea, select { width:100%; padding:10px 12px; margin:6px 0; border:1px solid #cdd5df; border-radius:8px; font-family:inherit; font-size:14px; background:#fff; }
     input:focus, textarea:focus, select:focus { outline:2px solid #c7d6ee; border-color:var(--navy); }
     textarea { resize:vertical; max-width:100%; min-height:70px; }
-    select:required:invalid { color:#8896a8; }
+    /* light-gray prompt that is NOT a real option */
+    select:required:invalid, input[type=date]:required:invalid { color:#8896a8; }
     select:required:invalid option { color:#1f2a37; }
     .plabel { display:block; font-weight:700; font-size:13px; color:var(--navy); margin:8px 0 0; }
-    .hint { font-size:12px; color:#7a8798; margin:4px 0; }
     .pwwrap { position:relative; }
     .pwwrap input { padding-inline-end:84px; }
     .pwwrap button { position:absolute; inset-inline-end:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:var(--navy); }
@@ -130,6 +130,10 @@
     .bar .val { font-weight:700; text-align:end; }
     @media (max-width:640px) { .bar { grid-template-columns:22px 1fr 80px 30px; } }
 
+    /* required-field highlight (review form) */
+    .field { border-radius:10px; padding:2px 4px; margin:0 -4px; }
+    .field.missing { outline:2px solid #e57373; background:#fff5f5; }
+
     .catrow { display:flex; justify-content:space-between; align-items:center; padding:4px 0; gap:8px; font-size:14px; }
     .catrow .lbl { display:flex; align-items:center; gap:8px; }
     .pick { direction:ltr; }
@@ -205,25 +209,34 @@
 
     #toast { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; padding:10px 18px; border-radius:10px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.2); display:none; z-index:80; align-items:center; gap:8px; }
 
+    /* ----- Jewish calendar ----- */
     #calModal { position:fixed; inset:0; background:rgba(10,20,40,.55); display:none; align-items:center; justify-content:center; z-index:70; padding:12px; }
-    .calBox { background:#fff; border-radius:16px; padding:16px; width:min(420px,100%); box-shadow:0 20px 50px rgba(0,0,0,.35); }
-    .calHead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
+    .calBox { direction:rtl; background:#fff; border-radius:18px; width:min(440px,100%); box-shadow:0 20px 50px rgba(0,0,0,.35); overflow:hidden; }
+    .calHead { display:flex; align-items:center; gap:8px; padding:14px; background:linear-gradient(90deg,var(--navy2),var(--navy)); color:#fff; }
+    .calNav { margin:0; width:38px; height:38px; padding:0; justify-content:center; font-size:18px; border-radius:50%; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); color:#fff; flex:none; }
     .calTitle { text-align:center; flex:1; }
-    .calTitle b { display:block; font-size:19px; color:var(--navy); }
-    .calTitle small { color:#5b6776; }
-    .calGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; direction:rtl; margin-top:8px; }
-    .cw { text-align:center; font-weight:700; color:var(--navy); font-size:13px; padding:4px 0; }
-    .cd { text-align:center; border-radius:8px; padding:6px 0; background:var(--soft); }
-    .cd b { display:block; font-size:16px; color:#1f2a37; }
-    .cd small { color:#7a8798; font-size:11px; }
-    .cd.sat { background:#e8eefb; }
-    .cd.sat b { color:var(--navy); }
-    .cd.today { background:var(--gold); }
-    .cd.today b, .cd.today small { color:#fff; }
+    .calTitle b { display:block; font-size:22px; }
+    .calTitle small { display:block; color:#cfe0fb; direction:ltr; unicode-bidi:isolate; font-size:12px; margin-top:2px; }
+    .calHint { background:#fff7e0; color:#7a5a00; font-size:13px; font-weight:600; text-align:center; padding:7px 10px; }
+    #calBody { padding:12px 12px 6px; }
+    .calGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+    .cw { text-align:center; font-weight:700; color:var(--navy); font-size:12px; padding:4px 0; border-bottom:2px solid var(--line); }
+    .cw.sat { color:#5b3a8c; border-bottom-color:#d9ccef; }
+    .cd { position:relative; text-align:center; border-radius:10px; padding:7px 0 5px; background:var(--soft); }
+    .cd b { display:block; font-size:18px; color:#1f2a37; line-height:1.15; }
+    .cd small { display:block; color:#8896a8; font-size:11px; direction:ltr; }
+    .cd .rc { position:absolute; top:2px; inset-inline-end:4px; font-size:9px; font-weight:700; color:#e8660a; }
+    .cd.sat { background:#efe9fa; }
+    .cd.sat b { color:#5b3a8c; }
+    .cd.today { outline:2px solid var(--gold); background:#fff7e0; }
+    .cd.sel { background:var(--navy); }
+    .cd.sel b, .cd.sel small { color:#fff; }
     .cd.blank { background:none; }
     .cd[data-day] { cursor:pointer; }
     .cd[data-day]:hover { background:#dbe6fb; }
+    .cd.sel[data-day]:hover { background:var(--navy); }
     .cd.fut { opacity:.35; }
+    .calFoot { display:flex; justify-content:space-between; gap:8px; padding:10px 14px 14px; }
   </style>
 </head>
 <body>
@@ -233,14 +246,15 @@
   <div id="calModal">
     <div class="calBox">
       <div class="calHead">
-        <button class="ghost small" data-cal="next" style="margin:0">&#9654;</button>
+        <button class="calNav" type="button" data-cal="prev">&#8594;</button>
         <div class="calTitle"><b id="calTitle"></b><small id="calSub"></small></div>
-        <button class="ghost small" data-cal="prev" style="margin:0">&#9664;</button>
+        <button class="calNav" type="button" data-cal="next">&#8592;</button>
       </div>
+      <div class="calHint hidden" id="calHint"></div>
       <div id="calBody"></div>
-      <div class="row" style="margin-top:12px">
-        <button class="ghost small" data-cal="today" id="calTodayBtn"></button>
-        <button class="small" data-cal="close" id="calCloseBtn"></button>
+      <div class="calFoot">
+        <button class="ghost small" data-cal="today" id="calTodayBtn" style="margin:0"></button>
+        <button class="small" data-cal="close" id="calCloseBtn" style="margin:0"></button>
       </div>
     </div>
   </div>
@@ -398,7 +412,7 @@
     const sortedPlaces = () => [...PLACES].sort((a, b) =>
       lang === 'yi' ? a[1].localeCompare(b[1], 'he') : a[0].localeCompare(b[0]));
 
-    // label = bold text above the field; the gray text inside is NOT an option
+    // label = bold text above the field; the light-gray text inside is NOT an option
     function placeSelect(id, val, label) {
       const inList = PLACES.some(p => p[0] === val);
       const sel = val ? (inList ? val : '__other') : '';
@@ -439,7 +453,7 @@
         created: 'Account created', createdConfirm: 'Account created. Check your email to confirm, then log in.',
         companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
-        cityPh: 'City / area', pickPlace: 'Choose the place',
+        cityPh: 'City / area', pickPlace: 'Choose the place', pickTod: 'Choose the time of day',
         logoOpt: 'Logo (optional):', saveCompany: 'Save company', sendForApproval: 'Send for approval',
         apprNote: 'Your request is sent to the admin. It appears on the site only after the admin approves it.',
         reqSent: 'Sent to the admin for approval', suggestChange: 'Suggest a change',
@@ -465,10 +479,11 @@
         ratingsByCat: 'Ratings overview', writeReview: 'Write a review', editReview: 'Edit your review',
         anonymous: '(anonymous)', otherIssue: 'Other issue',
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
-        confirmDelRev: 'Delete your review?', rateAll: 'Please choose the arrival time and rate the 3 required categories',
+        confirmDelRev: 'Delete your review?',
+        allReq: 'All fields are required, except "What stood out?" and "Other issue".',
+        fillAll: 'Please fill in everything before saving. Missing:',
+        f_rec: 'Recommendation', f_date: 'Trip date',
         badPrice: 'Price must be a valid number',
-        priceNote: 'A price counts only if both "From where" and "To where" are filled in.',
-        priceNeedsRoute: 'To add a price, please fill in both "From where" and "To where".',
         saved: 'Saved', deleted: 'Review deleted', notSaved: 'Not saved. Please log out, log in again and retry.',
         allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
         grpOffice: 'Office / Dispatch', grpDriver: 'Driver & car',
@@ -482,14 +497,14 @@
         tagsTitle: 'What stood out?', saidTags: 'What people say',
         rideTitle: 'Your ride & price', fromPh: 'From where', toPh: 'To where', pricePh: 'Price paid',
         otherPlace: 'Other place...', otherPlaceType: 'Type the place',
-        tripWhen: 'When was your trip?', todPh: 'Time of day',
+        todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
         trip: 'Trip',
         tag_on_time: 'On time', tag_polite: 'Polite driver', tag_clean: 'Clean car',
         tag_fair_price: 'Fair price', tag_safe: 'Safe driving', tag_great_service: 'Great service',
         tag_late: 'Late', tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
         tag_overcharged: 'Overcharged', tag_unsafe: 'Unsafe driving', tag_no_answer: 'Hard to reach',
-        calToday: 'Today', calClose: 'Close',
+        calToday: 'Today', calClose: 'Close', calPick: 'Choose the trip date',
         pickJewish: 'Pick from Jewish calendar',
         users: 'Users', usersTitle: 'All users', noUsers: 'No users',
         ban: 'Ban', unban: 'Unban', banned: 'Banned', by: 'By',
@@ -507,7 +522,7 @@
         created: 'אַקאַונט באַשאַפֿן', createdConfirm: 'אַקאַונט באַשאַפֿן. קוקט אין אימעיל צו באַשטעטיקן, דערנאָך לאָגירט אײַן.',
         companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
         companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
-        cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ',
+        cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ', pickTod: 'קלײַבט די צײַט פֿון טאָג',
         logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באַשטעטיקונג',
         apprNote: 'אײַער בקשה גייט צום אַדמין. עס ווײַזט זיך אויף דער זייט נאָר נאָכדעם וואָס דער אַדמין באַשטעטיקט עס.',
         reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאָגט פֿאָר אַ ענדערונג',
@@ -533,10 +548,11 @@
         ratingsByCat: 'איבערבליק פֿון באַוואַרטונגען', writeReview: 'שרײַבט אַ רעוויו', editReview: 'ענדערט אײַער רעוויו',
         anonymous: '(אַנאָנים)', otherIssue: 'אַנדער פּראָבלעם',
         submit: 'שיקט רעוויו', update: 'דערהײַנטיקט רעוויו', delMine: 'מעקט אויס מײַן רעוויו',
-        confirmDelRev: 'אויסמעקן אײַער רעוויו?', rateAll: 'ביטע קלײַבט ווען דער דרײַווער איז אָנגעקומען און באַוואַרט די 3 נייטיקע קאַטעגאָריעס',
+        confirmDelRev: 'אויסמעקן אײַער רעוויו?',
+        allReq: 'אַלע פֿעלדער זענען נייטיק, חוץ "וואָס איז אײַך אויפֿגעפֿאַלן?" און "אַנדער פּראָבלעם".',
+        fillAll: 'ביטע פֿילט אויס אַלץ פֿאַרן שפּײַכערן. עס פֿעלט:',
+        f_rec: 'רעקאָמענדאַציע', f_date: 'דאַטום פֿון דער נסיעה',
         badPrice: 'דער פּרײַז מוז זײַן אַ ריכטיקע צאָל',
-        priceNote: 'אַ פּרײַז צײלט נאָר ווען "פֿון וואו" און "צו וואו" זענען אויסגעפֿילט.',
-        priceNeedsRoute: 'כּדי צוצולייגן אַ פּרײַז, מוז מען אויסלייגן "פֿון וואו" און "צו וואו".',
         saved: 'געשפּײַכערט', deleted: 'רעוויו אויסגעמעקט', notSaved: 'נישט געשפּײַכערט. לאָגירט אַרויס, לאָגירט ווידער אַרײַן און פּרוּווט נאָכאַמאָל.',
         allReviews: 'אַלע רעוויוס', beFirst: 'נאָך קיין רעוויוס נישט. זײַט דער ערשטער!', loading: 'לאָדנט...', error: 'טעות',
         grpOffice: 'אָפֿיס / דיספּעטש', grpDriver: 'דרײַווער און קאַר',
@@ -550,14 +566,14 @@
         tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
         rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואו', toPh: 'צו וואו', pricePh: 'וויפֿל באַצאָלט',
         otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
-        tripWhen: 'ווען איז געווען די נסיעה?', todPh: 'צײַט פֿון טאָג',
+        todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
         trip: 'נסיעה',
         tag_on_time: 'פּינקטלעך', tag_polite: 'העפֿלעכער דרײַווער', tag_clean: 'רײנע קאַר',
         tag_fair_price: 'ריכטיקער פּרײַז', tag_safe: 'זיכער געפֿאָרן', tag_great_service: 'אויסגעצייכנט סערוויס',
         tag_late: 'פֿאַרשפּעטיקט', tag_rude: 'אומהעפֿלעכער דרײַווער', tag_dirty: 'שמוציקע קאַר',
         tag_overcharged: 'צו טײַער', tag_unsafe: 'נישט זיכער געפֿאָרן', tag_no_answer: 'שווער צו דערגרייכן',
-        calToday: 'הײַנט', calClose: 'צומאַכן',
+        calToday: 'הײַנט', calClose: 'צומאַכן', calPick: 'קלײַבט דעם טאָג פֿון דער נסיעה',
         pickJewish: 'קלײַבט פֿון אידישן לוח',
         users: 'באַניצער', usersTitle: 'אַלע באַניצער', noUsers: 'קיין באַניצער נישט',
         ban: 'אַרויסשליסן', unban: 'צוריקלאָזן', banned: 'אַרויסגעשלאָסן', by: 'פֿון',
@@ -575,7 +591,7 @@
         created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
         companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
-        cityPh: 'Город / район', pickPlace: 'Выберите место',
+        cityPh: 'Город / район', pickPlace: 'Выберите место', pickTod: 'Выберите время суток',
         logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию', sendForApproval: 'Отправить на одобрение',
         apprNote: 'Ваш запрос отправляется админу. Он появится на сайте только после одобрения.',
         reqSent: 'Отправлено админу на одобрение', suggestChange: 'Предложить изменение',
@@ -601,10 +617,11 @@
         ratingsByCat: 'Обзор оценок', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
         anonymous: '(анонимно)', otherIssue: 'Другая проблема',
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
-        confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Выберите время прибытия и оцените 3 обязательные категории',
+        confirmDelRev: 'Удалить ваш отзыв?',
+        allReq: 'Все поля обязательны, кроме «Что запомнилось?» и «Другая проблема».',
+        fillAll: 'Заполните всё перед сохранением. Не хватает:',
+        f_rec: 'Рекомендация', f_date: 'Дата поездки',
         badPrice: 'Цена должна быть числом',
-        priceNote: 'Цена учитывается, только если заполнены «Откуда» и «Куда».',
-        priceNeedsRoute: 'Чтобы указать цену, заполните «Откуда» и «Куда».',
         saved: 'Сохранено', deleted: 'Отзыв удалён', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
         allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
         grpOffice: 'Офис / Диспетчер', grpDriver: 'Водитель и машина',
@@ -618,14 +635,14 @@
         tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
         rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда', toPh: 'Куда', pricePh: 'Оплачено',
         otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
-        tripWhen: 'Когда была поездка?', todPh: 'Время суток',
+        todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
         trip: 'Поездка',
         tag_on_time: 'Вовремя', tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
         tag_fair_price: 'Честная цена', tag_safe: 'Безопасная езда', tag_great_service: 'Отличный сервис',
         tag_late: 'Опоздание', tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
         tag_overcharged: 'Завышенная цена', tag_unsafe: 'Опасная езда', tag_no_answer: 'Не дозвониться',
-        calToday: 'Сегодня', calClose: 'Закрыть',
+        calToday: 'Сегодня', calClose: 'Закрыть', calPick: 'Выберите дату поездки',
         pickJewish: 'Выбрать по еврейскому календарю',
         users: 'Пользователи', usersTitle: 'Все пользователи', noUsers: 'Нет пользователей',
         ban: 'Заблокировать', unban: 'Разблокировать', banned: 'Заблокирован', by: 'Автор',
@@ -643,7 +660,7 @@
         created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
         companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
-        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar',
+        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar', pickTod: 'Elige la hora del día',
         logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa', sendForApproval: 'Enviar para aprobación',
         apprNote: 'Tu solicitud se envía al administrador. Aparece en el sitio solo después de su aprobación.',
         reqSent: 'Enviado al administrador para aprobación', suggestChange: 'Sugerir un cambio',
@@ -669,10 +686,11 @@
         ratingsByCat: 'Resumen de calificaciones', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
         anonymous: '(anónima)', otherIssue: 'Otro problema',
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
-        confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Elige la hora de llegada y califica las 3 categorías obligatorias',
+        confirmDelRev: '¿Eliminar tu reseña?',
+        allReq: 'Todos los campos son obligatorios, excepto «¿Qué destacó?» y «Otro problema».',
+        fillAll: 'Completa todo antes de guardar. Falta:',
+        f_rec: 'Recomendación', f_date: 'Fecha del viaje',
         badPrice: 'El precio debe ser un número válido',
-        priceNote: 'Un precio cuenta solo si "Desde dónde" y "Hacia dónde" están completos.',
-        priceNeedsRoute: 'Para agregar un precio, completa "Desde dónde" y "Hacia dónde".',
         saved: 'Guardado', deleted: 'Reseña eliminada', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
         allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
         grpOffice: 'Oficina / Despacho', grpDriver: 'Conductor y auto',
@@ -686,14 +704,14 @@
         tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
         rideTitle: 'Tu viaje y precio', fromPh: 'Desde dónde', toPh: 'Hacia dónde', pricePh: 'Precio pagado',
         otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
-        tripWhen: '¿Cuándo fue tu viaje?', todPh: 'Hora del día',
+        todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
         trip: 'Viaje',
         tag_on_time: 'Puntual', tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
         tag_fair_price: 'Precio justo', tag_safe: 'Conducción segura', tag_great_service: 'Gran servicio',
         tag_late: 'Tarde', tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
         tag_overcharged: 'Cobro excesivo', tag_unsafe: 'Conducción peligrosa', tag_no_answer: 'Difícil de contactar',
-        calToday: 'Hoy', calClose: 'Cerrar',
+        calToday: 'Hoy', calClose: 'Cerrar', calPick: 'Elige la fecha del viaje',
         pickJewish: 'Elegir del calendario judío',
         users: 'Usuarios', usersTitle: 'Todos los usuarios', noUsers: 'Sin usuarios',
         ban: 'Bloquear', unban: 'Desbloquear', banned: 'Bloqueado', by: 'Por',
@@ -714,11 +732,13 @@
     const t_ = k => (T[lang] && T[lang][k]) || T.en[k] || k;
     const dl = () => lang === 'yi' ? 'he' : lang;
 
+    // the overall score is computed from these 4 (same as the database view)
     const REQ_KEYS = ['punctuality', 'service', 'cleanliness', 'driving'];
     const GROUPS = [
       ['grpOffice', 'office', ['punctuality', 'service']],
       ['grpDriver', 'car', ['driver_service', 'cleanliness', 'driving']]
     ];
+    // all 5 answers are required to save a review
     const ALL_KEYS = ['punctuality', 'service', 'driver_service', 'cleanliness', 'driving'];
     const POS_TAGS = ['on_time', 'polite', 'clean', 'fair_price', 'safe', 'great_service'];
     const NEG_TAGS = ['late', 'rude', 'dirty', 'overcharged', 'unsafe', 'no_answer'];
@@ -731,7 +751,7 @@
     let userMap = {}, usersOpen = false;
     let sugMap = {}, sugList = [], sugTarget = null;
     let reqList = [], msgList = [], reqOpen = true;
-    let detailData = [], showN = 8;
+    let detailData = [], showN = 8, triedSubmit = false;
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -778,10 +798,12 @@
       catch (e) { return 1; }
     };
     const hMonth = d => hf(d, { month: 'long', year: 'numeric' });
-    const hebFull = d => hf(d, { day: 'numeric', month: 'long', year: 'numeric' });
+    // full Jewish date with the weekday, e.g. "יום שני, כ״ט בתשרי תשפ״ז"
+    const hebFull = d => hf(d, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     const hebFromStr = s => s ? hebFull(new Date(s + 'T12:00:00')) : '';
     const noon = d => { const x = new Date(d); x.setHours(12, 0, 0, 0); return x; };
     const isoOf = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+    const WEEKDAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
 
     let calAnchor = noon(new Date()), calFirst = null, calLast = null;
     let pickMode = false;
@@ -794,20 +816,29 @@
       const d = new Date(first);
       while (hMonth(d) === label && days.length < 31) { days.push(new Date(d)); d.setDate(d.getDate() + 1); }
       calFirst = first; calLast = days[days.length - 1];
-      const todayStr = new Date().toDateString();
       const now = new Date();
-      const wk = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','שבת'];
-      let html = wk.map(w => `<div class="cw">${w}</div>`).join('');
+      const todayStr = now.toDateString();
+      const selIso = pickMode && $('revDate') ? $('revDate').value : '';
+
+      let html = WEEKDAYS.map((w, i) => `<div class="cw ${i === 6 ? 'sat' : ''}">${w}</div>`).join('');
       for (let i = 0; i < first.getDay(); i++) html += '<div class="cd blank"></div>';
       days.forEach(x => {
+        const iso = isoOf(x);
         const future = x > now && x.toDateString() !== todayStr;
-        html += `<div class="cd ${x.getDay() === 6 ? 'sat' : ''} ${x.toDateString() === todayStr ? 'today' : ''} ${pickMode && future ? 'fut' : ''}" ${pickMode && !future ? `data-day="${isoOf(x)}"` : ''}>
+        const hd = hDay(x);
+        let rc = '';
+        if (hd === 30) rc = 'ר״ח';
+        else if (hd === 1) rc = hf(x, { month: 'long' }) === 'תשרי' ? 'ר״ה' : 'ר״ח';
+        html += `<div class="cd ${x.getDay() === 6 ? 'sat' : ''} ${x.toDateString() === todayStr ? 'today' : ''} ${iso === selIso ? 'sel' : ''} ${pickMode && future ? 'fut' : ''}" ${pickMode && !future ? `data-day="${iso}"` : ''}>
+          ${rc ? `<span class="rc">${rc}</span>` : ''}
           <b>${esc(hf(x, { day: 'numeric' }))}</b><small>${x.getDate()}</small></div>`;
       });
       $('calBody').innerHTML = `<div class="calGrid">${html}</div>`;
       $('calTitle').textContent = label;
       const o = { month: 'short', year: 'numeric' };
       $('calSub').textContent = calFirst.toLocaleDateString(dl(), o) + ' – ' + calLast.toLocaleDateString(dl(), o);
+      $('calHint').textContent = t_('calPick');
+      $('calHint').classList.toggle('hidden', !pickMode);
     }
     function openCal() { pickMode = false; calAnchor = noon(new Date()); renderCal(); $('calModal').style.display = 'flex'; }
     function openPick() {
@@ -884,6 +915,7 @@
     }
 
     $('langSel').onchange = () => {
+      syncDraft();
       lang = $('langSel').value;
       localStorage.setItem('lang', lang);
       applyStaticText();
@@ -1305,13 +1337,50 @@
     // one row of the review form: arrival time = 4 option buttons, the rest = stars
     function catRowHtml(k) {
       if (k === 'punctuality') {
-        return `<div class="ptq">${ic('clock')} ${esc(t_('punctQ'))}</div>
+        return `<div class="field" data-field="punctuality">
+          <div class="ptq">${ic('clock')} ${esc(t_('punctQ'))}</div>
           <div class="ptopts">${PUNCT.map(([v, key]) =>
-            `<button type="button" class="ptbtn ${draft.punctuality === v ? 'on' : ''}" data-punct="${v}">${esc(t_(key))}</button>`).join('')}</div>`;
+            `<button type="button" class="ptbtn ${draft.punctuality === v ? 'on' : ''}" data-punct="${v}">${esc(t_(key))}</button>`).join('')}</div>
+        </div>`;
       }
-      return `<div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}${REQ_KEYS.includes(k) ? '' : ` <span class="opt">(${esc(t_('optional'))})</span>`}</span>
+      return `<div class="field" data-field="${k}"><div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}</span>
         <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
-      </div>`;
+      </div></div>`;
+    }
+
+    // ---------- review form: everything required (except tags + "other issue") ----------
+    function syncDraft() {
+      if (openMode !== 'write' || !$('revDate') || !$('revFrom')) return;
+      draft.trip_date = $('revDate').value;
+      draft.tod = $('revTod').value;
+      draft.from = readPlace('revFrom') || '';
+      draft.to = readPlace('revTo') || '';
+      draft.price = $('revPrice').value;
+      draft.comment = $('revComment').value;
+    }
+    function getMissing() {
+      const m = [];
+      ALL_KEYS.forEach(k => { if (!draft[k]) m.push([k, t_(k)]); });
+      if (draft.rec !== true && draft.rec !== false) m.push(['rec', t_('f_rec')]);
+      const today = new Date().toISOString().slice(0, 10);
+      const dv = $('revDate') ? $('revDate').value : '';
+      if (!dv || dv > today) m.push(['date', t_('f_date')]);
+      if (!($('revTod') && $('revTod').value)) m.push(['tod', t_('todPh')]);
+      if (!($('revFrom') && readPlace('revFrom'))) m.push(['from', t_('fromPh')]);
+      if (!($('revTo') && readPlace('revTo'))) m.push(['to', t_('toPh')]);
+      const p = $('revPrice') ? $('revPrice').value.trim() : '';
+      if (p === '' || !(Number(p) > 0)) m.push(['price', t_('pricePh')]);
+      return m;
+    }
+    function showMissing(list) {
+      document.querySelectorAll('#detail .field').forEach(f =>
+        f.classList.toggle('missing', list.some(x => x[0] === f.dataset.field)));
+    }
+    function refreshMissing() {
+      if (!triedSubmit || openMode !== 'write' || !$('revDate') || !$('revMsg')) return;
+      const m = getMissing();
+      showMissing(m);
+      if (!m.length) $('revMsg').style.display = 'none';
     }
 
     // Fetch the reviews of one company, then paint the opened panel
@@ -1360,31 +1429,41 @@
           ${keys.map(k => catRowHtml(k)).join('')}</div>`).join('')}</div>`;
 
         const recForm = `
-          <h4 style="margin-top:16px">${esc(t_('recommendQ'))}</h4>
-          <div class="recbtns">
-            <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
-            <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
+          <div class="field" data-field="rec" style="margin-top:12px">
+            <h4>${esc(t_('recommendQ'))}</h4>
+            <div class="recbtns">
+              <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
+              <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
+            </div>
           </div>`;
 
         const today = new Date().toISOString().slice(0, 10);
         const rideForm = `
           <div class="sect ride">
-            <h4>${ic('car')} ${esc(t_('rideTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
+            <h4>${ic('car')} ${esc(t_('rideTitle'))}</h4>
             <div class="two">
-              <input id="revDate" type="date" max="${today}" value="${esc(draft.trip_date || '')}">
-              <select id="revTod">
-                <option value="">${esc(t_('todPh'))}</option>
-                ${TODS.map(k => `<option value="${k}" ${draft.tod === k ? 'selected' : ''}>${esc(t_('tod_' + k))}</option>`).join('')}
-              </select>
+              <div class="field" data-field="date">
+                <label class="plabel" for="revDate">${esc(t_('f_date'))}</label>
+                <input id="revDate" type="date" required max="${today}" value="${esc(draft.trip_date || '')}">
+              </div>
+              <div class="field" data-field="tod">
+                <label class="plabel" for="revTod">${esc(t_('todPh'))}</label>
+                <select id="revTod" required>
+                  <option value="" disabled hidden ${draft.tod ? '' : 'selected'}>${esc(t_('pickTod'))}</option>
+                  ${TODS.map(k => `<option value="${k}" ${draft.tod === k ? 'selected' : ''}>${esc(t_('tod_' + k))}</option>`).join('')}
+                </select>
+              </div>
             </div>
             <button type="button" class="ghost small" data-pickdate="1">${ic('cal')} ${esc(t_('pickJewish'))}</button>
             <div class="heb" id="revHeb">${esc(hebFromStr(draft.trip_date))}</div>
             <div class="two">
-              ${placeSelect('revFrom', draft.from || '', t_('fromPh'))}
-              ${placeSelect('revTo', draft.to || '', t_('toPh'))}
+              <div class="field" data-field="from">${placeSelect('revFrom', draft.from || '', t_('fromPh'))}</div>
+              <div class="field" data-field="to">${placeSelect('revTo', draft.to || '', t_('toPh'))}</div>
             </div>
-            <div class="hint">${esc(t_('priceNote'))}</div>
-            <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="${esc(t_('pricePh'))}" value="${esc(draft.price || '')}"></div>
+            <div class="field" data-field="price">
+              <label class="plabel" for="revPrice">${esc(t_('pricePh'))}</label>
+              <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.price || '')}"></div>
+            </div>
           </div>`;
 
         const tagForm = `
@@ -1396,15 +1475,17 @@
 
         el.innerHTML = head(`${esc(mine ? t_('editReview') : t_('writeReview'))} <span class="opt">${esc(t_('anonymous'))}</span>`) + `
           <div class="sect white">
+            <div class="note">${esc(t_('allReq'))}</div>
             <div id="revMsg" class="msg"></div>
             ${form}
             ${recForm}
             ${rideForm}
             ${tagForm}
-            <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
+            <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))} (${esc(t_('optional'))})">${esc(draft.comment || '')}</textarea>
             <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
             ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
           </div>`;
+        if (triedSubmit) showMissing(getMissing());
         return;
       }
 
@@ -1516,9 +1597,10 @@
 
     document.addEventListener('input', (e) => {
       if (e.target && e.target.id === 'revDate') {
-        draft.trip_date = e.target.value;
         $('revHeb').textContent = hebFromStr(e.target.value);
       }
+      syncDraft();
+      refreshMissing();
     });
 
     document.addEventListener('change', (e) => {
@@ -1530,7 +1612,12 @@
           if (el.value === '__other') txt.focus();
         }
       }
+      syncDraft();
+      refreshMissing();
     });
+
+    // after every click, re-check which required fields are still missing
+    document.addEventListener('click', () => setTimeout(refreshMissing, 0));
 
     $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) closeCal(); });
 
@@ -1546,7 +1633,7 @@
       if (!$('msgForm').classList.contains('hidden')) { closeMsg(); return; }
       if (!$('addForm').classList.contains('hidden')) { closeAdd(); return; }
       if (editingId) { editingId = null; renderCompanies(); return; }
-      if (openId) { const id = openId; openId = null; draft = {}; renderCompanies(); scrollToCard(id); return; }
+      if (openId) { const id = openId; openId = null; draft = {}; triedSubmit = false; renderCompanies(); scrollToCard(id); return; }
       if (usersOpen) { usersOpen = false; renderUsers(); }
     });
 
@@ -1653,6 +1740,7 @@
         if (openId === id && openMode === m) openId = null;
         else { openId = id; openMode = m; }
         draft = {};
+        triedSubmit = false;
         showN = 8;
         renderCompanies();
         scrollToCard(id);
@@ -1662,6 +1750,7 @@
         const id = ds.close;
         openId = null;
         draft = {};
+        triedSubmit = false;
         renderCompanies();
         scrollToCard(id);
         return;
@@ -1677,7 +1766,7 @@
       if (t.classList && t.classList.contains('st')) {
         const cat = t.parentElement.dataset.cat;
         const v = Number(t.dataset.v);
-        if (!REQ_KEYS.includes(cat) && draft[cat] === v) draft[cat] = null; else draft[cat] = v;
+        draft[cat] = v;
         t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= (draft[cat] || 0)));
         return;
       }
@@ -1752,34 +1841,32 @@
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
         if (isBanned) return showMsg(msg, t_('bannedMsg'), false);
-        if (REQ_KEYS.some(k => !draft[k])) return showMsg(msg, t_('rateAll'), false);
+        syncDraft();
 
-        const fromV = readPlace('revFrom');
-        const toV = readPlace('revTo');
-        const priceRaw = $('revPrice').value.trim();
-        let price_paid = null;
-        if (priceRaw !== '') {
-          price_paid = Number(priceRaw);
-          if (!isFinite(price_paid) || price_paid < 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false);
-          price_paid = Math.round(price_paid * 100) / 100;
-          // a price only counts with a route
-          if (!fromV || !toV) return showMsg(msg, t_('priceNeedsRoute'), false);
+        // everything must be filled in, otherwise the review is NOT saved
+        const miss = getMissing();
+        if (miss.length) {
+          triedSubmit = true;
+          showMissing(miss);
+          return showMsg(msg, t_('fillAll') + ' ' + miss.map(x => x[1]).join(' · '), false);
         }
+
+        const price_paid = Math.round(Number($('revPrice').value) * 100) / 100;
+        if (!isFinite(price_paid) || price_paid <= 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false);
 
         const vals = {
           comment: $('revComment').value.trim() || null,
-          recommend: (draft.rec === true || draft.rec === false) ? draft.rec : null,
+          recommend: draft.rec,
           tags: draft.tags || [],
-          trip_date: $('revDate').value || null,
-          time_of_day: $('revTod').value || null,
-          trip_from: fromV,
-          trip_to: toV,
+          trip_date: $('revDate').value,
+          time_of_day: $('revTod').value,
+          trip_from: readPlace('revFrom'),
+          trip_to: readPlace('revTo'),
           price_paid,
           price: null,
-          driver_service: draft.driver_service || null,
           updated_at: new Date().toISOString()
         };
-        REQ_KEYS.forEach(k => vals[k] = draft[k]);
+        ALL_KEYS.forEach(k => vals[k] = draft[k]);
         t.disabled = true;
 
         let error = null;
@@ -1798,6 +1885,7 @@
 
         const cid = openId;
         draft = {};
+        triedSubmit = false;
         openId = null;
         await loadCompanies();
         toast(t_('saved'));
@@ -1811,6 +1899,7 @@
           .eq('company_id', t.dataset.company).eq('user_id', myUid);
         if (error) return showMsg($('revMsg'), error.message, false);
         draft = {};
+        triedSubmit = false;
         openId = null;
         await loadCompanies();
         toast(t_('deleted'));
