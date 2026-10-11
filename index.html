@@ -38,9 +38,10 @@
     input:focus, textarea:focus, select:focus { outline:2px solid #c7d6ee; border-color:var(--navy); }
     textarea { resize:vertical; max-width:100%; min-height:70px; }
     /* light-gray prompt that is NOT a real option */
-    select:required:invalid, input[type=date]:required:invalid { color:#8896a8; }
+    select:required:invalid { color:#8896a8; }
     select:required:invalid option { color:#1f2a37; }
-    .plabel { display:block; font-weight:700; font-size:13px; color:var(--navy); margin:8px 0 0; }
+    ::placeholder { color:#9aa7b8; opacity:1; }
+    .plabel { display:block; font-weight:700; font-size:13px; color:var(--navy); margin:0 0 2px; }
     .pwwrap { position:relative; }
     .pwwrap input { padding-inline-end:84px; }
     .pwwrap button { position:absolute; inset-inline-end:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:var(--navy); }
@@ -130,39 +131,54 @@
     .bar .val { font-weight:700; text-align:end; }
     @media (max-width:640px) { .bar { grid-template-columns:22px 1fr 80px 30px; } }
 
-    /* required-field highlight (review form) */
-    .field { border-radius:10px; padding:2px 4px; margin:0 -4px; }
-    .field.missing { outline:2px solid #e57373; background:#fff5f5; }
+    /* every question sits in a clear bordered box; missing = red */
+    .field { border:2px solid #d3dcea; background:#fbfcff; border-radius:12px; padding:10px 12px; margin:10px 0; transition:border-color .15s, background .15s; }
+    .field.missing { border-color:#e53935; background:#fff1f1; }
+    .field.missing .plabel, .field.missing .ptq, .field.missing h4, .field.missing .lbl { color:#c62828; }
+    .field.missing select, .field.missing .datebtn, .field.missing .pricewrap { border-color:#e53935; }
+    .optbox { border:2px dashed #d3dcea; border-radius:12px; padding:10px 12px; margin:12px 0; background:#fcfdff; }
 
-    .catrow { display:flex; justify-content:space-between; align-items:center; padding:4px 0; gap:8px; font-size:14px; }
-    .catrow .lbl { display:flex; align-items:center; gap:8px; }
-    .pick { direction:ltr; }
-    .pick .st { cursor:pointer; font-size:28px; color:#cfd6df; padding:0 2px; user-select:none; }
-    .pick .st.on { color:var(--gold); }
+    .catrow { display:flex; justify-content:space-between; align-items:flex-end; padding:2px 0; gap:8px; font-size:14px; }
+    .catrow .lbl { display:flex; align-items:center; gap:8px; font-weight:600; padding-bottom:4px; }
+    .pick { direction:ltr; display:flex; }
+    .pick .st { cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; padding:0 3px; user-select:none; }
+    .pick .st .sn { font-style:normal; font-size:11px; font-weight:700; color:#8896a8; line-height:1; margin-bottom:1px; }
+    .pick .st .sg { font-size:28px; line-height:1; color:#cfd6df; }
+    .pick .st.on .sg { color:var(--gold); }
+    .pick .st.on .sn { color:var(--navy); }
     .opt { font-size:12px; color:#7a8798; font-weight:400; }
+    .hintline { font-size:12px; color:#7a8798; margin:4px 0 0; }
 
-    /* arrival-time options */
-    .ptq { font-weight:700; font-size:14px; color:var(--navy); margin:2px 0 6px; display:flex; align-items:center; gap:8px; }
-    .ptopts { display:grid; gap:6px; margin-bottom:8px; }
-    .ptbtn { background:#fff; color:#1f2a37; border:1.5px solid #cdd5df; justify-content:flex-start; text-align:start; font-weight:600; }
-    .ptbtn.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+    /* big option cards (arrival time, yes/no) */
+    .ptq { font-weight:700; font-size:14px; color:var(--navy); margin:2px 0 8px; display:flex; align-items:center; gap:8px; }
+    .ptopts { display:grid; gap:8px; }
+    .optcard { display:flex; align-items:center; justify-content:flex-start; gap:10px; width:100%; background:#fff; color:#1f2a37; border:2px solid #aebbd0; border-radius:12px; padding:11px 14px; font-weight:600; text-align:start; box-shadow:0 1px 2px rgba(16,24,40,.06); }
+    .optcard::before { content:''; flex:none; width:18px; height:18px; border-radius:50%; border:2px solid #8fa0bb; background:#fff; }
+    .optcard:hover { border-color:var(--navy); background:#f3f7ff; filter:none; }
+    .optcard.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+    .optcard.on::before { border-color:#fff; background:radial-gradient(circle,#fff 0 4px,var(--navy) 5px); }
+    .optcard.yes.on { background:var(--green); border-color:var(--green); }
+    .optcard.yes.on::before { background:radial-gradient(circle,#fff 0 4px,var(--green) 5px); }
+    .optcard.no.on { background:var(--red); border-color:var(--red); }
+    .optcard.no.on::before { background:radial-gradient(circle,#fff 0 4px,var(--red) 5px); }
+    .recbtns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 
-    .chips { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; }
-    .chip { padding:6px 12px; border-radius:16px; font-size:13px; background:#fff; border:1px solid #9aa5b3; color:#555; cursor:pointer; font-weight:500; display:inline-flex; align-items:center; gap:5px; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0; }
+    .chip { padding:8px 14px; border-radius:14px; font-size:13px; background:#fff; border:2px solid #aebbd0; color:#444; cursor:pointer; font-weight:600; display:inline-flex; align-items:center; gap:5px; }
     .chip.pos { border-color:var(--green); color:var(--green); }
     .chip.neg { border-color:var(--red); color:var(--red); }
     .chip.pos.on { background:var(--green); color:#fff; }
     .chip.neg.on { background:var(--red); color:#fff; }
-    .chip.static { cursor:default; padding:3px 10px; }
-    .recbtns { display:flex; gap:8px; margin:6px 0; }
-    .recbtn { background:#fff; color:#555; border:1px solid #9aa5b3; }
-    .recbtn.yes.on { background:var(--green); color:#fff; border-color:var(--green); }
-    .recbtn.no.on { background:var(--red); color:#fff; border-color:var(--red); }
+    .chip.static { cursor:default; padding:3px 10px; border-width:1.5px; }
     .two { display:flex; gap:10px; flex-wrap:wrap; }
     .two > * { flex:1 1 150px; }
     .placebox { flex:1 1 150px; }
-    .placebox input { margin-top:0; }
-    .heb { color:var(--navy); font-weight:600; font-size:13px; min-height:18px; margin-top:4px; }
+    .placebox select, .placebox input { margin-bottom:0; }
+    .placebox input { margin-top:6px; }
+
+    /* trip-date button (opens the Jewish calendar) */
+    .datebtn { width:100%; justify-content:flex-start; background:#fff; color:#8896a8; border:1px solid #cdd5df; padding:10px 12px; margin:6px 0 0; font-weight:500; font-size:14px; text-align:start; }
+    .datebtn.has { color:#1f2a37; font-weight:700; }
 
     /* ----- reviews list ----- */
     .rev { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:8px 0; }
@@ -207,30 +223,32 @@
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
 
-    #toast { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; padding:10px 18px; border-radius:10px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.2); display:none; z-index:80; align-items:center; gap:8px; }
+    #toast { position:fixed; top:16px; left:50%; transform:translateX(-50%); width:max-content; max-width:92vw; text-align:center; background:var(--green); color:#fff; padding:10px 18px; border-radius:10px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.25); display:none; z-index:80; align-items:center; gap:8px; }
+    #toast.err { background:var(--red); }
 
     /* ----- Jewish calendar ----- */
     #calModal { position:fixed; inset:0; background:rgba(10,20,40,.55); display:none; align-items:center; justify-content:center; z-index:70; padding:12px; }
-    .calBox { direction:rtl; background:#fff; border-radius:18px; width:min(440px,100%); box-shadow:0 20px 50px rgba(0,0,0,.35); overflow:hidden; }
+    .calBox { direction:rtl; background:#fff; border-radius:18px; width:min(460px,100%); max-height:96vh; overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.35); }
     .calHead { display:flex; align-items:center; gap:8px; padding:14px; background:linear-gradient(90deg,var(--navy2),var(--navy)); color:#fff; }
-    .calNav { margin:0; width:38px; height:38px; padding:0; justify-content:center; font-size:18px; border-radius:50%; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); color:#fff; flex:none; }
+    .calNav { margin:0; width:40px; height:40px; padding:0; justify-content:center; font-size:20px; border-radius:50%; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); color:#fff; flex:none; }
     .calTitle { text-align:center; flex:1; }
-    .calTitle b { display:block; font-size:22px; }
+    .calTitle b { display:block; font-size:24px; letter-spacing:.3px; }
     .calTitle small { display:block; color:#cfe0fb; direction:ltr; unicode-bidi:isolate; font-size:12px; margin-top:2px; }
-    .calHint { background:#fff7e0; color:#7a5a00; font-size:13px; font-weight:600; text-align:center; padding:7px 10px; }
+    .calHint { background:#fff7e0; color:#7a5a00; font-size:13px; font-weight:700; text-align:center; padding:7px 10px; }
     #calBody { padding:12px 12px 6px; }
     .calGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
-    .cw { text-align:center; font-weight:700; color:var(--navy); font-size:12px; padding:4px 0; border-bottom:2px solid var(--line); }
+    .cw { text-align:center; font-weight:700; color:var(--navy); font-size:12px; padding:5px 0; border-bottom:2px solid var(--line); }
     .cw.sat { color:#5b3a8c; border-bottom-color:#d9ccef; }
-    .cd { position:relative; text-align:center; border-radius:10px; padding:7px 0 5px; background:var(--soft); }
-    .cd b { display:block; font-size:18px; color:#1f2a37; line-height:1.15; }
-    .cd small { display:block; color:#8896a8; font-size:11px; direction:ltr; }
-    .cd .rc { position:absolute; top:2px; inset-inline-end:4px; font-size:9px; font-weight:700; color:#e8660a; }
+    .cd { text-align:center; border-radius:10px; padding:6px 0 5px; background:var(--soft); min-height:56px; }
+    .cd b { display:block; font-size:20px; color:#1f2a37; line-height:1.15; }
+    .cd small { display:block; color:#8896a8; font-size:11px; direction:ltr; unicode-bidi:isolate; }
+    .cd .hl { display:block; font-style:normal; font-size:9.5px; font-weight:800; color:#c25400; line-height:1.15; margin-top:1px; }
     .cd.sat { background:#efe9fa; }
     .cd.sat b { color:#5b3a8c; }
     .cd.today { outline:2px solid var(--gold); background:#fff7e0; }
     .cd.sel { background:var(--navy); }
     .cd.sel b, .cd.sel small { color:#fff; }
+    .cd.sel .hl { color:#ffd9a8; }
     .cd.blank { background:none; }
     .cd[data-day] { cursor:pointer; }
     .cd[data-day]:hover { background:#dbe6fb; }
@@ -453,7 +471,7 @@
         created: 'Account created', createdConfirm: 'Account created. Check your email to confirm, then log in.',
         companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
-        cityPh: 'City / area', pickPlace: 'Choose the place', pickTod: 'Choose the time of day',
+        cityPh: 'City / area', pickPlace: 'Choose the place', pickTod: 'Choose the time of day', pickDate: 'Choose the trip date',
         logoOpt: 'Logo (optional):', saveCompany: 'Save company', sendForApproval: 'Send for approval',
         apprNote: 'Your request is sent to the admin. It appears on the site only after the admin approves it.',
         reqSent: 'Sent to the admin for approval', suggestChange: 'Suggest a change',
@@ -481,6 +499,7 @@
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
         confirmDelRev: 'Delete your review?',
         allReq: 'All fields are required, except "What stood out?" and "Other issue".',
+        starsHint: 'Stars: 1 = lowest · 5 = highest',
         fillAll: 'Please fill in everything before saving. Missing:',
         f_rec: 'Recommendation', f_date: 'Trip date',
         badPrice: 'Price must be a valid number',
@@ -505,7 +524,6 @@
         tag_late: 'Late', tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
         tag_overcharged: 'Overcharged', tag_unsafe: 'Unsafe driving', tag_no_answer: 'Hard to reach',
         calToday: 'Today', calClose: 'Close', calPick: 'Choose the trip date',
-        pickJewish: 'Pick from Jewish calendar',
         users: 'Users', usersTitle: 'All users', noUsers: 'No users',
         ban: 'Ban', unban: 'Unban', banned: 'Banned', by: 'By',
         bannedMsg: 'You are banned and cannot write reviews or add companies.',
@@ -522,7 +540,7 @@
         created: 'אַקאַונט באַשאַפֿן', createdConfirm: 'אַקאַונט באַשאַפֿן. קוקט אין אימעיל צו באַשטעטיקן, דערנאָך לאָגירט אײַן.',
         companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
         companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
-        cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ', pickTod: 'קלײַבט די צײַט פֿון טאָג',
+        cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ', pickTod: 'קלײַבט די צײַט פֿון טאָג', pickDate: 'קלײַבט דעם טאָג פֿון דער נסיעה',
         logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באַשטעטיקונג',
         apprNote: 'אײַער בקשה גייט צום אַדמין. עס ווײַזט זיך אויף דער זייט נאָר נאָכדעם וואָס דער אַדמין באַשטעטיקט עס.',
         reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאָגט פֿאָר אַ ענדערונג',
@@ -550,6 +568,7 @@
         submit: 'שיקט רעוויו', update: 'דערהײַנטיקט רעוויו', delMine: 'מעקט אויס מײַן רעוויו',
         confirmDelRev: 'אויסמעקן אײַער רעוויו?',
         allReq: 'אַלע פֿעלדער זענען נייטיק, חוץ "וואָס איז אײַך אויפֿגעפֿאַלן?" און "אַנדער פּראָבלעם".',
+        starsHint: 'ביי די שטערן: 1 = נידעריגסט · 5 = העכסטע',
         fillAll: 'ביטע פֿילט אויס אַלץ פֿאַרן שפּײַכערן. עס פֿעלט:',
         f_rec: 'רעקאָמענדאַציע', f_date: 'דאַטום פֿון דער נסיעה',
         badPrice: 'דער פּרײַז מוז זײַן אַ ריכטיקע צאָל',
@@ -574,7 +593,6 @@
         tag_late: 'פֿאַרשפּעטיקט', tag_rude: 'אומהעפֿלעכער דרײַווער', tag_dirty: 'שמוציקע קאַר',
         tag_overcharged: 'צו טײַער', tag_unsafe: 'נישט זיכער געפֿאָרן', tag_no_answer: 'שווער צו דערגרייכן',
         calToday: 'הײַנט', calClose: 'צומאַכן', calPick: 'קלײַבט דעם טאָג פֿון דער נסיעה',
-        pickJewish: 'קלײַבט פֿון אידישן לוח',
         users: 'באַניצער', usersTitle: 'אַלע באַניצער', noUsers: 'קיין באַניצער נישט',
         ban: 'אַרויסשליסן', unban: 'צוריקלאָזן', banned: 'אַרויסגעשלאָסן', by: 'פֿון',
         bannedMsg: 'איר זענט אַרויסגעשלאָסן און קענט נישט שרײַבן רעוויוס אָדער לייגן קאָמפּאַניעס.',
@@ -591,7 +609,7 @@
         created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
         companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
-        cityPh: 'Город / район', pickPlace: 'Выберите место', pickTod: 'Выберите время суток',
+        cityPh: 'Город / район', pickPlace: 'Выберите место', pickTod: 'Выберите время суток', pickDate: 'Выберите дату поездки',
         logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию', sendForApproval: 'Отправить на одобрение',
         apprNote: 'Ваш запрос отправляется админу. Он появится на сайте только после одобрения.',
         reqSent: 'Отправлено админу на одобрение', suggestChange: 'Предложить изменение',
@@ -619,6 +637,7 @@
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
         confirmDelRev: 'Удалить ваш отзыв?',
         allReq: 'Все поля обязательны, кроме «Что запомнилось?» и «Другая проблема».',
+        starsHint: 'Звёзды: 1 = самая низкая · 5 = самая высокая',
         fillAll: 'Заполните всё перед сохранением. Не хватает:',
         f_rec: 'Рекомендация', f_date: 'Дата поездки',
         badPrice: 'Цена должна быть числом',
@@ -643,7 +662,6 @@
         tag_late: 'Опоздание', tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
         tag_overcharged: 'Завышенная цена', tag_unsafe: 'Опасная езда', tag_no_answer: 'Не дозвониться',
         calToday: 'Сегодня', calClose: 'Закрыть', calPick: 'Выберите дату поездки',
-        pickJewish: 'Выбрать по еврейскому календарю',
         users: 'Пользователи', usersTitle: 'Все пользователи', noUsers: 'Нет пользователей',
         ban: 'Заблокировать', unban: 'Разблокировать', banned: 'Заблокирован', by: 'Автор',
         bannedMsg: 'Вы заблокированы и не можете писать отзывы или добавлять компании.',
@@ -660,7 +678,7 @@
         created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
         companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
-        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar', pickTod: 'Elige la hora del día',
+        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar', pickTod: 'Elige la hora del día', pickDate: 'Elige la fecha del viaje',
         logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa', sendForApproval: 'Enviar para aprobación',
         apprNote: 'Tu solicitud se envía al administrador. Aparece en el sitio solo después de su aprobación.',
         reqSent: 'Enviado al administrador para aprobación', suggestChange: 'Sugerir un cambio',
@@ -688,6 +706,7 @@
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
         confirmDelRev: '¿Eliminar tu reseña?',
         allReq: 'Todos los campos son obligatorios, excepto «¿Qué destacó?» y «Otro problema».',
+        starsHint: 'Estrellas: 1 = la más baja · 5 = la más alta',
         fillAll: 'Completa todo antes de guardar. Falta:',
         f_rec: 'Recomendación', f_date: 'Fecha del viaje',
         badPrice: 'El precio debe ser un número válido',
@@ -712,7 +731,6 @@
         tag_late: 'Tarde', tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
         tag_overcharged: 'Cobro excesivo', tag_unsafe: 'Conducción peligrosa', tag_no_answer: 'Difícil de contactar',
         calToday: 'Hoy', calClose: 'Cerrar', calPick: 'Elige la fecha del viaje',
-        pickJewish: 'Elegir del calendario judío',
         users: 'Usuarios', usersTitle: 'Todos los usuarios', noUsers: 'Sin usuarios',
         ban: 'Bloquear', unban: 'Desbloquear', banned: 'Bloqueado', by: 'Por',
         bannedMsg: 'Estás bloqueado y no puedes escribir reseñas ni agregar empresas.',
@@ -791,26 +809,127 @@
       } catch (e) {}
     })();
 
-    // ---------- Jewish calendar ----------
+    // ---------- Jewish calendar (own gematria, Yiddish names) ----------
     const hf = (d, o) => { try { return new Intl.DateTimeFormat('he-u-ca-hebrew', o).format(d); } catch (e) { return ''; } };
     const hDay = d => {
       try { return Number(new Intl.DateTimeFormat('en-u-ca-hebrew', { day: 'numeric' }).formatToParts(d).find(x => x.type === 'day').value); }
       catch (e) { return 1; }
     };
-    const hMonth = d => hf(d, { month: 'long', year: 'numeric' });
-    // full Jewish date with the weekday, e.g. "יום שני, כ״ט בתשרי תשפ״ז"
-    const hebFull = d => hf(d, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const hebFromStr = s => s ? hebFull(new Date(s + 'T12:00:00')) : '';
+    const hYearNum = d => {
+      try {
+        const p = new Intl.DateTimeFormat('en-u-ca-hebrew', { year: 'numeric' }).formatToParts(d)
+          .find(x => x.type === 'year' || x.type === 'relatedYear');
+        if (p) return Number(String(p.value).replace(/\D/g, ''));
+      } catch (e) {}
+      return Number((hf(d, { year: 'numeric' }).match(/\d+/) || [5787])[0]);
+    };
+    // Hebrew letters for numbers (1-999): י״ב, כ״ט, תשפ״ז ...
+    function gem(n) {
+      const hund = [[400,'ת'],[300,'ש'],[200,'ר'],[100,'ק']];
+      const tens = [[90,'צ'],[80,'פ'],[70,'ע'],[60,'ס'],[50,'נ'],[40,'מ'],[30,'ל'],[20,'כ'],[10,'י']];
+      const ones = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'];
+      let s = '';
+      for (const [v, l] of hund) { while (n >= v) { s += l; n -= v; } }
+      if (n === 15) { s += 'טו'; n = 0; }
+      else if (n === 16) { s += 'טז'; n = 0; }
+      for (const [v, l] of tens) { if (n >= v) { s += l; n -= v; } }
+      s += ones[n];
+      if (!s) return '';
+      return s.length === 1 ? s + '׳' : s.slice(0, -1) + '״' + s.slice(-1);
+    }
+    const gemYear = d => gem(hYearNum(d) % 1000);
+
+    // [prefix to match Intl month name, key, Yiddish display name]
+    const MONTHS = [
+      ['אדר א','adar1','אדר ראשון'], ['אדר ב','adar2','אדר שני'], ['תשרי','tishri','תשרי'],
+      ['חשו','cheshvan','חשוון'], ['מרחשו','cheshvan','חשוון'], ['כסלו','kislev','כסלו'], ['טבת','tevet','טבת'],
+      ['שבט','shvat','שבט'], ['אדר','adar','אדר'], ['ניסן','nisan','ניסן'], ['אייר','iyar','אייר'],
+      ['סיו','sivan','סיוון'], ['תמוז','tamuz','תמוז'], ['אב','av','מנחם אב'], ['אלול','elul','אלול']
+    ];
+    function monthInfo(d) {
+      const n = hf(d, { month: 'long' }).replace(/[׳״'"]/g, '').trim();
+      for (const [pre, key, name] of MONTHS) if (n.startsWith(pre)) return { key, name };
+      return { key: n, name: n };
+    }
+    const hMonth = d => hf(d, { month: 'long', year: 'numeric' });   // used as a month identity label
+
+    const WD_YI = ['זונטיק','מאנטיק','דינסטיק','מיטוואך','דאנערשטיק','פרייטיק','שבת קודש'];
+    const WD_HE = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת קודש'];
+    const wdName = d => (lang === 'yi' ? WD_YI : WD_HE)[d.getDay()];
+    const WD_HDR = () => lang === 'yi'
+      ? ['זונ׳','מאנ׳','דינ׳','מיט׳','דאנ׳','פרי׳','שבת']
+      : ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','שבת'];
+
+    // full Jewish date with weekday, e.g. "דינסטיק, כ״ט תשרי תשפ״ז"
+    const hebStr = d => `${wdName(d)}, ${gem(hDay(d))} ${monthInfo(d).name} ${gemYear(d)}`;
+    const hebFromStr = s => s ? hebStr(new Date(s + 'T12:00:00')) : '';
     const noon = d => { const x = new Date(d); x.setHours(12, 0, 0, 0); return x; };
     const isoOf = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
-    const WEEKDAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+    const dateLabel = iso => {
+      const dt = new Date(iso + 'T12:00:00');
+      return hebStr(dt) + ' · ' + dt.toLocaleDateString(dl(), { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
+    // small label under a day: Rosh Chodesh / holidays / fasts
+    function dayMark(x) {
+      const hd = hDay(x), key = monthInfo(x).key, dow = x.getDay();
+      let hol = '';
+      switch (key) {
+        case 'tishri':
+          if (hd <= 2) hol = 'ר״ה';
+          else if ((hd === 3 && dow !== 6) || (hd === 4 && dow === 0)) hol = 'צום';
+          else if (hd === 10) hol = 'יוה״כ';
+          else if (hd === 15 || hd === 16) hol = 'סוכות';
+          else if (hd >= 17 && hd <= 20) hol = 'חוה״מ';
+          else if (hd === 21) hol = 'הו״ר';
+          else if (hd === 22) hol = 'שמ״ע';
+          else if (hd === 23) hol = 'שמח״ת';
+          break;
+        case 'kislev':
+          if (hd >= 25) hol = 'חנוכה';
+          break;
+        case 'tevet':
+          if (hd <= 2) hol = 'חנוכה';
+          else if (hd === 3) { const p = new Date(x); p.setDate(p.getDate() - 3); if (hDay(p) === 29) hol = 'חנוכה'; }
+          else if (hd === 10) hol = 'צום';
+          break;
+        case 'shvat':
+          if (hd === 15) hol = 'ט״ו';
+          break;
+        case 'adar': case 'adar2':
+          if ((hd === 13 && dow !== 6) || (hd === 11 && dow === 4)) hol = 'תענית';
+          else if (hd === 14) hol = 'פורים';
+          else if (hd === 15) hol = 'שושן';
+          break;
+        case 'nisan':
+          if (hd === 15 || hd === 16) hol = 'פסח';
+          else if (hd >= 17 && hd <= 20) hol = 'חוה״מ';
+          else if (hd === 21) hol = 'שביעי';
+          else if (hd === 22) hol = 'אחרון';
+          break;
+        case 'iyar':
+          if (hd === 18) hol = 'ל״ג';
+          break;
+        case 'sivan':
+          if (hd === 6 || hd === 7) hol = 'שבועות';
+          break;
+        case 'tamuz':
+          if ((hd === 17 && dow !== 6) || (hd === 18 && dow === 0)) hol = 'צום';
+          break;
+        case 'av':
+          if ((hd === 9 && dow !== 6) || (hd === 10 && dow === 0)) hol = 'ת״ב';
+          break;
+      }
+      const rc = (hd === 30 || (hd === 1 && key !== 'tishri')) ? 'ר״ח' : '';
+      return [rc, hol].filter(Boolean).join(' ');
+    }
 
     let calAnchor = noon(new Date()), calFirst = null, calLast = null;
     let pickMode = false;
 
     function renderCal() {
       const a = noon(calAnchor);
-      const first = new Date(a); first.setDate(a.getDate() - (hDay(a) - 1));
+      const first = new Date(a); first.setDate(a.getDate() - (hDay(a) - 1));   // 1st of the Jewish month
       const label = hMonth(first);
       const days = [];
       const d = new Date(first);
@@ -820,21 +939,20 @@
       const todayStr = now.toDateString();
       const selIso = pickMode && $('revDate') ? $('revDate').value : '';
 
-      let html = WEEKDAYS.map((w, i) => `<div class="cw ${i === 6 ? 'sat' : ''}">${w}</div>`).join('');
+      let html = WD_HDR().map((w, i) => `<div class="cw ${i === 6 ? 'sat' : ''}">${w}</div>`).join('');
       for (let i = 0; i < first.getDay(); i++) html += '<div class="cd blank"></div>';
-      days.forEach(x => {
+      days.forEach((x, idx) => {
         const iso = isoOf(x);
         const future = x > now && x.toDateString() !== todayStr;
-        const hd = hDay(x);
-        let rc = '';
-        if (hd === 30) rc = 'ר״ח';
-        else if (hd === 1) rc = hf(x, { month: 'long' }) === 'תשרי' ? 'ר״ה' : 'ר״ח';
+        const mk = dayMark(x);
+        const g = (idx === 0 || x.getDate() === 1)
+          ? x.getDate() + ' ' + x.toLocaleDateString(dl(), { month: 'short' })
+          : String(x.getDate());
         html += `<div class="cd ${x.getDay() === 6 ? 'sat' : ''} ${x.toDateString() === todayStr ? 'today' : ''} ${iso === selIso ? 'sel' : ''} ${pickMode && future ? 'fut' : ''}" ${pickMode && !future ? `data-day="${iso}"` : ''}>
-          ${rc ? `<span class="rc">${rc}</span>` : ''}
-          <b>${esc(hf(x, { day: 'numeric' }))}</b><small>${x.getDate()}</small></div>`;
+          <b>${esc(gem(hDay(x)))}</b><small>${esc(g)}</small>${mk ? `<i class="hl">${esc(mk)}</i>` : ''}</div>`;
       });
       $('calBody').innerHTML = `<div class="calGrid">${html}</div>`;
-      $('calTitle').textContent = label;
+      $('calTitle').textContent = monthInfo(first).name + ' ' + gemYear(first);
       const o = { month: 'short', year: 'numeric' };
       $('calSub').textContent = calFirst.toLocaleDateString(dl(), o) + ' – ' + calLast.toLocaleDateString(dl(), o);
       $('calHint').textContent = t_('calPick');
@@ -851,19 +969,20 @@
     function closeCal() { $('calModal').style.display = 'none'; pickMode = false; }
 
     let toastTimer;
-    function toast(text) {
+    function toast(text, isErr) {
       const el = $('toast');
-      el.innerHTML = ic('check') + esc(text);
+      el.className = isErr ? 'err' : '';
+      el.innerHTML = ic(isErr ? 'x' : 'check') + '<span>' + esc(text) + '</span>';
       el.style.display = 'flex';
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.style.display = 'none', 2500);
+      toastTimer = setTimeout(() => el.style.display = 'none', isErr ? 4500 : 2500);
     }
 
     function applyStaticText() {
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'yi' ? 'rtl' : 'ltr';
       $('langSel').value = lang;
-      $('calBtn').innerHTML = ic('cal') + ' ' + esc(hebFull(new Date()));
+      $('calBtn').innerHTML = ic('cal') + ' ' + esc(hebStr(new Date()));
       $('calTodayBtn').textContent = t_('calToday');
       $('calCloseBtn').textContent = t_('calClose');
       $('authTitle').textContent = isSignup ? t_('signup') : t_('login');
@@ -979,11 +1098,14 @@
       $('showPw').textContent = p.type === 'password' ? t_('show') : t_('hide');
     };
 
-    function showMsg(el, text, ok) {
+    // autoMs = hide the message again after that many milliseconds (so it does not stay forever)
+    function showMsg(el, text, ok, autoMs) {
       if (!el) return alert(text);
       el.textContent = text;
       el.className = 'msg ' + (ok ? 'ok' : 'err');
       el.style.display = 'block';
+      clearTimeout(el._t);
+      if (autoMs) el._t = setTimeout(() => { el.style.display = 'none'; }, autoMs);
       try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
     }
 
@@ -1031,7 +1153,7 @@
     $('msgClose').onclick = closeMsg;
     $('msgSend').onclick = async () => {
       const body = $('msgBody').value.trim();
-      if (!body) return showMsg($('msgNote'), t_('msgEmpty'), false);
+      if (!body) return showMsg($('msgNote'), t_('msgEmpty'), false, 4000);
       const btn = $('msgSend');
       btn.disabled = true;
       const { error } = await sb.from('admin_messages').insert({ user_id: myUid, body });
@@ -1044,7 +1166,7 @@
 
     $('saveCompany').onclick = async () => {
       const name = $('cName').value.trim();
-      if (!name) return showMsg($('addMsg'), t_('nameRequired'), false);
+      if (!name) return showMsg($('addMsg'), t_('nameRequired'), false, 4000);
       const btn = $('saveCompany');
       btn.disabled = true;
       try {
@@ -1334,17 +1456,18 @@
     const routeName = r => (r.trip_from || r.trip_to)
       ? `${placeLabel(r.trip_from || '?')} → ${placeLabel(r.trip_to || '?')}` : t_('routeUnknown');
 
-    // one row of the review form: arrival time = 4 option buttons, the rest = stars
+    // one boxed question of the review form: arrival time = 4 option cards, the rest = numbered stars
     function catRowHtml(k) {
       if (k === 'punctuality') {
         return `<div class="field" data-field="punctuality">
           <div class="ptq">${ic('clock')} ${esc(t_('punctQ'))}</div>
           <div class="ptopts">${PUNCT.map(([v, key]) =>
-            `<button type="button" class="ptbtn ${draft.punctuality === v ? 'on' : ''}" data-punct="${v}">${esc(t_(key))}</button>`).join('')}</div>
+            `<button type="button" class="ptbtn optcard ${draft.punctuality === v ? 'on' : ''}" data-punct="${v}">${esc(t_(key))}</button>`).join('')}</div>
         </div>`;
       }
       return `<div class="field" data-field="${k}"><div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}</span>
-        <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
+        <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v =>
+          `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}"><i class="sn">${v}</i><span class="sg">★</span></span>`).join('')}</span>
       </div></div>`;
     }
 
@@ -1362,9 +1485,8 @@
       const m = [];
       ALL_KEYS.forEach(k => { if (!draft[k]) m.push([k, t_(k)]); });
       if (draft.rec !== true && draft.rec !== false) m.push(['rec', t_('f_rec')]);
-      const today = new Date().toISOString().slice(0, 10);
       const dv = $('revDate') ? $('revDate').value : '';
-      if (!dv || dv > today) m.push(['date', t_('f_date')]);
+      if (!dv || dv > isoOf(new Date())) m.push(['date', t_('f_date')]);
       if (!($('revTod') && $('revTod').value)) m.push(['tod', t_('todPh')]);
       if (!($('revFrom') && readPlace('revFrom'))) m.push(['from', t_('fromPh')]);
       if (!($('revTo') && readPlace('revTo'))) m.push(['to', t_('toPh')]);
@@ -1376,11 +1498,10 @@
       document.querySelectorAll('#detail .field').forEach(f =>
         f.classList.toggle('missing', list.some(x => x[0] === f.dataset.field)));
     }
+    // keep the red boxes in sync while the user fills the form (after the first failed attempt)
     function refreshMissing() {
-      if (!triedSubmit || openMode !== 'write' || !$('revDate') || !$('revMsg')) return;
-      const m = getMissing();
-      showMissing(m);
-      if (!m.length) $('revMsg').style.display = 'none';
+      if (!triedSubmit || openMode !== 'write' || !$('revDate')) return;
+      showMissing(getMissing());
     }
 
     // Fetch the reviews of one company, then paint the opened panel
@@ -1429,22 +1550,22 @@
           ${keys.map(k => catRowHtml(k)).join('')}</div>`).join('')}</div>`;
 
         const recForm = `
-          <div class="field" data-field="rec" style="margin-top:12px">
+          <div class="field" data-field="rec">
             <h4>${esc(t_('recommendQ'))}</h4>
             <div class="recbtns">
-              <button type="button" class="recbtn yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
-              <button type="button" class="recbtn no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
+              <button type="button" class="recbtn optcard yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
+              <button type="button" class="recbtn optcard no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
             </div>
           </div>`;
 
-        const today = new Date().toISOString().slice(0, 10);
         const rideForm = `
           <div class="sect ride">
             <h4>${ic('car')} ${esc(t_('rideTitle'))}</h4>
             <div class="two">
               <div class="field" data-field="date">
-                <label class="plabel" for="revDate">${esc(t_('f_date'))}</label>
-                <input id="revDate" type="date" required max="${today}" value="${esc(draft.trip_date || '')}">
+                <span class="plabel">${esc(t_('f_date'))}</span>
+                <input id="revDate" type="hidden" value="${esc(draft.trip_date || '')}">
+                <button type="button" class="datebtn ${draft.trip_date ? 'has' : ''}" data-pickdate="1">${ic('cal')} <span id="revDateTxt">${draft.trip_date ? esc(dateLabel(draft.trip_date)) : esc(t_('pickDate'))}</span></button>
               </div>
               <div class="field" data-field="tod">
                 <label class="plabel" for="revTod">${esc(t_('todPh'))}</label>
@@ -1454,8 +1575,6 @@
                 </select>
               </div>
             </div>
-            <button type="button" class="ghost small" data-pickdate="1">${ic('cal')} ${esc(t_('pickJewish'))}</button>
-            <div class="heb" id="revHeb">${esc(hebFromStr(draft.trip_date))}</div>
             <div class="two">
               <div class="field" data-field="from">${placeSelect('revFrom', draft.from || '', t_('fromPh'))}</div>
               <div class="field" data-field="to">${placeSelect('revTo', draft.to || '', t_('toPh'))}</div>
@@ -1467,21 +1586,24 @@
           </div>`;
 
         const tagForm = `
-          <h4 style="margin-top:16px">${esc(t_('tagsTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
-          <div class="chips">
-            ${POS_TAGS.map(k => `<button type="button" class="chip pos ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
-            ${NEG_TAGS.map(k => `<button type="button" class="chip neg ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+          <div class="optbox">
+            <h4>${esc(t_('tagsTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
+            <div class="chips">
+              ${POS_TAGS.map(k => `<button type="button" class="chip pos ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+              ${NEG_TAGS.map(k => `<button type="button" class="chip neg ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+            </div>
+            <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))} (${esc(t_('optional'))})">${esc(draft.comment || '')}</textarea>
           </div>`;
 
         el.innerHTML = head(`${esc(mine ? t_('editReview') : t_('writeReview'))} <span class="opt">${esc(t_('anonymous'))}</span>`) + `
           <div class="sect white">
             <div class="note">${esc(t_('allReq'))}</div>
+            <div class="hintline">${esc(t_('starsHint'))}</div>
             <div id="revMsg" class="msg"></div>
             ${form}
             ${recForm}
             ${rideForm}
             ${tagForm}
-            <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))} (${esc(t_('optional'))})">${esc(draft.comment || '')}</textarea>
             <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
             ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
           </div>`;
@@ -1595,13 +1717,7 @@
         ${list}`;
     }
 
-    document.addEventListener('input', (e) => {
-      if (e.target && e.target.id === 'revDate') {
-        $('revHeb').textContent = hebFromStr(e.target.value);
-      }
-      syncDraft();
-      refreshMissing();
-    });
+    document.addEventListener('input', () => { syncDraft(); refreshMissing(); });
 
     document.addEventListener('change', (e) => {
       const el = e.target;
@@ -1678,11 +1794,17 @@
         return;
       }
 
+      // calendar: a day was chosen for the trip date
       const dayEl = e.target.closest ? e.target.closest('[data-day]') : null;
       if (dayEl && pickMode) {
         const v = dayEl.dataset.day;
         const inp = $('revDate');
-        if (inp) { inp.value = v; draft.trip_date = v; $('revHeb').textContent = hebFromStr(v); }
+        if (inp) {
+          inp.value = v;
+          draft.trip_date = v;
+          const txt = $('revDateTxt');
+          if (txt) { txt.textContent = dateLabel(v); txt.parentElement.classList.add('has'); }
+        }
         closeCal();
         return;
       }
@@ -1763,6 +1885,7 @@
         return;
       }
 
+      // stars (each star holds a small number 1-5 above it)
       if (t.classList && t.classList.contains('st')) {
         const cat = t.parentElement.dataset.cat;
         const v = Number(t.dataset.v);
@@ -1808,7 +1931,7 @@
 
       if (ds.saveedit) {
         const name = $('eName').value.trim();
-        if (!name) return showMsg($('editMsg'), t_('nameRequired'), false);
+        if (!name) return showMsg($('editMsg'), t_('nameRequired'), false, 4000);
         t.disabled = true;
         try {
           const ph = $('ePhone').value.trim();
@@ -1840,19 +1963,21 @@
 
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
-        if (isBanned) return showMsg(msg, t_('bannedMsg'), false);
+        if (isBanned) return showMsg(msg, t_('bannedMsg'), false, 5000);
         syncDraft();
 
         // everything must be filled in, otherwise the review is NOT saved
         const miss = getMissing();
         if (miss.length) {
           triedSubmit = true;
-          showMissing(miss);
-          return showMsg(msg, t_('fillAll') + ' ' + miss.map(x => x[1]).join(' · '), false);
+          showMissing(miss);                       // missing boxes turn red (and stay red until filled)
+          const firstBox = document.querySelector('#detail .field.missing');
+          if (firstBox) firstBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return toast(t_('fillAll') + ' ' + miss.map(x => x[1]).join(' · '), true);   // short red message, hides itself
         }
 
         const price_paid = Math.round(Number($('revPrice').value) * 100) / 100;
-        if (!isFinite(price_paid) || price_paid <= 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false);
+        if (!isFinite(price_paid) || price_paid <= 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false, 5000);
 
         const vals = {
           comment: $('revComment').value.trim() || null,
@@ -1875,13 +2000,13 @@
           error = res.error;
           if (!error && (!res.data || res.data.length === 0)) {
             t.disabled = false;
-            return showMsg(msg, t_('notSaved'), false);
+            return showMsg(msg, t_('notSaved'), false, 6000);
           }
         } else {
           const res = await sb.from('reviews').insert({ ...vals, company_id: t.dataset.company, user_id: myUid });
           error = res.error;
         }
-        if (error) { t.disabled = false; return showMsg(msg, error.message, false); }
+        if (error) { t.disabled = false; return showMsg(msg, error.message, false, 6000); }
 
         const cid = openId;
         draft = {};
@@ -1897,7 +2022,7 @@
         if (!confirm(t_('confirmDelRev'))) return;
         const { error } = await sb.from('reviews').delete()
           .eq('company_id', t.dataset.company).eq('user_id', myUid);
-        if (error) return showMsg($('revMsg'), error.message, false);
+        if (error) return showMsg($('revMsg'), error.message, false, 6000);
         draft = {};
         triedSubmit = false;
         openId = null;
