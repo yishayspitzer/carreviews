@@ -37,6 +37,10 @@
     input, textarea, select { width:100%; padding:10px 12px; margin:6px 0; border:1px solid #cdd5df; border-radius:8px; font-family:inherit; font-size:14px; background:#fff; }
     input:focus, textarea:focus, select:focus { outline:2px solid #c7d6ee; border-color:var(--navy); }
     textarea { resize:vertical; max-width:100%; min-height:70px; }
+    select:required:invalid { color:#8896a8; }
+    select:required:invalid option { color:#1f2a37; }
+    .plabel { display:block; font-weight:700; font-size:13px; color:var(--navy); margin:8px 0 0; }
+    .hint { font-size:12px; color:#7a8798; margin:4px 0; }
     .pwwrap { position:relative; }
     .pwwrap input { padding-inline-end:84px; }
     .pwwrap button { position:absolute; inset-inline-end:6px; top:11px; padding:4px 10px; font-size:12px; background:#e6ebf3; color:var(--navy); }
@@ -132,6 +136,12 @@
     .pick .st { cursor:pointer; font-size:28px; color:#cfd6df; padding:0 2px; user-select:none; }
     .pick .st.on { color:var(--gold); }
     .opt { font-size:12px; color:#7a8798; font-weight:400; }
+
+    /* arrival-time options */
+    .ptq { font-weight:700; font-size:14px; color:var(--navy); margin:2px 0 6px; display:flex; align-items:center; gap:8px; }
+    .ptopts { display:grid; gap:6px; margin-bottom:8px; }
+    .ptbtn { background:#fff; color:#1f2a37; border:1.5px solid #cdd5df; justify-content:flex-start; text-align:start; font-weight:600; }
+    .ptbtn.on { background:var(--navy); color:#fff; border-color:var(--navy); }
 
     .chips { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; }
     .chip { padding:6px 12px; border-radius:16px; font-size:13px; background:#fff; border:1px solid #9aa5b3; color:#555; cursor:pointer; font-weight:500; display:inline-flex; align-items:center; gap:5px; }
@@ -270,6 +280,7 @@
     <div class="row toolbar">
       <h2 id="tCompanies"></h2>
       <div class="btns">
+        <button id="msgToggle" class="ghost hidden"></button>
         <button id="usersToggle" class="ghost hidden"></button>
         <button id="addToggle" class="gold"></button>
       </div>
@@ -277,6 +288,16 @@
 
     <div id="reqPanel" class="card hidden" style="background:#fff7e0;border:1px dashed var(--gold)"></div>
     <div id="usersPanel" class="card hidden"></div>
+
+    <div id="msgForm" class="card hidden">
+      <div class="row" style="margin-bottom:6px">
+        <h3 id="msgTitle" style="margin:0"></h3>
+        <button class="ghost small" id="msgClose" type="button" style="margin:0"></button>
+      </div>
+      <div id="msgNote" class="msg"></div>
+      <textarea id="msgBody" rows="4" maxlength="2000"></textarea>
+      <button id="msgSend" type="button"></button>
+    </div>
 
     <div id="addForm" class="card hidden">
       <div class="row" style="margin-bottom:6px">
@@ -297,7 +318,6 @@
 
     <div class="filters">
       <div class="sw"><span id="searchIc"></span><input id="search" type="text"></div>
-      <select id="cityFilter"></select>
       <select id="sort">
         <option value="rating"></option>
         <option value="count"></option>
@@ -374,13 +394,19 @@
       const p = PLACES.find(x => x[0] === v);
       return p ? p[1] : v;
     };
-    function placeSelect(id, val, ph) {
+    // alphabetical: Yiddish order when language = yi, otherwise English order
+    const sortedPlaces = () => [...PLACES].sort((a, b) =>
+      lang === 'yi' ? a[1].localeCompare(b[1], 'he') : a[0].localeCompare(b[0]));
+
+    // label = bold text above the field; the gray text inside is NOT an option
+    function placeSelect(id, val, label) {
       const inList = PLACES.some(p => p[0] === val);
       const sel = val ? (inList ? val : '__other') : '';
       return `<div class="placebox">
-        <select id="${id}" class="placeSel">
-          <option value="">${esc(ph)}</option>
-          ${PLACES.map(p => `<option value="${esc(p[0])}" ${sel === p[0] ? 'selected' : ''}>${esc(placeLabel(p[0]))}</option>`).join('')}
+        <label class="plabel" for="${id}">${esc(label)}</label>
+        <select id="${id}" class="placeSel" required>
+          <option value="" disabled hidden ${sel ? '' : 'selected'}>${esc(t_('pickPlace'))}</option>
+          ${sortedPlaces().map(p => `<option value="${esc(p[0])}" ${sel === p[0] ? 'selected' : ''}>${esc(placeLabel(p[0]))}</option>`).join('')}
           <option value="__other" ${sel === '__other' ? 'selected' : ''}>${esc(t_('otherPlace'))}</option>
         </select>
         <input id="${id}Txt" type="text" maxlength="120" placeholder="${esc(t_('otherPlaceType'))}" value="${esc(sel === '__other' ? val : '')}" class="${sel === '__other' ? '' : 'hidden'}">
@@ -396,6 +422,12 @@
       $('cCityBox').innerHTML = placeSelect('cCity', cur, t_('cityPh'));
     }
 
+    // ---------- Arrival time options -> stars (the system computes the stars) ----------
+    // [stars stored in DB, translation key]
+    const PUNCT = [[5, 'pt_1'], [3, 'pt_2'], [2, 'pt_3'], [1, 'pt_4']];
+    const normP = v => v >= 5 ? 5 : (v >= 3 ? 3 : (v === 2 ? 2 : (v === 1 ? 1 : undefined)));
+    const punctLabel = v => { const p = PUNCT.find(x => x[0] === v); return p ? t_(p[1]) : null; };
+
     // ---------- Translations ----------
     const T = {
       en: {
@@ -407,12 +439,14 @@
         created: 'Account created', createdConfirm: 'Account created. Check your email to confirm, then log in.',
         companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
         companyName: 'Company name *', description: 'Description', phone: 'Phone',
-        cityPh: 'City / area', allCities: 'All cities',
+        cityPh: 'City / area', pickPlace: 'Choose the place',
         logoOpt: 'Logo (optional):', saveCompany: 'Save company', sendForApproval: 'Send for approval',
         apprNote: 'Your request is sent to the admin. It appears on the site only after the admin approves it.',
         reqSent: 'Sent to the admin for approval', suggestChange: 'Suggest a change',
-        reqTitle: 'Pending approvals', reqAdd: 'New company', reqEdit: 'Change', approve: 'Approve', reject: 'Reject',
+        reqTitle: 'Approvals & messages', reqAdd: 'New company', reqEdit: 'Change', approve: 'Approve', reject: 'Reject',
         confirmReject: 'Reject this request?',
+        msgBtn: 'Message to admin', msgTitle: 'Send a note to the admin', msgPh: 'Write your note...', msgSend: 'Send',
+        msgSent: 'Sent to the admin', msgEmpty: 'Please write something first', msgKind: 'Message', done: 'Done',
         search: 'Search companies...',
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
@@ -431,18 +465,22 @@
         ratingsByCat: 'Ratings overview', writeReview: 'Write a review', editReview: 'Edit your review',
         anonymous: '(anonymous)', otherIssue: 'Other issue',
         submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
-        confirmDelRev: 'Delete your review?', rateAll: 'Please rate the 4 required categories',
+        confirmDelRev: 'Delete your review?', rateAll: 'Please choose the arrival time and rate the 3 required categories',
         badPrice: 'Price must be a valid number',
+        priceNote: 'A price counts only if both "From where" and "To where" are filled in.',
+        priceNeedsRoute: 'To add a price, please fill in both "From where" and "To where".',
         saved: 'Saved', deleted: 'Review deleted', notSaved: 'Not saved. Please log out, log in again and retry.',
         allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
         grpOffice: 'Office / Dispatch', grpDriver: 'Driver & car',
         punctuality: 'Punctuality', service: 'Service',
         driver_service: 'Driver service', cleanliness: 'Cleanliness', driving: 'Safe driving',
+        punctQ: 'When did the driver arrive?',
+        pt_1: 'On time', pt_2: 'Up to 15 min late', pt_3: 'Up to an hour late', pt_4: 'More than an hour late / never came',
         optional: 'optional',
         recommendQ: 'Would you recommend this company?', yes: 'Yes', no: 'No',
         recommendWord: 'recommend',
         tagsTitle: 'What stood out?', saidTags: 'What people say',
-        rideTitle: 'Your ride & price', fromPh: 'From (pick-up area)', toPh: 'To (drop-off area)', pricePh: 'Price paid',
+        rideTitle: 'Your ride & price', fromPh: 'From where', toPh: 'To where', pricePh: 'Price paid',
         otherPlace: 'Other place...', otherPlaceType: 'Type the place',
         tripWhen: 'When was your trip?', todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
@@ -469,12 +507,14 @@
         created: 'אַקאַונט באַשאַפֿן', createdConfirm: 'אַקאַונט באַשאַפֿן. קוקט אין אימעיל צו באַשטעטיקן, דערנאָך לאָגירט אײַן.',
         companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
         companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
-        cityPh: 'שטאָט / געגנט', allCities: 'אַלע שטעט',
+        cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ',
         logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באַשטעטיקונג',
         apprNote: 'אײַער בקשה גייט צום אַדמין. עס ווײַזט זיך אויף דער זייט נאָר נאָכדעם וואָס דער אַדמין באַשטעטיקט עס.',
         reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאָגט פֿאָר אַ ענדערונג',
-        reqTitle: 'וואַרטן אויף באַשטעטיקונג', reqAdd: 'נײַע קאָמפּאַני', reqEdit: 'ענדערונג', approve: 'באַשטעטיקן', reject: 'אָפּוואַרפֿן',
+        reqTitle: 'באַשטעטיקונגען און הערות', reqAdd: 'נײַע קאָמפּאַני', reqEdit: 'ענדערונג', approve: 'באַשטעטיקן', reject: 'אָפּוואַרפֿן',
         confirmReject: 'אָפּוואַרפֿן די בקשה?',
+        msgBtn: 'שיקט אַ הערה צום אַדמין', msgTitle: 'שיקט אַ הערה צום אַדמין', msgPh: 'שרײַבט דאָ אײַער הערה...', msgSend: 'שיקן',
+        msgSent: 'געשיקט צום אַדמין', msgEmpty: 'שרײַבט ערשט עפּעס', msgKind: 'הערה', done: 'דערלעדיקט',
         search: 'זוכט קאָמפּאַניעס...',
         sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
         noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
@@ -493,18 +533,22 @@
         ratingsByCat: 'איבערבליק פֿון באַוואַרטונגען', writeReview: 'שרײַבט אַ רעוויו', editReview: 'ענדערט אײַער רעוויו',
         anonymous: '(אַנאָנים)', otherIssue: 'אַנדער פּראָבלעם',
         submit: 'שיקט רעוויו', update: 'דערהײַנטיקט רעוויו', delMine: 'מעקט אויס מײַן רעוויו',
-        confirmDelRev: 'אויסמעקן אײַער רעוויו?', rateAll: 'ביטע באַוואַרט די 4 נייטיקע קאַטעגאָריעס',
+        confirmDelRev: 'אויסמעקן אײַער רעוויו?', rateAll: 'ביטע קלײַבט ווען דער דרײַווער איז אָנגעקומען און באַוואַרט די 3 נייטיקע קאַטעגאָריעס',
         badPrice: 'דער פּרײַז מוז זײַן אַ ריכטיקע צאָל',
+        priceNote: 'אַ פּרײַז צײלט נאָר ווען "פֿון וואו" און "צו וואו" זענען אויסגעפֿילט.',
+        priceNeedsRoute: 'כּדי צוצולייגן אַ פּרײַז, מוז מען אויסלייגן "פֿון וואו" און "צו וואו".',
         saved: 'געשפּײַכערט', deleted: 'רעוויו אויסגעמעקט', notSaved: 'נישט געשפּײַכערט. לאָגירט אַרויס, לאָגירט ווידער אַרײַן און פּרוּווט נאָכאַמאָל.',
         allReviews: 'אַלע רעוויוס', beFirst: 'נאָך קיין רעוויוס נישט. זײַט דער ערשטער!', loading: 'לאָדנט...', error: 'טעות',
         grpOffice: 'אָפֿיס / דיספּעטש', grpDriver: 'דרײַווער און קאַר',
         punctuality: 'פּינקטלעכקייט', service: 'סערוויס',
         driver_service: 'דרײַווער סערוויס', cleanliness: 'רײנקייט', driving: 'זיכער פֿאָרן',
+        punctQ: 'ווען איז דער דרײַווער אָנגעקומען?',
+        pt_1: 'אויף צײַט', pt_2: 'ביז 15 מינוט שפּעט', pt_3: 'ביז אַ שעה שפּעט', pt_4: 'מער ווי אַ שעה שפּעט / בכלל נישט אָנגעקומען',
         optional: 'אָפּציע',
         recommendQ: 'וואָלט איר רעקאָמענדירט די קאָמפּאַני?', yes: 'יאָ', no: 'ניין',
         recommendWord: 'רעקאָמענדירן',
         tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
-        rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואַנען (געגנט)', toPh: 'וווּהין (געגנט)', pricePh: 'וויפֿל באַצאָלט',
+        rideTitle: 'אײַער נסיעה און פּרײַז', fromPh: 'פֿון וואו', toPh: 'צו וואו', pricePh: 'וויפֿל באַצאָלט',
         otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
         tripWhen: 'ווען איז געווען די נסיעה?', todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
@@ -531,12 +575,14 @@
         created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
         companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
-        cityPh: 'Город / район', allCities: 'Все города',
+        cityPh: 'Город / район', pickPlace: 'Выберите место',
         logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию', sendForApproval: 'Отправить на одобрение',
         apprNote: 'Ваш запрос отправляется админу. Он появится на сайте только после одобрения.',
         reqSent: 'Отправлено админу на одобрение', suggestChange: 'Предложить изменение',
-        reqTitle: 'Ожидают одобрения', reqAdd: 'Новая компания', reqEdit: 'Изменение', approve: 'Одобрить', reject: 'Отклонить',
+        reqTitle: 'Одобрения и сообщения', reqAdd: 'Новая компания', reqEdit: 'Изменение', approve: 'Одобрить', reject: 'Отклонить',
         confirmReject: 'Отклонить запрос?',
+        msgBtn: 'Сообщение админу', msgTitle: 'Написать админу', msgPh: 'Напишите сообщение...', msgSend: 'Отправить',
+        msgSent: 'Отправлено админу', msgEmpty: 'Сначала напишите что-нибудь', msgKind: 'Сообщение', done: 'Готово',
         search: 'Поиск компаний...',
         sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
         noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
@@ -555,18 +601,22 @@
         ratingsByCat: 'Обзор оценок', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
         anonymous: '(анонимно)', otherIssue: 'Другая проблема',
         submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
-        confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Пожалуйста, оцените 4 обязательные категории',
+        confirmDelRev: 'Удалить ваш отзыв?', rateAll: 'Выберите время прибытия и оцените 3 обязательные категории',
         badPrice: 'Цена должна быть числом',
+        priceNote: 'Цена учитывается, только если заполнены «Откуда» и «Куда».',
+        priceNeedsRoute: 'Чтобы указать цену, заполните «Откуда» и «Куда».',
         saved: 'Сохранено', deleted: 'Отзыв удалён', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
         allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
         grpOffice: 'Офис / Диспетчер', grpDriver: 'Водитель и машина',
         punctuality: 'Пунктуальность', service: 'Сервис',
         driver_service: 'Обслуживание водителем', cleanliness: 'Чистота', driving: 'Безопасное вождение',
+        punctQ: 'Когда приехал водитель?',
+        pt_1: 'Вовремя', pt_2: 'Опоздал до 15 мин', pt_3: 'Опоздал до часа', pt_4: 'Опоздал более чем на час / не приехал',
         optional: 'необязательно',
         recommendQ: 'Вы бы порекомендовали эту компанию?', yes: 'Да', no: 'Нет',
         recommendWord: 'рекомендуют',
         tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
-        rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда (район)', toPh: 'Куда (район)', pricePh: 'Оплачено',
+        rideTitle: 'Ваша поездка и цена', fromPh: 'Откуда', toPh: 'Куда', pricePh: 'Оплачено',
         otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
         tripWhen: 'Когда была поездка?', todPh: 'Время суток',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
@@ -593,12 +643,14 @@
         created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
         companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
-        cityPh: 'Ciudad / zona', allCities: 'Todas las ciudades',
+        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar',
         logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa', sendForApproval: 'Enviar para aprobación',
         apprNote: 'Tu solicitud se envía al administrador. Aparece en el sitio solo después de su aprobación.',
         reqSent: 'Enviado al administrador para aprobación', suggestChange: 'Sugerir un cambio',
-        reqTitle: 'Pendientes de aprobación', reqAdd: 'Nueva empresa', reqEdit: 'Cambio', approve: 'Aprobar', reject: 'Rechazar',
+        reqTitle: 'Aprobaciones y mensajes', reqAdd: 'Nueva empresa', reqEdit: 'Cambio', approve: 'Aprobar', reject: 'Rechazar',
         confirmReject: '¿Rechazar esta solicitud?',
+        msgBtn: 'Mensaje al administrador', msgTitle: 'Enviar una nota al administrador', msgPh: 'Escribe tu nota...', msgSend: 'Enviar',
+        msgSent: 'Enviado al administrador', msgEmpty: 'Escribe algo primero', msgKind: 'Mensaje', done: 'Listo',
         search: 'Buscar empresas...',
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
@@ -617,18 +669,22 @@
         ratingsByCat: 'Resumen de calificaciones', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
         anonymous: '(anónima)', otherIssue: 'Otro problema',
         submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
-        confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Por favor califica las 4 categorías obligatorias',
+        confirmDelRev: '¿Eliminar tu reseña?', rateAll: 'Elige la hora de llegada y califica las 3 categorías obligatorias',
         badPrice: 'El precio debe ser un número válido',
+        priceNote: 'Un precio cuenta solo si "Desde dónde" y "Hacia dónde" están completos.',
+        priceNeedsRoute: 'Para agregar un precio, completa "Desde dónde" y "Hacia dónde".',
         saved: 'Guardado', deleted: 'Reseña eliminada', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
         allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
         grpOffice: 'Oficina / Despacho', grpDriver: 'Conductor y auto',
         punctuality: 'Puntualidad', service: 'Servicio',
         driver_service: 'Trato del conductor', cleanliness: 'Limpieza', driving: 'Conducción segura',
+        punctQ: '¿Cuándo llegó el conductor?',
+        pt_1: 'A tiempo', pt_2: 'Hasta 15 min tarde', pt_3: 'Hasta una hora tarde', pt_4: 'Más de una hora tarde / nunca llegó',
         optional: 'opcional',
         recommendQ: '¿Recomendarías esta empresa?', yes: 'Sí', no: 'No',
         recommendWord: 'recomiendan',
         tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
-        rideTitle: 'Tu viaje y precio', fromPh: 'Desde (zona)', toPh: 'Hasta (zona)', pricePh: 'Precio pagado',
+        rideTitle: 'Tu viaje y precio', fromPh: 'Desde dónde', toPh: 'Hacia dónde', pricePh: 'Precio pagado',
         otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
         tripWhen: '¿Cuándo fue tu viaje?', todPh: 'Hora del día',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
@@ -674,7 +730,7 @@
     let allCompanies = [], stats = {}, recStats = {}, cnts = {}, myReviewId = null;
     let userMap = {}, usersOpen = false;
     let sugMap = {}, sugList = [], sugTarget = null;
-    let reqList = [], reqOpen = true;
+    let reqList = [], msgList = [], reqOpen = true;
     let detailData = [], showN = 8;
 
     const $ = id => document.getElementById(id);
@@ -692,6 +748,8 @@
       if (d.length === 11 && d[0] === '1') return d.slice(1,4) + '-' + d.slice(4,7) + '-' + d.slice(7);
       return String(p ?? '');
     };
+    // a price only counts when it has a route (from AND to)
+    const hasPrice = r => r.price_paid !== null && r.price_paid !== undefined && !!r.trip_from && !!r.trip_to;
 
     // ---------- Favicon: only the words "Car" / "Reviews" ----------
     (function makeFavicon() {
@@ -789,6 +847,12 @@
       $('addToggle').classList.toggle('hidden', isBanned);
       $('usersToggle').innerHTML = ic('users') + esc(t_('users'));
       $('usersToggle').classList.toggle('hidden', !isAdmin);
+      $('msgToggle').innerHTML = ic('mail') + ' ' + esc(t_('msgBtn'));
+      $('msgToggle').classList.toggle('hidden', isAdmin || isBanned || !loggedIn);
+      $('msgTitle').textContent = t_('msgTitle');
+      $('msgClose').innerHTML = ic('x') + ' ' + esc(t_('close'));
+      $('msgBody').placeholder = t_('msgPh');
+      $('msgSend').innerHTML = ic('check') + ' ' + esc(t_('msgSend'));
       $('bannedBanner').textContent = t_('bannedMsg');
       $('bannedBanner').classList.toggle('hidden', !isBanned);
       $('tAddTitle').textContent = t_('addTitle');
@@ -917,7 +981,7 @@
 
     async function logout() { openId = null; editingId = null; await sb.auth.signOut(); }
 
-    // ----- add-company form: open / close (single Close button) -----
+    // ----- add-company form (single Close button) -----
     function closeAdd() {
       $('addForm').classList.add('hidden');
       $('addMsg').style.display = 'none';
@@ -925,6 +989,26 @@
     $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
     $('addClose').onclick = closeAdd;
     $('usersToggle').onclick = () => { usersOpen = !usersOpen; renderUsers(); };
+
+    // ----- message to admin (single Close button) -----
+    function closeMsg() {
+      $('msgForm').classList.add('hidden');
+      $('msgNote').style.display = 'none';
+    }
+    $('msgToggle').onclick = () => $('msgForm').classList.toggle('hidden');
+    $('msgClose').onclick = closeMsg;
+    $('msgSend').onclick = async () => {
+      const body = $('msgBody').value.trim();
+      if (!body) return showMsg($('msgNote'), t_('msgEmpty'), false);
+      const btn = $('msgSend');
+      btn.disabled = true;
+      const { error } = await sb.from('admin_messages').insert({ user_id: myUid, body });
+      btn.disabled = false;
+      if (error) return showMsg($('msgNote'), error.message, false);
+      $('msgBody').value = '';
+      closeMsg();
+      toast(t_('msgSent'));
+    };
 
     $('saveCompany').onclick = async () => {
       const name = $('cName').value.trim();
@@ -961,7 +1045,6 @@
 
     $('search').oninput = () => renderCompanies();
     $('sort').onchange = () => renderCompanies();
-    $('cityFilter').onchange = () => renderCompanies();
 
     async function loadUsers() {
       userMap = {};
@@ -987,18 +1070,27 @@
       if (!error && data) reqList = data;
     }
 
+    async function loadMessages() {
+      msgList = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('admin_messages').select('*').order('created_at', { ascending: true });
+      if (!error && data) msgList = data;
+    }
+
     function renderRequests() {
       const box = $('reqPanel');
-      const show = isAdmin && reqList.length > 0;
+      const total = reqList.length + msgList.length;
+      document.title = (isAdmin && total ? '(' + total + ') ' : '') + 'CarReviews';
+      const show = isAdmin && total > 0;
       box.classList.toggle('hidden', !show);
       if (!show) return;
       const head = `<div class="row" ${reqOpen ? 'style="margin-bottom:6px"' : ''}>
-          <h4 style="margin:0">${ic('check')} ${esc(t_('reqTitle'))} (${reqList.length})</h4>
+          <h4 style="margin:0">${ic('check')} ${esc(t_('reqTitle'))} (${total})</h4>
           <button class="ghost small" style="margin:0" data-reqtoggle="1">${ic(reqOpen ? 'x' : 'plus')}${reqOpen ? ' ' + esc(t_('close')) : ''}</button>
         </div>`;
       if (!reqOpen) { box.innerHTML = head; return; }
       const F = [['name','companyName'], ['city','cityPh'], ['description','description'], ['phone','phone'], ['email','email']];
-      box.innerHTML = head + reqList.map(r => {
+      const reqHtml = reqList.map(r => {
         const u = userMap[r.user_id];
         const cur = r.kind === 'edit' ? (allCompanies.find(c => c.id === r.company_id) || {}) : {};
         const lines = F.filter(([k]) => r.data[k] !== undefined && (r.kind === 'add' ? r.data[k] : true)).map(([k, lbl]) => {
@@ -1018,6 +1110,18 @@
           </div>
         </div>`;
       }).join('');
+      const msgHtml = msgList.map(m => {
+        const u = userMap[m.user_id];
+        return `<div class="reqitem">
+          <div><span class="tagkind" style="background:#7b3fa0">${esc(t_('msgKind'))}</span>
+            <span class="meta">${u ? esc(u.full_name || u.email) : ''} · ${esc(new Date(m.created_at).toLocaleDateString(dl()))}</span></div>
+          <div class="cmt">${esc(m.body)}</div>
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:6px 0 0" data-delmsg="${m.id}">${ic('check')} ${esc(t_('done'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+      box.innerHTML = head + reqHtml + msgHtml;
     }
 
     function renderUsers() {
@@ -1042,10 +1146,11 @@
         sb.from('companies').select('*').order('created_at', { ascending: false }),
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
-        sb.from('reviews').select('company_id,price_paid,comment'),
+        sb.from('reviews').select('company_id,price_paid,comment,trip_from,trip_to'),
         loadUsers(),
         loadSuggestions(),
-        loadRequests()
+        loadRequests(),
+        loadMessages()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
@@ -1054,7 +1159,7 @@
       cnts = {};
       (xRes.data || []).forEach(r => {
         const o = cnts[r.company_id] = cnts[r.company_id] || { p: 0, c: 0 };
-        if (r.price_paid !== null && r.price_paid !== undefined) o.p++;
+        if (hasPrice(r)) o.p++;
         if (r.comment && String(r.comment).trim()) o.c++;
       });
       renderUsers();
@@ -1069,20 +1174,10 @@
       const ov = c => stats[c.id] ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
 
-      const known = PLACES.map(p => p[0]);
-      const extra = [...new Set(allCompanies.map(c => (c.city || '').trim()).filter(x => x && !known.includes(x)))]
-        .sort((a, b) => a.localeCompare(b));
-      const citySel = $('cityFilter');
-      const curCity = citySel.value;
-      citySel.innerHTML = `<option value="">${esc(t_('allCities'))}</option>` +
-        known.map(v => `<option value="${esc(v)}">${esc(placeLabel(v))}</option>`).join('') +
-        extra.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
-      citySel.value = (known.includes(curCity) || extra.includes(curCity)) ? curCity : '';
-      const cityQ = citySel.value;
-
       let list = allCompanies.filter(c =>
-        (!q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q) || (c.phone || '').includes(q)) &&
-        (!cityQ || (c.city || '').trim() === cityQ));
+        !q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) ||
+        (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q) ||
+        (c.phone || '').includes(q));
 
       if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
       else if (mode === 'count') list.sort((a, b) => cnt(b) - cnt(a));
@@ -1185,7 +1280,7 @@
     function rideHtml(r) {
       const bits = [];
       if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
-      if (r.price_paid !== null && r.price_paid !== undefined) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
+      if (hasPrice(r)) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
       return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
     }
 
@@ -1207,6 +1302,18 @@
     const routeName = r => (r.trip_from || r.trip_to)
       ? `${placeLabel(r.trip_from || '?')} → ${placeLabel(r.trip_to || '?')}` : t_('routeUnknown');
 
+    // one row of the review form: arrival time = 4 option buttons, the rest = stars
+    function catRowHtml(k) {
+      if (k === 'punctuality') {
+        return `<div class="ptq">${ic('clock')} ${esc(t_('punctQ'))}</div>
+          <div class="ptopts">${PUNCT.map(([v, key]) =>
+            `<button type="button" class="ptbtn ${draft.punctuality === v ? 'on' : ''}" data-punct="${v}">${esc(t_(key))}</button>`).join('')}</div>`;
+      }
+      return `<div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}${REQ_KEYS.includes(k) ? '' : ` <span class="opt">(${esc(t_('optional'))})</span>`}</span>
+        <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
+      </div>`;
+    }
+
     // Fetch the reviews of one company, then paint the opened panel
     async function loadDetail(companyId) {
       const el = $('detail');
@@ -1220,6 +1327,7 @@
       myReviewId = mine ? mine.id : null;
       if (!Object.keys(draft).length && mine) {
         ALL_KEYS.forEach(k => draft[k] = mine[k]);
+        draft.punctuality = normP(mine.punctuality);
         draft.comment = mine.comment || '';
         draft.rec = mine.recommend;
         draft.tags = Array.isArray(mine.tags) ? mine.tags.slice() : [];
@@ -1249,10 +1357,7 @@
 
         const form = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
           <div><div class="grp">${ic(gi)} ${esc(t_(g))}</div>
-          ${keys.map(k => `
-            <div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}${REQ_KEYS.includes(k) ? '' : ` <span class="opt">(${esc(t_('optional'))})</span>`}</span>
-              <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v => `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}">★</span>`).join('')}</span>
-            </div>`).join('')}</div>`).join('')}</div>`;
+          ${keys.map(k => catRowHtml(k)).join('')}</div>`).join('')}</div>`;
 
         const recForm = `
           <h4 style="margin-top:16px">${esc(t_('recommendQ'))}</h4>
@@ -1278,6 +1383,7 @@
               ${placeSelect('revFrom', draft.from || '', t_('fromPh'))}
               ${placeSelect('revTo', draft.to || '', t_('toPh'))}
             </div>
+            <div class="hint">${esc(t_('priceNote'))}</div>
             <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="${esc(t_('pricePh'))}" value="${esc(draft.price || '')}"></div>
           </div>`;
 
@@ -1302,15 +1408,15 @@
         return;
       }
 
-      // ================= PRICES =================
+      // ================= PRICES (only reports with from AND to) =================
       if (openMode === 'prices') {
-        const priced = data.filter(r => r.price_paid !== null && r.price_paid !== undefined);
+        const priced = data.filter(hasPrice);
         if (!priced.length) {
           el.innerHTML = head(`${ic('dollar')} ${esc(t_('pricesTitle'))}`) + `<p class="meta">${esc(t_('noPrices'))}</p>`;
           return;
         }
         const groups = {};
-        priced.forEach(r => { const k = (r.trip_from || '') + '|' + (r.trip_to || ''); (groups[k] = groups[k] || []).push(r); });
+        priced.forEach(r => { const k = r.trip_from + '|' + r.trip_to; (groups[k] = groups[k] || []).push(r); });
         const gl = Object.values(groups).sort((a, b) => b.length - a.length);
         const cards = gl.map(arr => {
           const ps = arr.map(r => Number(r.price_paid));
@@ -1381,7 +1487,10 @@
         const recBadge = r.recommend === true ? `<span class="yn good">${ic('up')} ${esc(t_('yes'))}</span>`
                        : r.recommend === false ? `<span class="yn bad">${ic('down')} ${esc(t_('no'))}</span>` : '';
         const mini = ALL_KEYS.filter(k => r[k] !== null && r[k] !== undefined)
-          .map(k => `<span>${ic(KEY_ICON[k])} ${esc(t_(k))} <b>${r[k]}</b></span>`).join('');
+          .map(k => {
+            const lab = k === 'punctuality' ? punctLabel(r[k]) : null;
+            return `<span>${ic(KEY_ICON[k])} ${esc(t_(k))} <b>${esc(lab || r[k])}</b></span>`;
+          }).join('');
         return `
         <div class="rev">
           <div class="rh">
@@ -1434,6 +1543,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if ($('calModal').style.display === 'flex') { closeCal(); return; }
+      if (!$('msgForm').classList.contains('hidden')) { closeMsg(); return; }
       if (!$('addForm').classList.contains('hidden')) { closeAdd(); return; }
       if (editingId) { editingId = null; renderCompanies(); return; }
       if (openId) { const id = openId; openId = null; draft = {}; renderCompanies(); scrollToCard(id); return; }
@@ -1448,7 +1558,7 @@
       if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
       if (ds.more) { showN += 10; paintDetail(); return; }
 
-      // admin: approve / reject requests
+      // admin: approve / reject requests, mark messages done
       if (ds.approve) {
         const r = reqList.find(x => x.id === ds.approve);
         if (!r) return;
@@ -1470,6 +1580,12 @@
       if (ds.rejectreq) {
         if (!confirm(t_('confirmReject'))) return;
         const { error } = await sb.from('change_requests').delete().eq('id', ds.rejectreq);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+      if (ds.delmsg) {
+        const { error } = await sb.from('admin_messages').delete().eq('id', ds.delmsg);
         if (error) { alert(error.message); return; }
         await loadCompanies();
         return;
@@ -1548,6 +1664,13 @@
         draft = {};
         renderCompanies();
         scrollToCard(id);
+        return;
+      }
+
+      // arrival time option
+      if (ds.punct) {
+        draft.punctuality = Number(ds.punct);
+        document.querySelectorAll('.ptbtn').forEach(b => b.classList.toggle('on', Number(b.dataset.punct) === draft.punctuality));
         return;
       }
 
@@ -1631,12 +1754,16 @@
         if (isBanned) return showMsg(msg, t_('bannedMsg'), false);
         if (REQ_KEYS.some(k => !draft[k])) return showMsg(msg, t_('rateAll'), false);
 
+        const fromV = readPlace('revFrom');
+        const toV = readPlace('revTo');
         const priceRaw = $('revPrice').value.trim();
         let price_paid = null;
         if (priceRaw !== '') {
           price_paid = Number(priceRaw);
           if (!isFinite(price_paid) || price_paid < 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false);
           price_paid = Math.round(price_paid * 100) / 100;
+          // a price only counts with a route
+          if (!fromV || !toV) return showMsg(msg, t_('priceNeedsRoute'), false);
         }
 
         const vals = {
@@ -1645,8 +1772,8 @@
           tags: draft.tags || [],
           trip_date: $('revDate').value || null,
           time_of_day: $('revTod').value || null,
-          trip_from: readPlace('revFrom'),
-          trip_to: readPlace('revTo'),
+          trip_from: fromV,
+          trip_to: toV,
           price_paid,
           price: null,
           driver_service: draft.driver_service || null,
@@ -1703,6 +1830,7 @@
         loadCompanies();
       } else {
         myUid = null; myEmail = ''; loggedIn = false; isAdmin = false; isBanned = false; usersOpen = false;
+        document.title = 'CarReviews';
         $('authView').classList.remove('hidden');
         $('mainView').classList.add('hidden');
         applyStaticText();
