@@ -251,7 +251,10 @@
     <div id="usersPanel" class="card hidden"></div>
 
     <div id="addForm" class="card hidden">
-      <h3 id="tAddTitle"></h3>
+      <div class="row" style="margin-bottom:6px">
+        <h3 id="tAddTitle" style="margin:0"></h3>
+        <button class="ghost small" id="addClose" type="button" style="margin:0"></button>
+      </div>
       <div id="tApprNote" class="note hidden"></div>
       <div id="addMsg" class="msg"></div>
       <input id="cName" type="text">
@@ -262,6 +265,7 @@
       <div class="fileline" id="tLogoOpt"></div>
       <input id="cLogoFile" type="file" accept="image/*">
       <button id="saveCompany"></button>
+      <button class="link" id="addCancel" type="button"></button>
     </div>
 
     <div class="filters">
@@ -635,7 +639,7 @@
     let allCompanies = [], stats = {}, recStats = {}, myReviewId = null;
     let userMap = {}, usersOpen = false;
     let sugMap = {}, sugList = [], sugTarget = null;
-    let reqList = [];
+    let reqList = [], reqOpen = true;
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -719,6 +723,7 @@
       renderCal();
       $('calModal').style.display = 'flex';
     }
+    function closeCal() { $('calModal').style.display = 'none'; pickMode = false; }
 
     let toastTimer;
     function toast(text) {
@@ -751,6 +756,8 @@
       $('bannedBanner').textContent = t_('bannedMsg');
       $('bannedBanner').classList.toggle('hidden', !isBanned);
       $('tAddTitle').textContent = t_('addTitle');
+      $('addClose').innerHTML = ic('x') + ' ' + esc(t_('close'));
+      $('addCancel').textContent = t_('cancel');
       $('tApprNote').textContent = t_('apprNote');
       $('tApprNote').classList.toggle('hidden', isAdmin);
       $('cName').placeholder = t_('companyName');
@@ -875,7 +882,14 @@
 
     async function logout() { openId = null; editingId = null; await sb.auth.signOut(); }
 
+    // ----- add-company form: open / close -----
+    function closeAdd() {
+      $('addForm').classList.add('hidden');
+      $('addMsg').style.display = 'none';
+    }
     $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
+    $('addClose').onclick = closeAdd;
+    $('addCancel').onclick = closeAdd;
     $('usersToggle').onclick = () => { usersOpen = !usersOpen; renderUsers(); };
 
     $('saveCompany').onclick = async () => {
@@ -903,8 +917,7 @@
         }
         ['cName','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
         renderCityBox(true);
-        $('addMsg').style.display = 'none';
-        $('addForm').classList.add('hidden');
+        closeAdd();
         loadCompanies();
       } catch (err) {
         showMsg($('addMsg'), err.message || String(err), false);
@@ -945,8 +958,13 @@
       const show = isAdmin && reqList.length > 0;
       box.classList.toggle('hidden', !show);
       if (!show) return;
+      const head = `<div class="row" ${reqOpen ? 'style="margin-bottom:6px"' : ''}>
+          <h4 style="margin:0">${ic('check')} ${esc(t_('reqTitle'))} (${reqList.length})</h4>
+          <button class="ghost small" style="margin:0" data-reqtoggle="1">${ic(reqOpen ? 'x' : 'plus')}${reqOpen ? ' ' + esc(t_('close')) : ''}</button>
+        </div>`;
+      if (!reqOpen) { box.innerHTML = head; return; }
       const F = [['name','companyName'], ['city','cityPh'], ['description','description'], ['phone','phone'], ['email','email']];
-      box.innerHTML = `<h4>${ic('check')} ${esc(t_('reqTitle'))} (${reqList.length})</h4>` + reqList.map(r => {
+      box.innerHTML = head + reqList.map(r => {
         const u = userMap[r.user_id];
         const cur = r.kind === 'edit' ? (allCompanies.find(c => c.id === r.company_id) || {}) : {};
         const lines = F.filter(([k]) => r.data[k] !== undefined && (r.kind === 'add' ? r.data[k] : true)).map(([k, lbl]) => {
@@ -1034,7 +1052,10 @@
         if (editingId === c.id) {
           return `
           <div class="card">
-            <h4>${esc(isAdmin ? t_('editCompany') : t_('suggestChange'))}</h4>
+            <div class="row" style="margin-bottom:6px">
+              <h4 style="margin:0">${esc(isAdmin ? t_('editCompany') : t_('suggestChange'))}</h4>
+              <button class="ghost small" style="margin:0" data-canceledit="1">${ic('x')} ${esc(t_('close'))}</button>
+            </div>
             ${isAdmin ? '' : `<div class="note">${esc(t_('apprNote'))}</div>`}
             <div id="editMsg" class="msg"></div>
             <input id="eName" type="text" value="${esc(c.name)}" placeholder="${esc(t_('companyName'))}">
@@ -1220,6 +1241,7 @@
             ${tagForm}
             <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))}">${esc(draft.comment || '')}</textarea>
             <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
+            <button type="button" class="ghost" data-close="${companyId}">${esc(t_('cancel'))}</button>
             ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
           </div>` + closeBottom;
         return;
@@ -1322,18 +1344,29 @@
       }
     });
 
-    $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) { $('calModal').style.display = 'none'; pickMode = false; } });
+    $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) closeCal(); });
 
     function scrollToCard(id) {
       const card = $('co-' + id);
       if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Esc closes the top-most open thing (no questions asked)
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if ($('calModal').style.display === 'flex') { closeCal(); return; }
+      if (!$('addForm').classList.contains('hidden')) { closeAdd(); return; }
+      if (editingId) { editingId = null; renderCompanies(); return; }
+      if (openId) { const id = openId; openId = null; draft = {}; renderCompanies(); scrollToCard(id); return; }
+      if (usersOpen) { usersOpen = false; renderUsers(); }
+    });
+
     document.addEventListener('click', async (e) => {
       const t = e.target.closest ? (e.target.closest('button, .st') || e.target) : e.target;
       const ds = t.dataset || {};
 
       if (ds.usersclose) { usersOpen = false; renderUsers(); return; }
+      if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
 
       // admin: approve / reject requests
       if (ds.approve) {
@@ -1367,14 +1400,13 @@
         const v = dayEl.dataset.day;
         const inp = $('revDate');
         if (inp) { inp.value = v; draft.trip_date = v; $('revHeb').textContent = hebFromStr(v); }
-        $('calModal').style.display = 'none';
-        pickMode = false;
+        closeCal();
         return;
       }
       if (ds.pickdate) { openPick(); return; }
 
       if (ds.cal) {
-        if (ds.cal === 'close') { $('calModal').style.display = 'none'; pickMode = false; return; }
+        if (ds.cal === 'close') { closeCal(); return; }
         if (ds.cal === 'today') calAnchor = noon(new Date());
         if (ds.cal === 'next') { calAnchor = new Date(calLast); calAnchor.setDate(calAnchor.getDate() + 1); }
         if (ds.cal === 'prev') { calAnchor = new Date(calFirst); calAnchor.setDate(calAnchor.getDate() - 1); }
