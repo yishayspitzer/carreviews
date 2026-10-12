@@ -27,6 +27,7 @@
     .ltr, .contact span.em, #userbar .em, input[type=email], input[type=tel] { direction:ltr; unicode-bidi:plaintext; }
     input[type=email]::placeholder, input[type=tel]::placeholder { direction:rtl; }
     .em { unicode-bidi:isolate; direction:ltr; display:inline-block; }
+    a.tel { color:var(--navy); font-weight:700; text-decoration:none; border-bottom:1px dotted var(--navy); }
 
     /* top bar: bright color, always visible (sticky) */
     .topbar { position:sticky; top:0; z-index:60; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; background:var(--top); color:#fff; padding:8px 14px; border-radius:0 0 14px 14px; box-shadow:0 4px 14px rgba(8,80,140,.3); }
@@ -228,6 +229,8 @@
     .reqitem .kv { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; margin:6px 0; }
     .reqitem .old { color:#999; text-decoration:line-through; }
     .tagkind { background:var(--navy); color:#fff; border-radius:6px; padding:1px 8px; font-size:12px; font-weight:700; }
+    .prof { display:flex; flex-wrap:wrap; gap:4px 16px; font-size:14px; margin:6px 0; align-items:center; }
+    .prof span { display:inline-flex; align-items:center; gap:6px; }
 
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
@@ -376,7 +379,7 @@
     <div id="companies"></div>
   </div>
 
-  <div id="ver">CarReviews v8.1</div>
+  <div id="ver">CarReviews v8.3</div>
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
@@ -491,7 +494,7 @@
         fullName: 'Full name', email: 'Email', password: 'Password (min 6 chars)',
         phonePh: 'Phone number *', phoneHint: 'Kept private. One account per phone number.',
         phoneBad: 'Please enter a valid phone number (10 digits)',
-        signupBlocked: 'This email or phone number cannot be used to register. If you think this is a mistake, write to the admin.',
+        signupBlocked: 'This phone number is already used by another account. If you think this is a mistake, write to the admin.',
         show: 'Show', hide: 'Hide',
         noAccount: 'No account? Sign up', haveAccount: 'Have an account? Log in',
         enterCreds: 'Enter email and a password of 6+ characters',
@@ -507,11 +510,12 @@
         revKind: 'Review to approve', pendingTag: 'Waiting',
         revPending: 'Waiting for admin approval. For now only you can see it.',
         permKind: 'Permission to write',
+        newAcct: 'New account', seenBtn: 'Seen', allowBtn: 'Allow writing', companyFlag: 'Looks like a company',
+        signedUp: 'Signed up', companyAcct: 'This is a company account. It cannot be approved.',
         needPermTitle: 'You need permission to write reviews',
-        needPermText: 'You can see everything on the site. To write reviews, the admin must approve you first. Write a few words about who you are (for example: your area and who sent you). The admin may call you.',
-        reqPermPh: 'Who are you? Where are you from? Who sent you?',
-        reqPermBtn: 'Ask for permission', reqPermShort: 'Please write a few words about who you are',
-        reqPermSent: 'Request sent. The admin will check it.',
+        needPermText: 'You can see everything on the site. To write reviews, the admin must approve you first. Press the button below. The admin will be notified and will call you.',
+        reqPermBtn: 'Ask for permission to write',
+        reqPermSent: 'Request sent. The admin will call you.',
         reqPermWaiting: 'Your request was sent. The admin will check it, and may call you.',
         noPermNow: 'You do not have permission to write reviews yet.',
         sig_perfect: 'All 5 stars + recommend', sig_burst: '3+ reviews by this user in 24h',
@@ -575,7 +579,7 @@
         fullName: 'פֿולער נאָמען', email: 'אימעיל', password: 'פּאַסווארט (מינימום 6 צייכנס)',
         phonePh: 'טעלעפֿאָן נומער *', phoneHint: 'פריוואט. נאר איין אקאונט פאר יעדן נומער.',
         phoneBad: 'ביטע שרייבט א ריכטיקן טעלעפאן נומער (10 ציפערן)',
-        signupBlocked: 'דער אימעיל אדער נומער קען נישט ווערן באנוצט צו עפענען אן אקאונט. אויב איר מיינט אז עס איז א טעות, שרייבט צום אדמין.',
+        signupBlocked: 'דער טעלעפאן נומער איז שוין באנוצט פון אן אנדער אקאונט. אויב איר מיינט אז עס איז א טעות, שרייבט צום אדמין.',
         show: 'ווײַזן', hide: 'באַהאַלטן',
         noAccount: 'קיין אַקאַונט נישט? רעגיסטרירט זיך', haveAccount: 'שוין אַן אַקאַונט? לאָגירט אײַן',
         enterCreds: 'שרײַבט אימעיל און אַ פּאַסווארט פֿון 6+ צייכנס',
@@ -591,11 +595,12 @@
         revKind: 'רעוויו צו באשטעטיקן', pendingTag: 'וואארט',
         revPending: 'וואארט אויף באשטעטיקונג פונעם אדמין. פארן מאמענט זעט עס נאר איר.',
         permKind: 'רשות צו שרייבן',
+        newAcct: 'נייער אקאונט', seenBtn: 'געזען', allowBtn: 'ערלויבט צו שרייבן', companyFlag: 'קוקט אויס ווי א קאמפאני',
+        signedUp: 'זיך אנגעמעלדן', companyAcct: 'דאס איז א קאמפאני־אקאונט. מען קען עס נישט באשטעטיקן.',
         needPermTitle: 'איר דארפט רשות צו שרייבן רעוויוס',
-        needPermText: 'איר קענט זען אלעס אויף דער זייט. כדי צו שרייבן רעוויוס מוז דער אדמין אייך ערשט באשטעטיקן. שרייבט א פאר ווערטער ווער איר זענט (למשל: פון וואו איר זענט און ווער האט אייך געשיקט). דער אדמין קען אייך רופן.',
-        reqPermPh: 'ווער זענט איר? פון וואו? ווער האט אייך געשיקט?',
-        reqPermBtn: 'בעט רשות', reqPermShort: 'ביטע שרייבט א פאר ווערטער ווער איר זענט',
-        reqPermSent: 'די בקשה איז געשיקט. דער אדמין וועט עס איבערקוקן.',
+        needPermText: 'איר קענט זען אלעס אויף דער זייט. כדי צו שרייבן רעוויוס מוז דער אדמין אייך ערשט באשטעטיקן. דרוקט אויפן קנעפל אונטן. דער אדמין באקומט א מעלדונג און וועט אייך רופן.',
+        reqPermBtn: 'בעט רשות צו שרייבן',
+        reqPermSent: 'די בקשה איז געשיקט. דער אדמין וועט אייך רופן.',
         reqPermWaiting: 'אייער בקשה איז געשיקט. דער אדמין וועט עס איבערקוקן, און קען אייך רופן.',
         noPermNow: 'איר האט נאך נישט קיין רשות צו שרייבן רעוויוס.',
         sig_perfect: 'אלע 5 שטערן + רעקאמענדירט', sig_burst: '3+ רעוויוס פון דעם באניצער אין 24 שעה',
@@ -659,7 +664,7 @@
         fullName: 'Полное имя', email: 'Эл. почта', password: 'Пароль (мин. 6 символов)',
         phonePh: 'Номер телефона *', phoneHint: 'Скрыт. Один аккаунт на один номер.',
         phoneBad: 'Введите правильный номер телефона (10 цифр)',
-        signupBlocked: 'Эту почту или номер нельзя использовать для регистрации. Если это ошибка, напишите админу.',
+        signupBlocked: 'Этот номер телефона уже используется другим аккаунтом. Если это ошибка, напишите админу.',
         show: 'Показать', hide: 'Скрыть',
         noAccount: 'Нет аккаунта? Зарегистрируйтесь', haveAccount: 'Уже есть аккаунт? Войти',
         enterCreds: 'Введите эл. почту и пароль от 6 символов',
@@ -675,11 +680,12 @@
         revKind: 'Отзыв на одобрение', pendingTag: 'Ожидает',
         revPending: 'Ожидает одобрения админа. Пока его видите только вы.',
         permKind: 'Разрешение писать',
+        newAcct: 'Новый аккаунт', seenBtn: 'Просмотрено', allowBtn: 'Разрешить писать', companyFlag: 'Похоже на компанию',
+        signedUp: 'Зарегистрирован', companyAcct: 'Это аккаунт компании. Его нельзя одобрить.',
         needPermTitle: 'Нужно разрешение, чтобы писать отзывы',
-        needPermText: 'Вы можете видеть всё на сайте. Чтобы писать отзывы, админ должен сначала вас одобрить. Напишите пару слов о себе (например: из какого вы района и кто вас прислал). Админ может вам позвонить.',
-        reqPermPh: 'Кто вы? Откуда? Кто вас прислал?',
-        reqPermBtn: 'Запросить разрешение', reqPermShort: 'Напишите пару слов о себе',
-        reqPermSent: 'Запрос отправлен. Админ его проверит.',
+        needPermText: 'Вы можете видеть всё на сайте. Чтобы писать отзывы, админ должен сначала вас одобрить. Нажмите кнопку ниже. Админ получит уведомление и позвонит вам.',
+        reqPermBtn: 'Запросить разрешение писать',
+        reqPermSent: 'Запрос отправлен. Админ вам позвонит.',
         reqPermWaiting: 'Ваш запрос отправлен. Админ его проверит и может вам позвонить.',
         noPermNow: 'У вас пока нет разрешения писать отзывы.',
         sig_perfect: 'Все 5 звёзд + рекомендует', sig_burst: '3+ отзыва от этого пользователя за 24 ч',
@@ -743,7 +749,7 @@
         fullName: 'Nombre completo', email: 'Correo electrónico', password: 'Contraseña (mín. 6 caracteres)',
         phonePh: 'Número de teléfono *', phoneHint: 'Privado. Una cuenta por número de teléfono.',
         phoneBad: 'Ingresa un número de teléfono válido (10 dígitos)',
-        signupBlocked: 'Este correo o número no se puede usar para registrarse. Si crees que es un error, escribe al administrador.',
+        signupBlocked: 'Este número de teléfono ya lo usa otra cuenta. Si crees que es un error, escribe al administrador.',
         show: 'Mostrar', hide: 'Ocultar',
         noAccount: '¿No tienes cuenta? Regístrate', haveAccount: '¿Ya tienes cuenta? Inicia sesión',
         enterCreds: 'Ingresa tu correo y una contraseña de 6+ caracteres',
@@ -759,11 +765,12 @@
         revKind: 'Reseña por aprobar', pendingTag: 'En espera',
         revPending: 'Esperando la aprobación del administrador. Por ahora solo tú la ves.',
         permKind: 'Permiso para escribir',
+        newAcct: 'Cuenta nueva', seenBtn: 'Visto', allowBtn: 'Permitir escribir', companyFlag: 'Parece una empresa',
+        signedUp: 'Registrado', companyAcct: 'Esta es una cuenta de empresa. No se puede aprobar.',
         needPermTitle: 'Necesitas permiso para escribir reseñas',
-        needPermText: 'Puedes ver todo en el sitio. Para escribir reseñas, el administrador debe aprobarte primero. Escribe unas palabras sobre ti (por ejemplo: tu zona y quién te envió). El administrador puede llamarte.',
-        reqPermPh: '¿Quién eres? ¿De dónde eres? ¿Quién te envió?',
-        reqPermBtn: 'Pedir permiso', reqPermShort: 'Escribe unas palabras sobre ti',
-        reqPermSent: 'Solicitud enviada. El administrador la revisará.',
+        needPermText: 'Puedes ver todo en el sitio. Para escribir reseñas, el administrador debe aprobarte primero. Pulsa el botón de abajo. El administrador recibirá un aviso y te llamará.',
+        reqPermBtn: 'Pedir permiso para escribir',
+        reqPermSent: 'Solicitud enviada. El administrador te llamará.',
         reqPermWaiting: 'Tu solicitud fue enviada. El administrador la revisará y puede llamarte.',
         noPermNow: 'Aún no tienes permiso para escribir reseñas.',
         sig_perfect: 'Las 5 estrellas + recomienda', sig_burst: '3+ reseñas de este usuario en 24 h',
@@ -878,6 +885,8 @@
       if (d.length === 11 && d[0] === '1') return d.slice(1,4) + '-' + d.slice(4,7) + '-' + d.slice(7);
       return String(p ?? '');
     };
+    // a clickable phone number (opens the dialer on a phone)
+    const telLink = p => p ? `<a class="tel em" href="tel:${esc(String(p).replace(/[^\d+]/g, ''))}">${esc(fmtPhone(p))}</a>` : '';
     // a price only counts when it has a route (from AND to)
     const hasPrice = r => r.price_paid !== null && r.price_paid !== undefined && !!r.trip_from && !!r.trip_to;
 
@@ -1243,7 +1252,7 @@
         if (digits.length < 10) return showMsg($('msg'), t_('phoneBad'), false, 6000);
         const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name, phone: fmtPhone(digits) } } });
         if (error) {
-          // the database refuses company emails / company phones / phones that are already used
+          // the database refuses a phone number that is already used by another account
           if (/database error/i.test(error.message)) return showMsg($('msg'), t_('signupBlocked'), false, 9000);
           return showMsg($('msg'), error.message, false);
         }
@@ -1322,10 +1331,11 @@
     $('search').oninput = () => renderCompanies();
     $('sort').onchange = () => renderCompanies();
 
+    // admin: every account with all its signup information (name, email, phone, date, new / company flags)
     async function loadUsers() {
       userMap = {};
       if (!isAdmin) return;
-      const { data, error } = await sb.rpc('admin_users');
+      const { data, error } = await sb.rpc('admin_users_v2');
       if (!error && data) data.forEach(u => userMap[u.id] = u);
     }
 
@@ -1395,9 +1405,28 @@
     }
     const flagHtml = id => (flagMap[id] || []).map(k => `<span class="flag">⚠ ${esc(t_('sig_' + k))}</span>`).join(' ');
 
+    // new accounts the admin has not looked at yet (and that did not already ask for permission)
+    const newUsersList = () => Object.values(userMap)
+      .filter(u => u.is_new && u.id !== myUid && !permReqs.some(p => p.user_id === u.id))
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+    // the profile of an account: name, email, phone (with a call link), signup date, company warning
+    function profileHtml(u, fallbackPhone) {
+      if (!u) return '';
+      const phone = u.phone || fallbackPhone || '';
+      return `<div class="prof">
+        <span>${ic('user')} <b>${esc(u.full_name || '—')}</b></span>
+        <span class="em">${ic('mail')} ${esc(u.email)}</span>
+        ${phone ? `<span>${ic('phone')} ${telLink(phone)}</span>` : ''}
+        <span class="meta" style="margin:0">${esc(t_('signedUp'))}: ${esc(new Date(u.created_at).toLocaleString(dl()))}</span>
+        ${u.is_company ? `<span class="flag">⚠ ${esc(t_('companyFlag'))}</span>` : ''}
+      </div>`;
+    }
+
     function renderRequests() {
       const box = $('reqPanel');
-      const total = permReqs.length + reqList.length + msgList.length + pendRevs.length;
+      const newUsers = isAdmin ? newUsersList() : [];
+      const total = newUsers.length + permReqs.length + reqList.length + msgList.length + pendRevs.length;
       document.title = (isAdmin && total ? '(' + total + ') ' : '') + 'CarReviews';
       const show = isAdmin && total > 0;
       box.classList.toggle('hidden', !show);
@@ -1408,15 +1437,23 @@
         </div>`;
       if (!reqOpen) { box.innerHTML = head; return; }
 
-      // people asking for permission to write reviews
+      // a new account was opened
+      const newHtml = newUsers.map(u => `<div class="reqitem">
+          <div><span class="tagkind" style="background:#e8660a">${esc(t_('newAcct'))}</span></div>
+          ${profileHtml(u)}
+          <div class="row" style="justify-content:flex-start">
+            ${u.is_company ? '' : `<button class="green small" style="margin:6px 0 0" data-permok="${u.id}">${ic('check')} ${esc(t_('allowBtn'))}</button>`}
+            <button class="ghost small" style="margin:6px 0 0" data-seen="${u.id}">${ic('x')} ${esc(t_('seenBtn'))}</button>
+          </div>
+        </div>`).join('');
+
+      // people asking for permission to write reviews (one button press, no note)
       const permHtml = permReqs.map(p => {
         const u = userMap[p.user_id];
         return `<div class="reqitem">
-          <div><span class="tagkind" style="background:#0e8a9a">${esc(t_('permKind'))}</span>
-            <b>${u ? esc(u.full_name || '—') : ''}</b>
-            <span class="meta em">${u ? esc(u.email) : ''}</span>
-            ${p.phone ? `<span class="meta em">${ic('phone')} ${esc(p.phone)}</span>` : ''}</div>
-          <div class="cmt">${esc(p.note)}</div>
+          <div><span class="tagkind" style="background:#0e8a9a">${esc(t_('permKind'))}</span></div>
+          ${profileHtml(u, p.phone)}
+          ${p.note ? `<div class="cmt">${esc(p.note)}</div>` : ''}
           <div class="row" style="justify-content:flex-start">
             <button class="green small" style="margin:6px 0 0" data-permok="${p.user_id}">${ic('check')} ${esc(t_('approve'))}</button>
             <button class="danger small" style="margin:6px 0 0" data-permno="${p.user_id}">${ic('x')} ${esc(t_('reject'))}</button>
@@ -1479,7 +1516,7 @@
           </div>
         </div>`;
       }).join('');
-      box.innerHTML = head + permHtml + revHtml + reqHtml + msgHtml;
+      box.innerHTML = head + permHtml + newHtml + revHtml + reqHtml + msgHtml;
     }
 
     function renderUsers() {
@@ -1491,6 +1528,9 @@
         (list.length ? list.map(u => `
           <div class="urow">
             <div>${ic('user')} <b>${esc(u.full_name || '—')}</b> <span class="meta em">${esc(u.email)}</span>
+              ${u.phone ? `<span class="meta">${telLink(u.phone)}</span>` : ''}
+              ${u.can_review ? `<span class="pill" style="margin:0 6px;padding:1px 8px">${ic('check')}</span>` : ''}
+              ${u.is_company ? `<span class="flag">⚠ ${esc(t_('companyFlag'))}</span>` : ''}
               ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}</div>
             ${u.id === myUid ? '' : (u.banned
               ? `<button class="ghost small" data-unban="${u.id}">${esc(t_('unban'))}</button>`
@@ -1649,7 +1689,7 @@
     function authorHtml(r) {
       if (!isAdmin) return '';
       const u = userMap[r.user_id];
-      const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta em" style="margin:0">${esc(u.email)}</span>` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
+      const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta em" style="margin:0">${esc(u.email)}</span> ${u.phone ? telLink(u.phone) : ''}` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
       const isB = u && u.banned;
       const pend = r.approved === false
         ? `<span class="tagban" style="background:#e8660a">${esc(t_('pendingTag'))}</span>
@@ -1746,15 +1786,14 @@
       if (openMode === 'write') {
         if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
 
-        // viewers (no permission yet): ask the admin for permission
+        // viewers (no permission yet): ONE button asks the admin for permission
         if (!isAdmin && !canReview) {
           el.innerHTML = head(esc(t_('writeReview'))) + `
             <div class="sect white">
               <div class="note warn"><b>${esc(t_('needPermTitle'))}</b><br>${esc(t_('needPermText'))}</div>
               ${myReqPending
                 ? `<div class="note">${esc(t_('reqPermWaiting'))}</div>`
-                : `<textarea id="permNote" rows="3" maxlength="500" placeholder="${esc(t_('reqPermPh'))}"></textarea>
-                   <button type="button" data-reqperm="1">${ic('check')} ${esc(t_('reqPermBtn'))}</button>`}
+                : `<button type="button" data-reqperm="1">${ic('check')} ${esc(t_('reqPermBtn'))}</button>`}
             </div>`;
           return;
         }
@@ -1982,12 +2021,10 @@
       if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
       if (ds.more) { showN += 10; paintDetail(); return; }
 
-      // viewer: ask the admin for permission to write reviews
+      // viewer: ONE button asks the admin for permission to write reviews (no note needed)
       if (ds.reqperm) {
-        const note = ($('permNote') ? $('permNote').value : '').trim();
-        if (note.length < 5) return toast(t_('reqPermShort'), true);
         t.disabled = true;
-        const { error } = await sb.from('review_requests').insert({ user_id: myUid, note, phone: myPhone || null });
+        const { error } = await sb.from('review_requests').insert({ user_id: myUid, phone: myPhone || null });
         // a duplicate means the request already exists, which is fine
         if (error && !/duplicate|unique/i.test(error.message)) { t.disabled = false; return toast(error.message, true, 6000); }
         myReqPending = true;
@@ -1995,11 +2032,14 @@
         toast(t_('reqPermSent'), false, 4000);
         return;
       }
-      // admin: allow / refuse a writer
+      // admin: allow / refuse a writer, or mark a new account as seen
       if (ds.permok) {
         t.disabled = true;
         const { error } = await sb.rpc('admin_set_reviewer', { target: ds.permok, allow: true });
-        if (error) { alert(error.message); t.disabled = false; return; }
+        if (error) {
+          alert(/COMPANY_ACCOUNT/.test(error.message) ? t_('companyAcct') : error.message);
+          t.disabled = false; return;
+        }
         await loadCompanies();
         toast(t_('saved'));
         return;
@@ -2007,6 +2047,13 @@
       if (ds.permno) {
         if (!confirm(t_('confirmReject'))) return;
         const { error } = await sb.from('review_requests').delete().eq('user_id', ds.permno);
+        if (error) { alert(error.message); return; }
+        await sb.rpc('admin_mark_seen', { target: ds.permno });
+        await loadCompanies();
+        return;
+      }
+      if (ds.seen) {
+        const { error } = await sb.rpc('admin_mark_seen', { target: ds.seen });
         if (error) { alert(error.message); return; }
         await loadCompanies();
         return;
