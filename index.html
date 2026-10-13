@@ -23,13 +23,11 @@
     svg.ic { width:1em; height:1em; vertical-align:-0.15em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex:none; }
     button svg, .chip svg { pointer-events:none; }
 
-    /* emails and phone numbers always read left-to-right, even inside a Yiddish (RTL) page */
     .ltr, .contact span.em, #userbar .em, input[type=email], input[type=tel] { direction:ltr; unicode-bidi:plaintext; }
     input[type=email]::placeholder, input[type=tel]::placeholder { direction:rtl; }
     .em { unicode-bidi:isolate; direction:ltr; display:inline-block; }
     a.tel { color:var(--navy); font-weight:700; text-decoration:none; border-bottom:1px dotted var(--navy); }
 
-    /* top bar: bright color, always visible (sticky) */
     .topbar { position:sticky; top:0; z-index:60; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; background:var(--top); color:#fff; padding:8px 14px; border-radius:0 0 14px 14px; box-shadow:0 4px 14px rgba(8,80,140,.3); }
     .topbar select { background:#fff; }
     #userbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14px; }
@@ -45,6 +43,7 @@
     .box { max-width:400px; margin:10px auto 30px; }
     input, textarea, select { width:100%; padding:10px 12px; margin:6px 0; border:1px solid #cdd5df; border-radius:8px; font-family:inherit; font-size:14px; background:#fff; }
     input:focus, textarea:focus, select:focus { outline:2px solid #c7d6ee; border-color:var(--navy); }
+    input[type=checkbox] { width:20px; height:20px; margin:0; padding:0; accent-color:var(--navy); flex:none; }
     textarea { resize:vertical; max-width:100%; min-height:70px; }
     select:required:invalid { color:#8896a8; }
     select:required:invalid option { color:#1f2a37; }
@@ -58,6 +57,9 @@
     .pricewrap:focus-within { outline:2px solid #c7d6ee; border-color:var(--navy); }
     .pricewrap .dol { font-weight:800; color:var(--navy); font-size:18px; }
     .pricewrap input { border:0; margin:0; outline:none !important; background:transparent; }
+    .tollnote span { display:inline-block; border:2px solid var(--red); border-radius:999px; padding:2px 14px; font-size:12px; font-weight:800; color:var(--red); margin:4px 0 2px; background:#fff5f4; }
+    .rtcheck { display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; color:var(--navy); margin-top:8px; padding:8px 12px; background:#fff; border:1.5px solid #cdd5df; border-radius:10px; }
+    .rtbadge { background:#e8f0ff; color:var(--navy); border:1px solid #b9cdf3; border-radius:999px; padding:1px 10px; font-size:12px; font-weight:800; }
 
     button { padding:9px 16px; border:0; border-radius:8px; background:var(--navy); color:#fff; cursor:pointer; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:6px; font-family:inherit; }
     button:hover { filter:brightness(1.1); }
@@ -90,7 +92,6 @@
     .filters .sw input { padding-inline-start:36px; margin:6px 0; }
     .filters select { flex:1 1 150px; }
 
-    /* ----- company card ----- */
     .chead { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
     .cinfo { display:flex; align-items:center; gap:14px; min-width:0; }
     .clogo { width:60px; height:60px; object-fit:contain; border-radius:10px; border:1px solid #eee; background:#fff; flex:none; }
@@ -107,7 +108,6 @@
     .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:600; background:#e6f4ea; color:var(--green); margin-top:8px; }
     .pill.low { background:#fde8e8; color:var(--red); }
 
-    /* call button + user activity */
     .callbtn { display:inline-flex; align-items:center; gap:6px; background:var(--green); color:#fff !important; text-decoration:none; font-weight:700; padding:7px 14px; border-radius:999px; direction:ltr; box-shadow:0 2px 6px rgba(30,142,62,.35); }
     .callbtn:hover { filter:brightness(1.1); }
     .callbtn.sm { padding:3px 10px; font-size:12px; margin-inline-start:6px; }
@@ -131,7 +131,6 @@
     .more button.gold { background:var(--gold); color:#fff; border:0; }
     .more button.danger { background:var(--red); color:#fff; border:0; }
 
-    /* ----- opened panel ----- */
     .detail { margin-top:16px; border-top:1px solid rgba(0,0,0,.08); padding-top:14px; }
     .dhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
     .dhead h4 { margin:0; font-size:17px; }
@@ -236,6 +235,28 @@
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
 
+    /* ----- welcome letter ----- */
+    .welcome { max-width:680px; margin:14px auto 18px; padding:0; overflow:hidden; border:0; border-radius:20px; box-shadow:0 12px 34px rgba(18,41,77,.16); }
+    .wHead { background:var(--top); color:#fff; padding:26px 22px 22px; text-align:center; }
+    .wHead .wlogo { font-size:38px; line-height:1; }
+    .wHead h3 { margin:8px 0 0; font-size:26px; color:#fff; letter-spacing:.3px; }
+    .wBody { padding:20px 22px 22px; background:#fff; }
+    .wBlock { margin:0 0 18px; }
+    .wBlock h5 { margin:0 0 6px; color:var(--navy); font-size:16px; display:flex; align-items:center; gap:8px; }
+    .wBlock h5::before { content:''; width:5px; height:18px; border-radius:3px; background:var(--gold); flex:none; }
+    .wBlock p { margin:0; font-size:15px; line-height:1.65; color:#2b3645; }
+    .wSteps { list-style:none; margin:0; padding:0; counter-reset:st; display:grid; gap:10px; }
+    .wSteps li { counter-increment:st; display:flex; gap:12px; align-items:flex-start; background:#f4f8ff; border:1px solid #d9e6fb; border-radius:12px; padding:10px 12px; font-size:15px; line-height:1.55; }
+    .wSteps li::before { content:counter(st); flex:none; width:28px; height:28px; border-radius:50%; background:var(--navy); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; }
+    .wPriv { display:flex; gap:10px; align-items:flex-start; background:#eaf8ef; border:1px solid #bfe6cc; border-radius:12px; padding:11px 14px; font-size:15px; line-height:1.55; margin-bottom:18px; }
+    .wAsk { text-align:center; background:linear-gradient(135deg,#fff3c9,#ffe39a); border:3px solid var(--gold); border-radius:18px; padding:20px 16px; margin:0 0 18px; box-shadow:0 6px 18px rgba(232,163,23,.3); }
+    .wAsk .t1 { font-size:16px; font-weight:900; color:#7a4300; }
+    .wAsk .t2 { font-size:22px; font-weight:900; color:#5a3000; line-height:1.35; margin-top:6px; }
+    .wRules { margin:0; padding-inline-start:22px; }
+    .wRules li { font-size:15px; line-height:1.6; margin:3px 0; }
+    .wFoot { margin-top:16px; padding-top:14px; border-top:1px solid var(--line); text-align:center; color:#5b6776; font-size:15px; line-height:1.7; }
+    .wFoot b { color:var(--navy); }
+
     #toast { position:fixed; top:76px; left:50%; transform:translateX(-50%); width:max-content; max-width:92vw; text-align:center; background:var(--green); color:#fff; padding:10px 18px; border-radius:10px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.25); display:none; z-index:80; align-items:center; gap:8px; }
     #toast.err { background:var(--red); }
 
@@ -306,6 +327,7 @@
   <div class="hero"><div class="logoCard"><div class="logoBox"><img src="logo.png" alt="CarReviews"></div></div></div>
 
   <div id="authView">
+    <div class="card welcome" id="welcome"></div>
     <div class="box card">
       <h2 id="authTitle"></h2>
       <div id="msg" class="msg"></div>
@@ -378,21 +400,19 @@
     <div id="companies"></div>
   </div>
 
-  <div id="ver">CarReviews v8.4</div>
+  <div id="ver">CarReviews v8.5</div>
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ---------- Yiddish without any marks ----------
     function cleanYi(s) {
       return String(s).normalize('NFD')
         .replace(/[\u0591-\u05C7]/g, '')
         .replace(/\u05F2/g, 'יי').replace(/\u05F0/g, 'וו').replace(/\u05F1/g, 'וי');
     }
 
-    // ---------- Icons ----------
     const P = {
       clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
       dollar:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
@@ -420,7 +440,6 @@
     const ic = n => `<svg class="ic" viewBox="0 0 24 24">${P[n]}</svg>`;
     const KEY_ICON = { punctuality:'clock', service:'chat', driver_service:'user', cleanliness:'drop', driving:'shield' };
 
-    // ---------- Places ----------
     const PLACES = [
       ['Williamsburg','וויליאמסבורג'], ['Boro Park','בארא פארק'], ['Crown Heights','קראון הייטס'],
       ['Flatbush','פלעטבוש'], ['Midwood','מידוואד'], ['Kensington','קענסינגטאן'],
@@ -475,12 +494,9 @@
       $('cCityBox').innerHTML = placeSelect('cCity', cur, t_('cityPh'));
     }
 
-    // ---------- Arrival time options -> stars ----------
     const PUNCT = [[5, 'pt_1'], [3, 'pt_2'], [2, 'pt_3'], [1, 'pt_4']];
     const normP = v => v >= 5 ? 5 : (v >= 3 ? 3 : (v === 2 ? 2 : (v === 1 ? 1 : undefined)));
     const punctLabel = v => { const p = PUNCT.find(x => x[0] === v); return p ? t_(p[1]) : null; };
-
-    // ---------- Translations ----------
     const T = {
       en: {
         login: 'Log in', signup: 'Sign up', logout: 'Log out',
@@ -513,6 +529,7 @@
         noPermNow: 'You do not have permission to write reviews yet.',
         callBtn: 'Call', actCalls: 'Calls', actReviews: 'Reviews', actLogin: 'Last login',
         actIdleOnly: 'Only: calls but no reviews', actAll: 'Show everyone', actIdle: 'Calls but no reviews',
+        roundTrip: 'Round trip', tollNote: 'Not including toll',
         sig_perfect: 'All 5 stars + recommend', sig_burst: '3+ reviews by this user in 24h',
         sig_cluster: '4+ reviews on this company in 48h', sig_dupe: 'Same text as another review',
         msgBtn: 'Message to admin', msgTitle: 'Send a note to the admin', msgPh: 'Write your note...', msgSend: 'Send',
@@ -600,6 +617,7 @@
         noPermNow: 'איר האט נאך נישט קיין רשות צו שרייבן רעוויוס.',
         callBtn: 'רופט אן', actCalls: 'אנרופן', actReviews: 'רעוויוס', actLogin: 'לעצטע מאל אריינגעלאגירט',
         actIdleOnly: 'נאר די וואס רופן אבער שרייבן נישט', actAll: 'ווייזט אלע', actIdle: 'רופט אבער שרייבט נישט',
+        roundTrip: 'ראונד טריפ', tollNote: 'נישט אריינגערעכנט טאול',
         sig_perfect: 'אלע 5 שטערן + רעקאמענדירט', sig_burst: '3+ רעוויוס פון דעם באניצער אין 24 שעה',
         sig_cluster: '4+ רעוויוס אויף דער קאמפאני אין 48 שעה', sig_dupe: 'דער זעלבער טעקסט ווי אן אנדערער רעוויו',
         msgBtn: 'שיקט אַ הערה צום אַדמין', msgTitle: 'שיקט אַ הערה צום אַדמין', msgPh: 'שרײַבט דאָ אײַער הערה...', msgSend: 'שיקן',
@@ -687,6 +705,7 @@
         noPermNow: 'У вас пока нет разрешения писать отзывы.',
         callBtn: 'Позвонить', actCalls: 'Звонки', actReviews: 'Отзывы', actLogin: 'Последний вход',
         actIdleOnly: 'Только: звонят, но не пишут', actAll: 'Показать всех', actIdle: 'Звонит, но не пишет',
+        roundTrip: 'Туда и обратно', tollNote: 'Без учёта платной дороги',
         sig_perfect: 'Все 5 звёзд + рекомендует', sig_burst: '3+ отзыва от этого пользователя за 24 ч',
         sig_cluster: '4+ отзыва на эту компанию за 48 ч', sig_dupe: 'Тот же текст, что в другом отзыве',
         msgBtn: 'Сообщение админу', msgTitle: 'Написать админу', msgPh: 'Напишите сообщение...', msgSend: 'Отправить',
@@ -774,6 +793,7 @@
         noPermNow: 'Aún no tienes permiso para escribir reseñas.',
         callBtn: 'Llamar', actCalls: 'Llamadas', actReviews: 'Reseñas', actLogin: 'Último acceso',
         actIdleOnly: 'Solo: llaman pero no escriben', actAll: 'Mostrar todos', actIdle: 'Llama pero no escribe',
+        roundTrip: 'Ida y vuelta', tollNote: 'Sin incluir peaje',
         sig_perfect: 'Las 5 estrellas + recomienda', sig_burst: '3+ reseñas de este usuario en 24 h',
         sig_cluster: '4+ reseñas de esta empresa en 48 h', sig_dupe: 'Mismo texto que otra reseña',
         msgBtn: 'Mensaje al administrador', msgTitle: 'Enviar una nota al administrador', msgPh: 'Escribe tu nota...', msgSend: 'Enviar',
@@ -831,7 +851,6 @@
         confirmUnban: '¿Desbloquear a este usuario?'
       }
     };
-
     function detectLang() {
       const saved = localStorage.getItem('lang');
       if (saved && T[saved]) return saved;
@@ -885,8 +904,8 @@
     const telHref = p => 'tel:' + String(p).replace(/[^\d+]/g, '');
     const telLink = p => p ? `<a class="tel em" href="${esc(telHref(p))}">${esc(fmtPhone(p))}</a>` : '';
     const hasPrice = r => r.price_paid !== null && r.price_paid !== undefined && !!r.trip_from && !!r.trip_to;
+    const rtBadge = r => r.round_trip ? `<span class="rtbadge">${esc(t_('roundTrip'))}</span>` : '';
 
-    // each company box gets its own pastel colour (stable per company)
     const CO_COLORS = [
       ['#eaf3ff', '#9cc2f5', '#1d4ed8'], ['#e9f8ee', '#8fd3a6', '#1e8e3e'], ['#fff4e0', '#f2c777', '#c98a00'],
       ['#f3ecff', '#c4a8f0', '#7b3fa0'], ['#ffeaf0', '#f2a6bd', '#b83280'], ['#e6f7f7', '#85d0d0', '#0e8a9a']
@@ -898,7 +917,116 @@
       return `background:${c[0]};border:2px solid ${c[1]};border-inline-start:7px solid ${c[2]};`;
     }
 
-    // ---------- Favicon ----------
+    // ================= Welcome letter =================
+    const WELCOME = {
+      yi: {
+        title: 'ברוכים הבאים צו CarReviews',
+        what: 'וואס איז CarReviews?',
+        whatT: 'א סערוויס וואס איז אויפגעשטעלט געווארן דורך היימישע אידן ספעציעל פארן היימישן עולם. דא קענען אידן וואס נוצן קאר־סערוויסעס איבערלאזן זייערע רעוויוס אויף די קאמפאניס: למשל, ווער עס קומט אן אין צייט, וואס זענען די פרייזן, וויאזוי די סערוויס איז, און צי מען וואלט עס רעקאמענדירט פאר אנדערע, און נאך אזעלכע סארט זאכן.',
+        goal: 'וואס איז דער ציל?',
+        goalT: 'יעדער איינער פארט און צאלט געלט, אבער קיינער ווייסט נישט פון פאראויס וואס ער גייט באקומען פאר זיין געלט. ווען מיר טיילן זיך מיט איינער מיטן צווייטן אונזער עקספיריענס, קען יעדער אויסקלויבן די בעסטע סערוויס, און די קאמפאניס וועלן זיך מוזן פארבעסערן.',
+        how: 'וויאזוי ארבעט עס?',
+        steps: [
+          '<b>עפנט אן אקאונט:</b> דאס קאסט נישט קיין געלט, ס\'איז אינגאנצן בחינם.',
+          '<b>כאפט א בליק:</b> זעט וואס אנדערע שרייבן אין די רעוויוס, די פרייזן און די הערות. מען קען רופן א קאמפאני מיט בלויז איין דרוק אויפן קנעפל.',
+          '<b>נאך יעדע נסיעה:</b> לאזט איבער א רעוויו. עס נעמט נאר א קורצע מינוט, און איר פילט נאר אויס די זאכן וואס איר ווילט.'
+        ],
+        priv: '<b>אייער פריוואטקייט:</b> די רעוויוס זענען אנאנים. קיינער זעט נישט ווער עס האט עס געשריבן.',
+        ask1: 'א שטארקע בקשה צום ציבור',
+        ask2: 'ביטע שרייבט א רעוויו נאך יעדע נסיעה, אפילו אויב אלעס איז געווען פיין! אייער רעוויו העלפט דעם גאנצן ציבור.',
+        rules: 'כללים',
+        rulesL: [
+          'שרייבט נאר זאכן וואס איר האט באמת אליין מיטגעלעבט.',
+          'מיר ווילן האלטן די סיסטעם ערליך, דעריבער רעזערווירן מיר זיך דאס רעכט אראפצונעמען אקאונטס אדער רעוויוס וואס זענען נישט אמת.'
+        ],
+        foot: 'האט איר שאלות? שיקט א מעסעדזש דורך <b>"שיקט א הערה צום אדמין"</b>.<br>א גרויסן יישר כח פארן ארויסהעלפן אויפבויען א בעסערע סיסטעם פאר די ציבור!'
+      },
+      en: {
+        title: 'Welcome to CarReviews',
+        what: 'What is CarReviews?',
+        whatT: 'A service built by members of our community, especially for our community. Here, people who use car services can leave their reviews of the companies: for example, who arrives on time, what the prices are, how the service is, whether you would recommend it to others, and more.',
+        goal: 'What is the goal?',
+        goalT: 'Everyone travels and pays, but nobody knows in advance what they will get for their money. When we share our experience with each other, everyone can choose the best service, and the companies will have to improve.',
+        how: 'How does it work?',
+        steps: [
+          '<b>Open an account:</b> it costs nothing, it is completely free.',
+          '<b>Take a look:</b> see what others write in the reviews, the prices and the comments. You can call a company with just one tap.',
+          '<b>After every ride:</b> leave a review. It takes just a minute, and you fill in only what you want.'
+        ],
+        priv: '<b>Your privacy:</b> reviews are anonymous. Nobody sees who wrote them.',
+        ask1: 'A strong request to everyone',
+        ask2: 'Please write a review after every ride, even if everything was fine! Your review helps the whole community.',
+        rules: 'Rules',
+        rulesL: [
+          'Write only things you really experienced yourself.',
+          'We want to keep the system honest, so we reserve the right to remove accounts or reviews that are not true.'
+        ],
+        foot: 'Questions? Send a message through <b>"Message to admin"</b>.<br>A big thank you for helping to build a better system for the community!'
+      },
+      ru: {
+        title: 'Добро пожаловать в CarReviews',
+        what: 'Что такое CarReviews?',
+        whatT: 'Сервис, созданный членами нашей общины специально для нашей общины. Здесь те, кто пользуется автосервисами, могут оставлять отзывы о компаниях: например, кто приезжает вовремя, какие цены, каков сервис, порекомендуете ли вы его другим, и многое другое.',
+        goal: 'Какова цель?',
+        goalT: 'Все ездят и платят, но никто заранее не знает, что получит за свои деньги. Когда мы делимся опытом друг с другом, каждый может выбрать лучший сервис, а компаниям придётся улучшаться.',
+        how: 'Как это работает?',
+        steps: [
+          '<b>Создайте аккаунт:</b> это ничего не стоит, это полностью бесплатно.',
+          '<b>Загляните:</b> смотрите, что пишут другие в отзывах, ценах и комментариях. Позвонить в компанию можно одним нажатием.',
+          '<b>После каждой поездки:</b> оставьте отзыв. Это займёт всего минуту, и вы заполняете только то, что хотите.'
+        ],
+        priv: '<b>Ваша конфиденциальность:</b> отзывы анонимны. Никто не видит, кто их написал.',
+        ask1: 'Горячая просьба ко всем',
+        ask2: 'Пожалуйста, пишите отзыв после каждой поездки, даже если всё было хорошо! Ваш отзыв помогает всем.',
+        rules: 'Правила',
+        rulesL: [
+          'Пишите только то, что вы действительно пережили сами.',
+          'Мы хотим сохранить честность системы, поэтому оставляем за собой право удалять аккаунты или отзывы, не соответствующие действительности.'
+        ],
+        foot: 'Есть вопросы? Напишите через <b>«Сообщение админу»</b>.<br>Большое спасибо за помощь в создании лучшей системы для общины!'
+      },
+      es: {
+        title: 'Bienvenido a CarReviews',
+        what: '¿Qué es CarReviews?',
+        whatT: 'Un servicio creado por miembros de nuestra comunidad, especialmente para nuestra comunidad. Aquí, quienes usan servicios de autos pueden dejar sus reseñas de las empresas: por ejemplo, quién llega a tiempo, cuáles son los precios, cómo es el servicio, si lo recomendarías a otros, y más.',
+        goal: '¿Cuál es el objetivo?',
+        goalT: 'Todos viajamos y pagamos, pero nadie sabe de antemano qué recibirá por su dinero. Cuando compartimos nuestra experiencia, cada uno puede elegir el mejor servicio y las empresas tendrán que mejorar.',
+        how: '¿Cómo funciona?',
+        steps: [
+          '<b>Abre una cuenta:</b> no cuesta nada, es totalmente gratis.',
+          '<b>Echa un vistazo:</b> mira lo que otros escriben en las reseñas, los precios y los comentarios. Puedes llamar a una empresa con solo un toque.',
+          '<b>Después de cada viaje:</b> deja una reseña. Toma solo un minuto y completas solo lo que quieras.'
+        ],
+        priv: '<b>Tu privacidad:</b> las reseñas son anónimas. Nadie ve quién las escribió.',
+        ask1: 'Una petición importante a todos',
+        ask2: '¡Por favor escribe una reseña después de cada viaje, aunque todo haya estado bien! Tu reseña ayuda a toda la comunidad.',
+        rules: 'Reglas',
+        rulesL: [
+          'Escribe solo cosas que realmente viviste tú mismo.',
+          'Queremos mantener el sistema honesto, por eso nos reservamos el derecho de eliminar cuentas o reseñas que no sean verdaderas.'
+        ],
+        foot: '¿Preguntas? Envía un mensaje con <b>«Mensaje al administrador»</b>.<br>¡Muchas gracias por ayudar a construir un mejor sistema para la comunidad!'
+      }
+    };
+
+    function renderWelcome() {
+      const box = $('welcome');
+      if (!box) return;
+      const w = WELCOME[lang] || WELCOME.en;
+      const f = s => lang === 'yi' ? cleanYi(s) : s;
+      box.innerHTML = `
+        <div class="wHead"><div class="wlogo">🚗</div><h3>${f(w.title)}</h3></div>
+        <div class="wBody">
+          <div class="wBlock"><h5>${f(w.what)}</h5><p>${f(w.whatT)}</p></div>
+          <div class="wBlock"><h5>${f(w.goal)}</h5><p>${f(w.goalT)}</p></div>
+          <div class="wBlock"><h5>${f(w.how)}</h5><ol class="wSteps">${w.steps.map(s => `<li><div>${f(s)}</div></li>`).join('')}</ol></div>
+          <div class="wPriv"><span>🔒</span><div>${f(w.priv)}</div></div>
+          <div class="wAsk"><div class="t1">⭐ ${f(w.ask1)} ⭐</div><div class="t2">${f(w.ask2)}</div></div>
+          <div class="wBlock"><h5>${f(w.rules)}</h5><ul class="wRules">${w.rulesL.map(s => `<li>${f(s)}</li>`).join('')}</ul></div>
+          <div class="wFoot">${f(w.foot)}</div>
+        </div>`;
+    }
+
     (function makeFavicon() {
       try {
         const c = document.createElement('canvas');
@@ -918,7 +1046,6 @@
       } catch (e) {}
     })();
 
-    // ---------- Jewish calendar ----------
     const hf = (d, o) => { try { return new Intl.DateTimeFormat('he-u-ca-hebrew', o).format(d); } catch (e) { return ''; } };
     const hDay = d => {
       try { return Number(new Intl.DateTimeFormat('en-u-ca-hebrew', { day: 'numeric' }).formatToParts(d).find(x => x.type === 'day').value); }
@@ -988,17 +1115,13 @@
           else if (hd === 22) hol = 'שמ״ע';
           else if (hd === 23) hol = 'שמח״ת';
           break;
-        case 'kislev':
-          if (hd >= 25) hol = 'חנוכה';
-          break;
+        case 'kislev': if (hd >= 25) hol = 'חנוכה'; break;
         case 'tevet':
           if (hd <= 2) hol = 'חנוכה';
           else if (hd === 3) { const p = new Date(x); p.setDate(p.getDate() - 3); if (hDay(p) === 29) hol = 'חנוכה'; }
           else if (hd === 10) hol = 'צום';
           break;
-        case 'shvat':
-          if (hd === 15) hol = 'ט״ו';
-          break;
+        case 'shvat': if (hd === 15) hol = 'ט״ו'; break;
         case 'adar': case 'adar2':
           if ((hd === 13 && dow !== 6) || (hd === 11 && dow === 4)) hol = 'תענית';
           else if (hd === 14) hol = 'פורים';
@@ -1010,18 +1133,10 @@
           else if (hd === 21) hol = 'שביעי';
           else if (hd === 22) hol = 'אחרון';
           break;
-        case 'iyar':
-          if (hd === 18) hol = 'ל״ג';
-          break;
-        case 'sivan':
-          if (hd === 6 || hd === 7) hol = 'שבועות';
-          break;
-        case 'tamuz':
-          if ((hd === 17 && dow !== 6) || (hd === 18 && dow === 0)) hol = 'צום';
-          break;
-        case 'av':
-          if ((hd === 9 && dow !== 6) || (hd === 10 && dow === 0)) hol = 'ת״ב';
-          break;
+        case 'iyar': if (hd === 18) hol = 'ל״ג'; break;
+        case 'sivan': if (hd === 6 || hd === 7) hol = 'שבועות'; break;
+        case 'tamuz': if ((hd === 17 && dow !== 6) || (hd === 18 && dow === 0)) hol = 'צום'; break;
+        case 'av': if ((hd === 9 && dow !== 6) || (hd === 10 && dow === 0)) hol = 'ת״ב'; break;
       }
       const rc = (hd === 30 || (hd === 1 && key !== 'tishri')) ? 'ר״ח' : '';
       return [rc, hol].filter(Boolean).join(' ');
@@ -1094,6 +1209,7 @@
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'yi' ? 'rtl' : 'ltr';
       $('langSel').value = lang;
+      renderWelcome();
       $('calBtn').innerHTML = ic('cal') + ' ' + esc(hebStr(new Date()));
       $('calTodayBtn').textContent = pickMode ? t_('calPickToday') : t_('calToday');
       $('calCloseBtn').textContent = t_('calClose');
@@ -1182,9 +1298,7 @@
         const ins = await sb.from('logo_suggestions').insert({ company_id: cid, user_id: myUid, logo_url: url });
         if (ins.error) throw ins.error;
         toast(t_('logoSent'));
-      } catch (err) {
-        alert(err.message || String(err));
-      }
+      } catch (err) { alert(err.message || String(err)); }
     };
 
     async function checkAdmin() {
@@ -1261,18 +1375,12 @@
 
     async function logout() { openId = null; editingId = null; await sb.auth.signOut(); }
 
-    function closeAdd() {
-      $('addForm').classList.add('hidden');
-      $('addMsg').style.display = 'none';
-    }
+    function closeAdd() { $('addForm').classList.add('hidden'); $('addMsg').style.display = 'none'; }
     $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
     $('addClose').onclick = closeAdd;
     $('usersToggle').onclick = () => { usersOpen = !usersOpen; renderUsers(); };
 
-    function closeMsg() {
-      $('msgForm').classList.add('hidden');
-      $('msgNote').style.display = 'none';
-    }
+    function closeMsg() { $('msgForm').classList.add('hidden'); $('msgNote').style.display = 'none'; }
     $('msgToggle').onclick = () => $('msgForm').classList.toggle('hidden');
     $('msgClose').onclick = closeMsg;
     $('msgSend').onclick = async () => {
@@ -1315,16 +1423,13 @@
         renderCityBox(true);
         closeAdd();
         loadCompanies();
-      } catch (err) {
-        showMsg($('addMsg'), err.message || String(err), false);
-      }
+      } catch (err) { showMsg($('addMsg'), err.message || String(err), false); }
       btn.disabled = false;
     };
 
     $('search').oninput = () => renderCompanies();
     $('sort').onchange = () => renderCompanies();
 
-    // admin: every account with signup info + activity (calls, reviews, last login)
     async function loadUsers() {
       userMap = {};
       if (!isAdmin) return;
@@ -1332,38 +1437,30 @@
       if (!a.error && a.data) a.data.forEach(u => userMap[u.id] = u);
       if (!b.error && b.data) b.data.forEach(x => { if (userMap[x.uid]) Object.assign(userMap[x.uid], x); });
     }
-
     async function loadSuggestions() {
       sugMap = {}; sugList = [];
       if (!isAdmin) return;
       const { data, error } = await sb.from('logo_suggestions').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        sugList = data;
-        data.forEach(s => { (sugMap[s.company_id] = sugMap[s.company_id] || []).push(s); });
-      }
+      if (!error && data) { sugList = data; data.forEach(s => { (sugMap[s.company_id] = sugMap[s.company_id] || []).push(s); }); }
     }
-
     async function loadRequests() {
       reqList = [];
       if (!isAdmin) return;
       const { data, error } = await sb.from('change_requests').select('*').order('created_at', { ascending: true });
       if (!error && data) reqList = data;
     }
-
     async function loadMessages() {
       msgList = [];
       if (!isAdmin) return;
       const { data, error } = await sb.from('admin_messages').select('*').order('created_at', { ascending: true });
       if (!error && data) msgList = data;
     }
-
     async function loadPermReqs() {
       permReqs = [];
       if (!isAdmin) return;
       const { data, error } = await sb.from('review_requests').select('*').order('created_at', { ascending: true });
       if (!error && data) permReqs = data;
     }
-
     async function loadReviewAdmin() {
       pendRevs = []; adminRevs = []; flagMap = {};
       if (!isAdmin) return;
@@ -1506,7 +1603,6 @@
       box.innerHTML = head + permHtml + newHtml + revHtml + reqHtml + msgHtml;
     }
 
-    // users panel: calls / reviews / last login; "calls but no reviews" are highlighted and shown first
     function renderUsers() {
       const box = $('usersPanel');
       box.classList.toggle('hidden', !(isAdmin && usersOpen));
@@ -1551,12 +1647,7 @@
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
         sb.from('reviews').select('company_id,price_paid,comment,trip_from,trip_to,approved'),
-        loadUsers(),
-        loadSuggestions(),
-        loadRequests(),
-        loadMessages(),
-        loadPermReqs(),
-        loadReviewAdmin()
+        loadUsers(), loadSuggestions(), loadRequests(), loadMessages(), loadPermReqs(), loadReviewAdmin()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
@@ -1688,6 +1779,7 @@
       const bits = [];
       if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
       if (hasPrice(r)) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
+      if (hasPrice(r) && r.round_trip) bits.push(rtBadge(r));
       return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
     }
 
@@ -1735,6 +1827,7 @@
       draft.from = readPlace('revFrom') || '';
       draft.to = readPlace('revTo') || '';
       draft.price = $('revPrice').value;
+      draft.round = $('revRound') ? $('revRound').checked : false;
       draft.comment = $('revComment').value;
     }
     function hasAnyAnswer() {
@@ -1767,6 +1860,7 @@
         draft.tod = mine.time_of_day || '';
         draft.from = mine.trip_from || '';
         draft.to = mine.trip_to || '';
+        draft.round = !!mine.round_trip;
         draft.price = (mine.price_paid !== null && mine.price_paid !== undefined) ? String(mine.price_paid) : '';
       }
       paintDetail();
@@ -1782,7 +1876,6 @@
 
       const head = title => `<div class="dhead"><h4>${title}</h4><button class="ghost small" data-close="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>`;
 
-      // ================= WRITE =================
       if (openMode === 'write') {
         if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
 
@@ -1835,7 +1928,9 @@
             </div>
             <div class="field" data-field="price">
               <label class="plabel" for="revPrice">${esc(t_('pricePh'))}</label>
+              <div class="tollnote"><span>${esc(t_('tollNote'))}</span></div>
               <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.price || '')}"></div>
+              <label class="rtcheck"><input type="checkbox" id="revRound" ${draft.round ? 'checked' : ''}> <span>${esc(t_('roundTrip'))}</span></label>
             </div>
           </div>`;
 
@@ -1866,7 +1961,6 @@
         return;
       }
 
-      // ================= PRICES =================
       if (openMode === 'prices') {
         const priced = pub.filter(hasPrice);
         if (!priced.length) {
@@ -1891,7 +1985,7 @@
           bits.push(r.trip_date ? new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl()) : new Date(r.created_at).toLocaleDateString(dl()));
           if (r.time_of_day && TODS.includes(r.time_of_day)) bits.push(t_('tod_' + r.time_of_day));
           return `<div class="prow">
-            <div><div class="pr-route">${esc(routeName(r))}</div><div class="pr-meta">${esc(bits.join(' · '))}</div></div>
+            <div><div class="pr-route">${esc(routeName(r))} ${rtBadge(r)}</div><div class="pr-meta">${esc(bits.join(' · '))}</div></div>
             <span class="price">${esc(money(r.price_paid))}</span>
           </div>`;
         }).join('');
@@ -1901,7 +1995,6 @@
         return;
       }
 
-      // ================= WRITTEN COMMENTS =================
       if (openMode === 'comments') {
         const withC = pub.filter(r => r.comment && String(r.comment).trim());
         const items = withC.length ? withC.slice(0, showN).map(r => {
@@ -1920,7 +2013,6 @@
         return;
       }
 
-      // ================= REVIEWS =================
       const avgOf = k => {
         const vals = pub.map(r => r[k]).filter(v => v !== null && v !== undefined);
         return { a: vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : 0, n: vals.length };
@@ -1980,7 +2072,6 @@
     }
 
     document.addEventListener('input', () => { syncDraft(); });
-
     document.addEventListener('change', (e) => {
       const el = e.target;
       if (el && el.classList && el.classList.contains('placeSel')) {
@@ -2014,18 +2105,15 @@
       const t = e.target.closest ? (e.target.closest('button, .st, a[data-call]') || e.target) : e.target;
       const ds = t.dataset || {};
 
-      // "Call" button: the phone dialer opens as usual; the press is logged (not for the admin)
       if (ds.call) {
         if (myUid && !isAdmin) sb.from('call_log').insert({ company_id: String(ds.call) }).then(() => {});
         return;
       }
       if (ds.actfilter) { usersFilter = !usersFilter; renderUsers(); return; }
-
       if (ds.usersclose) { usersOpen = false; renderUsers(); return; }
       if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
       if (ds.more) { showN += 10; paintDetail(); return; }
 
-      // viewer: ONE button asks the admin for permission
       if (ds.reqperm) {
         t.disabled = true;
         const { error } = await sb.from('review_requests').insert({ user_id: myUid, phone: myPhone || null });
@@ -2035,7 +2123,6 @@
         toast(t_('reqPermSent'), false, 4000);
         return;
       }
-      // admin: allow / refuse a writer, mark a new account as seen
       if (ds.permok) {
         t.disabled = true;
         const { error } = await sb.rpc('admin_set_reviewer', { target: ds.permok, allow: true });
@@ -2085,11 +2172,8 @@
         const d = r.data || {};
         const row = { name: d.name, city: d.city || null, description: d.description || null, phone: d.phone || null, email: d.email || null };
         let err = null;
-        if (r.kind === 'add') {
-          err = (await sb.from('companies').insert(row)).error;
-        } else {
-          err = (await sb.from('companies').update(row).eq('id', r.company_id)).error;
-        }
+        if (r.kind === 'add') err = (await sb.from('companies').insert(row)).error;
+        else err = (await sb.from('companies').update(row).eq('id', r.company_id)).error;
         if (err) { alert(err.message); t.disabled = false; return; }
         await sb.from('change_requests').delete().eq('id', r.id);
         await loadCompanies();
@@ -2111,11 +2195,7 @@
       }
 
       const dayEl = e.target.closest ? e.target.closest('[data-day]') : null;
-      if (dayEl && pickMode) {
-        setTripDate(dayEl.dataset.day);
-        closeCal();
-        return;
-      }
+      if (dayEl && pickMode) { setTripDate(dayEl.dataset.day); closeCal(); return; }
       if (ds.pickdate) { openPick(); return; }
 
       if (ds.cal) {
@@ -2273,7 +2353,6 @@
         if (isBanned) return showMsg(msg, t_('bannedMsg'), false, 5000);
         if (!isAdmin && !canReview) return showMsg(msg, t_('noPermNow'), false, 5000);
         syncDraft();
-
         if (!hasAnyAnswer()) return toast(t_('needOne'), true);
 
         const fromV = readPlace('revFrom'), toV = readPlace('revTo');
@@ -2296,6 +2375,7 @@
           trip_from: fromV,
           trip_to: toV,
           price_paid,
+          round_trip: price_paid !== null ? !!$('revRound').checked : false,
           price: null,
           updated_at: new Date().toISOString()
         };
@@ -2361,7 +2441,6 @@
 
     applyStaticText();
 
-    // the admin inbox refreshes itself every minute (does not disturb open forms)
     setInterval(async () => {
       if (!isAdmin || document.hidden) return;
       await Promise.all([loadUsers(), loadPermReqs()]);
