@@ -57,7 +57,6 @@
     .pricewrap:focus-within { outline:2px solid #c7d6ee; border-color:var(--navy); }
     .pricewrap .dol { font-weight:800; color:var(--navy); font-size:18px; }
     .pricewrap input { border:0; margin:0; outline:none !important; background:transparent; }
-    .tollnote span { display:inline-block; border:2px solid var(--red); border-radius:999px; padding:2px 14px; font-size:12px; font-weight:800; color:var(--red); margin:4px 0 2px; background:#fff5f4; }
     .rtcheck { display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; color:var(--navy); margin-top:8px; padding:8px 12px; background:#fff; border:1.5px solid #cdd5df; border-radius:10px; }
     .rtbadge { background:#e8f0ff; color:var(--navy); border:1px solid #b9cdf3; border-radius:999px; padding:1px 10px; font-size:12px; font-weight:800; }
 
@@ -210,7 +209,7 @@
     .rtgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:10px; margin-bottom:6px; }
     .rt { background:#eef6ff; border:1px solid #cfe2fb; border-radius:12px; padding:12px; }
     .rt-route { font-weight:700; color:var(--navy); font-size:14px; display:flex; align-items:center; gap:6px; }
-    .rt-price { font-size:26px; font-weight:800; color:#0e8a9a; margin-top:4px; direction:ltr; }
+    .rt-price { font-size:26px; font-weight:800; color:#0e8a9a; margin-top:4px; margin-bottom:12px; direction:ltr; }
     .rt-sub { font-size:12px; color:#5b6776; margin-top:2px; }
     .prow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid #e3e8ef; font-size:14px; }
     .prow:last-child { border-bottom:0; }
@@ -235,7 +234,6 @@
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
 
-    /* ----- welcome letter ----- */
     .welcome { max-width:680px; margin:14px auto 18px; padding:0; overflow:hidden; border:0; border-radius:20px; box-shadow:0 12px 34px rgba(18,41,77,.16); }
     .wHead { background:var(--top); color:#fff; padding:26px 22px 22px; text-align:center; }
     .wHead .wlogo { font-size:38px; line-height:1; }
@@ -400,7 +398,7 @@
     <div id="companies"></div>
   </div>
 
-  <div id="ver">CarReviews v8.5</div>
+  <div id="ver">CarReviews v8.6</div>
 
   <script>
     const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
@@ -449,7 +447,7 @@
       ['Far Rockaway','פאר ראקאוועי'], ['Kew Gardens Hills','קיו גארדענס הילס'],
       ['Manhattan','מאנהעטען'], ['Staten Island','סטעטן איילענד'], ['Montreal','מאנטריאל'],
       ['Swan Lake','סוואן לעיק'], ['Woodridge','וואודרידזש'], ['Monticello','מאנטיסעלאו'],
-      ['Liberty','ליבערטי'], ['Loch Sheldrake','לאך שעלדרעיק'], ['Kiamesha Lake','קיאמישא לעיק'],
+      ['Liberty','ליבערטי'], ['Loch Sheldrake','לאק שעלדרעיק'], ['Kiamesha Lake','קיאמישא לעיק'],
       ['Fallsburg','פאלסבורג'], ['South Fallsburg','סאוט פאלסבורג'], ['Hurleyville','הערליוויל'],
       ['Parksville','פארקסוויל'], ['Spring Glen','ספרינג גלען'], ['Ellenville','עלענוויל'],
       ['Kerhonkson','קערהאנקסאן'], ['Napanoch','נאפאנאטש'], ['Mountaindale','מאונטיינדייל'],
@@ -529,7 +527,8 @@
         noPermNow: 'You do not have permission to write reviews yet.',
         callBtn: 'Call', actCalls: 'Calls', actReviews: 'Reviews', actLogin: 'Last login',
         actIdleOnly: 'Only: calls but no reviews', actAll: 'Show everyone', actIdle: 'Calls but no reviews',
-        roundTrip: 'Round trip', tollNote: 'Not including toll',
+        roundTrip: 'Round trip', tollIncl: 'Toll included', firstHourFree: 'First hour was free', hourlyPrice: 'Price for each hour',
+        langBlock: 'Reviews can only be written in English or Yiddish. Please switch the language.',
         sig_perfect: 'All 5 stars + recommend', sig_burst: '3+ reviews by this user in 24h',
         sig_cluster: '4+ reviews on this company in 48h', sig_dupe: 'Same text as another review',
         msgBtn: 'Message to admin', msgTitle: 'Send a note to the admin', msgPh: 'Write your note...', msgSend: 'Send',
@@ -537,7 +536,7 @@
         search: 'Search companies...',
         sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
-        reviews: 'Reviews', commentsBtn: 'Written comments', commentsTitle: 'Written comments', noComments: 'No written comments yet.',
+        reviews: 'Reviews', commentsBtn: 'Written comments', commentsTitle: 'Written comments', noComments: 'No written reviews yet.',
         pricesBtn: 'Prices', pricesTitle: 'What people paid', byRoute: 'By route', avg: 'avg', reportsWord: 'reports',
         allPriceReports: 'All price reports', noPrices: 'No prices reported yet.', routeUnknown: 'Route not specified',
         showMore: 'Show more', detailsWord: 'Details',
@@ -599,9 +598,9 @@
         companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
         companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
         cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ', pickTod: 'קלײַבט די צײַט פֿון טאָג', pickDate: 'קלײַבט דעם טאָג פֿון דער נסיעה',
-        logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באַשטעטיקונג',
+        logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באשטעטיגונג',
         apprNote: 'אײַער בקשה גייט צום אַדמין. עס ווײַזט זיך אויף דער זייט נאָר נאָכדעם וואָס דער אַדמין באַשטעטיקט עס.',
-        reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאָגט פֿאָר אַ ענדערונג',
+        reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאגט פאר א טויש',
         reqTitle: 'באַשטעטיקונגען און הערות', reqAdd: 'נײַע קאָמפּאַני', reqEdit: 'ענדערונג', approve: 'באַשטעטיקן', reject: 'אָפּוואַרפֿן',
         confirmReject: 'אָפּוואַרפֿן די בקשה?',
         revKind: 'רעוויו צו באשטעטיקן', pendingTag: 'וואארט',
@@ -617,7 +616,8 @@
         noPermNow: 'איר האט נאך נישט קיין רשות צו שרייבן רעוויוס.',
         callBtn: 'רופט אן', actCalls: 'אנרופן', actReviews: 'רעוויוס', actLogin: 'לעצטע מאל אריינגעלאגירט',
         actIdleOnly: 'נאר די וואס רופן אבער שרייבן נישט', actAll: 'ווייזט אלע', actIdle: 'רופט אבער שרייבט נישט',
-        roundTrip: 'ראונד טריפ', tollNote: 'נישט אריינגערעכנט טאול',
+        roundTrip: 'ראונד טריפ', tollIncl: 'אריינגערעכנט טאול', firstHourFree: 'די ערשטע שעה איז געווען בחינם', hourlyPrice: 'וויפיל האט מען באצאלט יעדע שעה',
+        langBlock: 'מען קען שרייבן רעוויוס נאר אויף ענגליש אדער אידיש. ביטע טוישט די שפראך.',
         sig_perfect: 'אלע 5 שטערן + רעקאמענדירט', sig_burst: '3+ רעוויוס פון דעם באניצער אין 24 שעה',
         sig_cluster: '4+ רעוויוס אויף דער קאמפאני אין 48 שעה', sig_dupe: 'דער זעלבער טעקסט ווי אן אנדערער רעוויו',
         msgBtn: 'שיקט אַ הערה צום אַדמין', msgTitle: 'שיקט אַ הערה צום אַדמין', msgPh: 'שרײַבט דאָ אײַער הערה...', msgSend: 'שיקן',
@@ -625,8 +625,8 @@
         search: 'זוכט קאָמפּאַניעס...',
         sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
         noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
-        reviews: 'רעוויוס', commentsBtn: 'געשריבענע רעוויוס', commentsTitle: 'געשריבענע רעוויוס', noComments: 'נאָך קיין געשריבענע רעוויוס נישט.',
-        pricesBtn: 'פּרײַזן', pricesTitle: 'וויפֿל מענטשן האָבן באַצאָלט', byRoute: 'לויט נסיעה', avg: 'דורכשניט', reportsWord: 'באַריכטן',
+        reviews: 'רעוויוס', commentsBtn: 'געשריבענע רעוויוס', commentsTitle: 'געשריבענע רעוויוס', noComments: 'נאך נישט דא קיין געשריבענע רעוויוס.',
+        pricesBtn: 'פּרײַזן', pricesTitle: 'וויפיל האט מען באצאלט', byRoute: 'לויט נסיעה', avg: 'דורכשניט', reportsWord: 'באַריכטן',
         allPriceReports: 'אַלע פּרײַז־באַריכטן', noPrices: 'נאָך קיין פּרײַזן נישט באַריכט.', routeUnknown: 'נסיעה נישט אָנגעגעבן',
         showMore: 'ווײַזט מער', detailsWord: 'פּרטים',
         writeBtn: 'שרײַבט אַ רעוויו', close: 'צומאַכן', edit: 'ענדערן', del: 'אויסמעקן',
@@ -705,7 +705,8 @@
         noPermNow: 'У вас пока нет разрешения писать отзывы.',
         callBtn: 'Позвонить', actCalls: 'Звонки', actReviews: 'Отзывы', actLogin: 'Последний вход',
         actIdleOnly: 'Только: звонят, но не пишут', actAll: 'Показать всех', actIdle: 'Звонит, но не пишет',
-        roundTrip: 'Туда и обратно', tollNote: 'Без учёта платной дороги',
+        roundTrip: 'Туда и обратно', tollIncl: 'Платная дорога включена', firstHourFree: 'Первый час бесплатно', hourlyPrice: 'Цена за каждый час',
+        langBlock: 'Отзывы можно писать только на английском или идише. Смените язык.',
         sig_perfect: 'Все 5 звёзд + рекомендует', sig_burst: '3+ отзыва от этого пользователя за 24 ч',
         sig_cluster: '4+ отзыва на эту компанию за 48 ч', sig_dupe: 'Тот же текст, что в другом отзыве',
         msgBtn: 'Сообщение админу', msgTitle: 'Написать админу', msgPh: 'Напишите сообщение...', msgSend: 'Отправить',
@@ -793,7 +794,8 @@
         noPermNow: 'Aún no tienes permiso para escribir reseñas.',
         callBtn: 'Llamar', actCalls: 'Llamadas', actReviews: 'Reseñas', actLogin: 'Último acceso',
         actIdleOnly: 'Solo: llaman pero no escriben', actAll: 'Mostrar todos', actIdle: 'Llama pero no escribe',
-        roundTrip: 'Ida y vuelta', tollNote: 'Sin incluir peaje',
+        roundTrip: 'Ida y vuelta', tollIncl: 'Peaje incluido', firstHourFree: 'Primera hora gratis', hourlyPrice: 'Precio por cada hora',
+        langBlock: 'Las reseñas solo se pueden escribir en inglés o yidis. Cambia el idioma.',
         sig_perfect: 'Las 5 estrellas + recomienda', sig_burst: '3+ reseñas de este usuario en 24 h',
         sig_cluster: '4+ reseñas de esta empresa en 48 h', sig_dupe: 'Mismo texto que otra reseña',
         msgBtn: 'Mensaje al administrador', msgTitle: 'Enviar una nota al administrador', msgPh: 'Escribe tu nota...', msgSend: 'Enviar',
@@ -801,7 +803,7 @@
         search: 'Buscar empresas...',
         sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
-        reviews: 'Reseñas', commentsBtn: 'Comentarios escritos', commentsTitle: 'Comentarios escritos', noComments: 'Aún no hay comentarios escritos.',
+        reviews: 'Reseñas', commentsBtn: 'Comentarios escritos', commentsTitle: 'Comentarios escritos', noComments: 'Aún no hay reseñas escritas.',
         pricesBtn: 'Precios', pricesTitle: 'Lo que pagó la gente', byRoute: 'Por ruta', avg: 'prom.', reportsWord: 'reportes',
         allPriceReports: 'Todos los precios reportados', noPrices: 'Aún no hay precios.', routeUnknown: 'Ruta no indicada',
         showMore: 'Ver más', detailsWord: 'Detalles',
@@ -875,6 +877,7 @@
     const LEGACY_TAGS = ['on_time', 'late'];
     const TODS = ['morning', 'afternoon', 'evening', 'night'];
     const isPos = k => POS_TAGS.includes(k);
+    const writeLangBlocked = () => !isAdmin && (lang === 'ru' || lang === 'es');
 
     let isSignup = false, openId = null, openMode = 'view', editingId = null, draft = {};
     let myUid = null, myEmail = '', myPhone = '', isAdmin = false, isBanned = false, loggedIn = false;
@@ -915,6 +918,23 @@
       for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
       const c = CO_COLORS[h % CO_COLORS.length];
       return `background:${c[0]};border:2px solid ${c[1]};border-inline-start:7px solid ${c[2]};`;
+    }
+
+    // ---------- time spent per language (this browser) -> alert to the admin ----------
+    function llGet() { try { return JSON.parse(localStorage.getItem('langSecs')) || {}; } catch (e) { return {}; } }
+    setInterval(() => {
+      if (document.hidden) return;
+      const o = llGet(); o[lang] = (o[lang] || 0) + 10;
+      localStorage.setItem('langSecs', JSON.stringify(o));
+    }, 10000);
+    async function langAlertIfNeeded() {
+      if (isAdmin || !myUid || lang === 'ru' || lang === 'es') return;
+      const o = llGet(), other = (o.ru || 0) + (o.es || 0), mine = (o.en || 0) + (o.yi || 0);
+      if (other < 300 || other <= mine * 2) return;
+      const k = 'langAlert_' + myUid, today = new Date().toDateString();
+      if (localStorage.getItem(k) === today) return;
+      localStorage.setItem(k, today);
+      await sb.from('admin_messages').insert({ user_id: myUid, body: 'ווארענונג: דער באניצער נוצט רוב צייט רוסיש/ספאניש, אבער האט זיך איבערגעטוישט צו ענגליש/אידיש כדי צו שרייבן א רעוויו.' });
     }
 
     // ================= Welcome letter =================
@@ -1779,7 +1799,10 @@
       const bits = [];
       if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
       if (hasPrice(r)) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
+      if (hasPrice(r) && r.toll_included) bits.push(`<span class="rtbadge">${esc(t_('tollIncl'))}</span>`);
       if (hasPrice(r) && r.round_trip) bits.push(rtBadge(r));
+      if (hasPrice(r) && r.round_trip && r.first_hour_free) bits.push(`<span class="rtbadge">${esc(t_('firstHourFree'))}</span>`);
+      if (hasPrice(r) && r.round_trip && r.hourly_price != null) bits.push(`<span class="rtbadge">${esc(t_('hourlyPrice'))}: ${esc(money(r.hourly_price))}</span>`);
       return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
     }
 
@@ -1828,6 +1851,9 @@
       draft.to = readPlace('revTo') || '';
       draft.price = $('revPrice').value;
       draft.round = $('revRound') ? $('revRound').checked : false;
+      draft.toll = $('revToll') ? $('revToll').checked : false;
+      draft.free = $('revFree') ? $('revFree').checked : false;
+      draft.hour = $('revHour') ? $('revHour').value : '';
       draft.comment = $('revComment').value;
     }
     function hasAnyAnswer() {
@@ -1861,6 +1887,9 @@
         draft.from = mine.trip_from || '';
         draft.to = mine.trip_to || '';
         draft.round = !!mine.round_trip;
+        draft.toll = !!mine.toll_included;
+        draft.free = !!mine.first_hour_free;
+        draft.hour = (mine.hourly_price !== null && mine.hourly_price !== undefined) ? String(mine.hourly_price) : '';
         draft.price = (mine.price_paid !== null && mine.price_paid !== undefined) ? String(mine.price_paid) : '';
       }
       paintDetail();
@@ -1878,6 +1907,8 @@
 
       if (openMode === 'write') {
         if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
+        if (writeLangBlocked()) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('langBlock'))}</div>`; return; }
+        langAlertIfNeeded();
 
         if (!isAdmin && !canReview) {
           el.innerHTML = head(esc(t_('writeReview'))) + `
@@ -1928,9 +1959,14 @@
             </div>
             <div class="field" data-field="price">
               <label class="plabel" for="revPrice">${esc(t_('pricePh'))}</label>
-              <div class="tollnote"><span>${esc(t_('tollNote'))}</span></div>
               <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.price || '')}"></div>
+              <label class="rtcheck"><input type="checkbox" id="revToll" ${draft.toll ? 'checked' : ''}> <span>${esc(t_('tollIncl'))}</span></label>
               <label class="rtcheck"><input type="checkbox" id="revRound" ${draft.round ? 'checked' : ''}> <span>${esc(t_('roundTrip'))}</span></label>
+              <div id="rtExtra" class="${draft.round ? '' : 'hidden'}">
+                <label class="rtcheck"><input type="checkbox" id="revFree" ${draft.free ? 'checked' : ''}> <span>${esc(t_('firstHourFree'))}</span></label>
+                <label class="plabel" for="revHour" style="margin-top:8px">${esc(t_('hourlyPrice'))}</label>
+                <div class="pricewrap"><span class="dol">$</span><input id="revHour" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.hour || '')}"></div>
+              </div>
             </div>
           </div>`;
 
@@ -2074,6 +2110,7 @@
     document.addEventListener('input', () => { syncDraft(); });
     document.addEventListener('change', (e) => {
       const el = e.target;
+      if (el && el.id === 'revRound' && $('rtExtra')) $('rtExtra').classList.toggle('hidden', !el.checked);
       if (el && el.classList && el.classList.contains('placeSel')) {
         const txt = $(el.id + 'Txt');
         if (txt) {
@@ -2350,6 +2387,8 @@
 
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
+        if (writeLangBlocked()) return toast(t_('langBlock'), true);
+        langAlertIfNeeded();
         if (isBanned) return showMsg(msg, t_('bannedMsg'), false, 5000);
         if (!isAdmin && !canReview) return showMsg(msg, t_('noPermNow'), false, 5000);
         syncDraft();
@@ -2366,6 +2405,8 @@
         const dv = $('revDate').value;
         if (dv && dv > isoOf(new Date())) return toast(t_('pickDate'), true);
 
+        const isRound = price_paid !== null && $('revRound').checked;
+        const hourRaw = $('revHour') ? $('revHour').value.trim() : '';
         const vals = {
           comment: $('revComment').value.trim() || null,
           recommend: (draft.rec === true || draft.rec === false) ? draft.rec : null,
@@ -2375,7 +2416,10 @@
           trip_from: fromV,
           trip_to: toV,
           price_paid,
-          round_trip: price_paid !== null ? !!$('revRound').checked : false,
+          round_trip: isRound,
+          toll_included: price_paid !== null ? !!$('revToll').checked : false,
+          first_hour_free: isRound ? !!$('revFree').checked : false,
+          hourly_price: (isRound && hourRaw !== '' && isFinite(Number(hourRaw))) ? Math.round(Number(hourRaw) * 100) / 100 : null,
           price: null,
           updated_at: new Date().toISOString()
         };
