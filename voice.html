@@ -57,7 +57,7 @@
 
 <script>
 const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
+const SUPABASE_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const STATUSES = [
@@ -87,9 +87,8 @@ async function doLogout() {
 async function init() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return;
-  // kontrol: ist der user in admin_users?
-  const { data: adm } = await sb.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
-  if (!adm) {
+  const { data: adm, error: admErr } = await sb.rpc('is_admin');
+  if (admErr || adm !== true) {
     document.getElementById('msg').textContent = 'דער אקאונט איז נישט קיין אדמין';
     await sb.auth.signOut();
     return;
