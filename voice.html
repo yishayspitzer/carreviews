@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="yi" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>רעקארדירטע הערות - אדמין</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: Arial, sans-serif; background:#f4f6f8; margin:0; padding:16px; color:#222; }
+  h1 { margin:0 0 12px; font-size:22px; }
+  .box { background:#fff; border-radius:10px; padding:14px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+  input, textarea, select, button { font-size:15px; padding:8px; border-radius:6px; border:1px solid #bbb; }
+  textarea { width:100%; box-sizing:border-box; min-height:70px; }
+  input[type=text], input[type=email], input[type=password] { width:100%; box-sizing:border-box; margin-bottom:8px; }
+  button { cursor:pointer; background:#1a73e8; color:#fff; border:none; margin:4px 0 0 6px; }
+  button.red { background:#d93025; }
+  button.gray { background:#666; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .meta { color:#555; font-size:13px; margin-bottom:6px; }
+  .st-new { border-right:6px solid #f9ab00; }
+  .st-typed { border-right:6px solid #1a73e8; }
+  .st-approved { border-right:6px solid #188038; }
+  .st-rejected { border-right:6px solid #d93025; opacity:.75; }
+  audio { width:100%; margin:6px 0; }
+  .hide { display:none; }
+  #msg { color:#d93025; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<h1>רעקארדירטע הערות</h1>
+
+<div id="loginBox" class="box">
+  <input type="email" id="email" placeholder="אימעיל" dir="ltr">
+  <input type="password" id="pass" placeholder="פאסווארד" dir="ltr">
+  <button onclick="doLogin()">אריינלאגן</button>
+  <div id="msg"></div>
+</div>
+
+<div id="app" class="hide">
+  <div class="box row">
+    <label>סטאטוס:
+      <select id="filter" onchange="load()">
+        <option value="">אלע</option>
+        <option value="new">נייע</option>
+        <option value="typed">אפגעשריבן</option>
+        <option value="approved">באשטעטיגט</option>
+        <option value="rejected">אפגעווארפן</option>
+      </select>
+    </label>
+    <button class="gray" onclick="load()">רעפרעש</button>
+    <button class="gray" onclick="doLogout()">ארויסלאגן</button>
+    <span id="count"></span>
+  </div>
+  <div id="list"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const STATUSES = [
+  ['new', 'נייע'],
+  ['typed', 'אפגעשריבן'],
+  ['approved', 'באשטעטיגט'],
+  ['rejected', 'אפגעווארפן']
+];
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function doLogin() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('pass').value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { document.getElementById('msg').textContent = error.message; return; }
+  await init();
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  location.reload();
+}
+
+async function init() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  // kontrol: ist der user in admin_users?
+  const { data: adm } = await sb.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+  if (!adm) {
+    document.getElementById('msg').textContent = 'דער אקאונט איז נישט קיין אדמין';
+    await sb.auth.signOut();
+    return;
+  }
+  document.getElementById('loginBox').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  load();
+}
+
+async function load() {
+  const f = document.getElementById('filter').value;
+  let q = sb.from('voice_messages').select('*').order('created_at', { ascending: false }).limit(200);
+  if (f) q = q.eq('status', f);
+  const { data, error } = await q;
+  const list = document.getElementById('list');
+  if (error) { list.innerHTML = '<div class="box">' + esc(error.message) + '</div>'; return; }
+  document.getElementById('count').textContent = data.length + ' הערות';
+  list.innerHTML = data.map(card).join('') || '<div class="box">נאך נישט דא קיין הערות</div>';
+}
+
+function card(m) {
+  const d = new Date(m.created_at).toLocaleString('he-IL');
+  const opts = STATUSES.map(([v, t]) =>
+    `<option value="${v}" ${m.status === v ? 'selected' : ''}>${t}</option>`).join('');
+  const known = STATUSES.some(([v]) => v === m.status);
+  const extra = (!known && m.status) ? `<option value="${esc(m.status)}" selected>${esc(m.status)}</option>` : '';
+  return `
+  <div class="box st-${esc(m.status)}" id="c-${m.id}">
+    <div class="meta">${d} | ${m.duration_seconds ?? '?'} סעק | ${esc(m.from_number || '')}</div>
+    <button onclick="play('${m.id}','${esc(m.storage_path)}')">▶ שפילן</button>
+    <div id="a-${m.id}"></div>
+    <input type="text" id="n-${m.id}" placeholder="נאמען פונעם רעוויווער" value="${esc(m.reviewer_name)}">
+    <textarea id="t-${m.id}" placeholder="אפגעשריבענער טעקסט">${esc(m.typed_text)}</textarea>
+    <textarea id="x-${m.id}" placeholder="אדמין נאטיצן">${esc(m.admin_notes)}</textarea>
+    <div class="row">
+      <select id="s-${m.id}">${extra}${opts}</select>
+      <button onclick="save('${m.id}')">שפייכערן</button>
+      <button class="red" onclick="del('${m.id}','${esc(m.storage_path)}')">אויסמעקן</button>
+    </div>
+  </div>`;
+}
+
+async function play(id, path) {
+  const { data, error } = await sb.storage.from('voice-messages').createSignedUrl(path, 600);
+  const box = document.getElementById('a-' + id);
+  if (error) { box.textContent = error.message; return; }
+  box.innerHTML = `<audio controls autoplay src="${data.signedUrl}"></audio>`;
+}
+
+async function save(id) {
+  const patch = {
+    reviewer_name: document.getElementById('n-' + id).value.trim() || null,
+    typed_text: document.getElementById('t-' + id).value.trim() || null,
+    admin_notes: document.getElementById('x-' + id).value.trim() || null,
+    status: document.getElementById('s-' + id).value
+  };
+  const { error } = await sb.from('voice_messages').update(patch).eq('id', id);
+  if (error) { alert(error.message); return; }
+  load();
+}
+
+async function del(id, path) {
+  if (!confirm('זיכער אויסמעקן די הערה?')) return;
+  if (path) await sb.storage.from('voice-messages').remove([path]);
+  const { error } = await sb.from('voice_messages').delete().eq('id', id);
+  if (error) { alert(error.message); return; }
+  load();
+}
+
+sb.auth.getSession().then(({ data }) => { if (data.session) init(); });
+</script>
+</body>
+</html>
