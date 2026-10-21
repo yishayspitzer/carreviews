@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
 <title>CarReviews — טעלעפאן אדמין</title>
 <style>
   *{box-sizing:border-box}
@@ -21,6 +22,7 @@
   .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;color:#fff;margin:0 3px}
   .b-green{background:#16a34a}.b-red{background:#dc2626}.b-gray{background:#64748b}.b-orange{background:#ea580c}
   .ltr{direction:ltr;unicode-bidi:plaintext;display:inline-block}
+  input.ltr{display:block;text-align:left}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .muted{color:#64748b;font-size:13px}
   .switch{display:flex;gap:12px;align-items:flex-start}
@@ -35,11 +37,11 @@
 
 <div id="loginView" style="max-width:380px;margin:60px auto;padding:14px">
   <div class="card">
-    <h2>אריינלאגין (אדמין)</h2>
+    <h2>אריינלאגין (נאר אדמינס)</h2>
     <label>אימעיל</label>
-    <input id="email" type="email" class="ltr" style="width:100%">
+    <input id="email" type="email" class="ltr">
     <label>פּאסווארט</label>
-    <input id="pass" type="password" class="ltr" style="width:100%">
+    <input id="pass" type="password" class="ltr">
     <button onclick="login()">אריין</button>
     <div id="loginMsg" class="muted"></div>
   </div>
@@ -60,9 +62,10 @@
 
     <!-- סוויטשעס -->
     <section id="p-settings" class="hidden">
+      <div class="card muted">נאר איינער פון די צוויי קען זײַן אן אינאיינעם. ביידע קענען זײַן אויס.</div>
       <div class="card">
         <div class="switch">
-          <input type="checkbox" id="swRequire" onchange="saveSwitch('phone_require_approval', this.checked)">
+          <input type="checkbox" id="swRequire" onchange="onSwitch('phone_require_approval', this)">
           <div>
             <b>נאר נומערן וואס איך האב דערלויבט</b>
             <div class="muted">אן = נאר נומערן וואס דו האסט דערלויבט קענען רעוויוען. אומבאקאנטע נומערן ווערן געשפייכלערט אין דער ליסטע, און הערן "נישט גילטיג".<br>
@@ -72,7 +75,7 @@
       </div>
       <div class="card">
         <div class="switch">
-          <input type="checkbox" id="swAuto" onchange="saveSwitch('phone_reviews_auto_approve', this.checked)">
+          <input type="checkbox" id="swAuto" onchange="onSwitch('phone_reviews_auto_approve', this)">
           <div>
             <b>טעלעפאן רעוויוס גיין גלייך אויפן זייטל</b>
             <div class="muted">אן = יעדער רעוויו פון טעלעפאן ווערט גלייך געוויזן.<br>
@@ -140,6 +143,13 @@ function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.
 function fmtDate(d){ if(!d) return ''; try{ return new Date(d).toLocaleString('en-US'); }catch(e){ return d; } }
 function normPhone(p){ const d=String(p||'').replace(/\D/g,''); if(d.length===10) return '+1'+d; if(d.length===11 && d[0]==='1') return '+'+d; return d ? '+'+d : ''; }
 function showPhone(p){ return esc(p||''); }
+function errMsg(e){
+  const m = (e && e.message) || '';
+  if(m.includes('HAS_REVIEWS')) return 'לוייט נישט: דער נומער האט שוין רעוויוס. נוץ "בלאקירן".';
+  if(m.includes('EXISTS')) return 'דער נומער איז שוין דא אין דער ליסטע';
+  if(m.includes('not admin')) return 'נישט אדמין';
+  return 'טעות: ' + m;
+}
 
 async function login(){
   const email=document.getElementById('email').value.trim();
@@ -178,21 +188,32 @@ function showTab(name){
   if(name==='messages') loadMessages();
 }
 
-/* ---------- סוויטשעס ---------- */
+/* ---------- סוויטשעס (נאר איינער אן) ---------- */
+async function setSetting(key, val){
+  const { error } = await sb.rpc('admin_set_setting', { p_key:key, p_value: val ? 'true' : 'false' });
+  if(error){ toast('טעות: '+error.message); return false; }
+  return true;
+}
 async function loadSettings(){
   const { data, error } = await sb.rpc('admin_phone_settings');
   if(error){ toast('טעות: '+error.message); return; }
   const s = data || {};
-  // defaults: require_approval = true, auto_approve = false
   const req = (s.phone_require_approval === undefined) ? true : String(s.phone_require_approval) === 'true';
-  const auto = (s.phone_reviews_auto_approve === undefined) ? false : String(s.phone_reviews_auto_approve) === 'true';
+  let auto = (s.phone_reviews_auto_approve === undefined) ? false : String(s.phone_reviews_auto_approve) === 'true';
+  if(req && auto){ auto = false; await setSetting('phone_reviews_auto_approve', false); }
   document.getElementById('swRequire').checked = req;
   document.getElementById('swAuto').checked = auto;
 }
-async function saveSwitch(key, val){
-  const { error } = await sb.rpc('admin_set_setting', { p_key:key, p_value: val ? 'true' : 'false' });
-  if(error){ toast('טעות: '+error.message); loadSettings(); return; }
-  toast('געשפייכערט ✅');
+async function onSwitch(key, el){
+  const otherEl = document.getElementById(key==='phone_require_approval' ? 'swAuto' : 'swRequire');
+  const otherKey = key==='phone_require_approval' ? 'phone_reviews_auto_approve' : 'phone_require_approval';
+  let ok = true;
+  if(el.checked && otherEl.checked){
+    otherEl.checked = false;
+    ok = await setSetting(otherKey, false);
+  }
+  if(ok) ok = await setSetting(key, el.checked);
+  if(ok) toast('געשפייכערט ✅'); else loadSettings();
 }
 
 /* ---------- נומערן ---------- */
@@ -211,19 +232,22 @@ function renderPhones(){
              : '<span class="badge b-orange">ווארט אויף דערלויבן</span>';
     return `<div class="card">
       <div class="row" style="justify-content:space-between">
-        <div><b class="ltr">${showPhone(p.phone)}</b> ${st}<span class="badge b-gray">${p.n_reviews||0} רעוויוס</span></div>
+        <div>${st}<span class="badge b-gray">${p.n_reviews||0} רעוויוס</span></div>
         <div class="muted">לעצטע רוף: ${esc(fmtDate(p.last_call)) || '—'}</div>
       </div>
-      <label>נאמען</label>
-      <input id="pn${i}" value="${esc(p.name||'')}">
+      <div class="row">
+        <div style="flex:1;min-width:180px"><label>נומער</label><input id="pp${i}" class="ltr" value="${esc(p.phone||'')}"></div>
+        <div style="flex:1;min-width:180px"><label>נאמען</label><input id="pn${i}" value="${esc(p.name||'')}"></div>
+      </div>
       <div>
+        <button onclick="editPhone(${i})">💾 שפייכערן ענדערונג</button>
         ${p.allowed && !p.blocked
           ? `<button class="orange" onclick="setPhone(${i},false,false)">נעם אוועק דערלויבן</button>`
           : `<button class="green" onclick="setPhone(${i},true,false)">דערלויבן</button>`}
         ${p.blocked
           ? `<button class="gray" onclick="setPhone(${i},${!!p.allowed},false)">אנטבלאקירן</button>`
           : `<button class="red" onclick="setPhone(${i},false,true)">בלאקירן</button>`}
-        <button onclick="setPhone(${i},${!!p.allowed},${!!p.blocked})">שפייכערן נאמען</button>
+        <button class="red" onclick="delPhone(${i})">🗑 מעק אויס</button>
       </div>
     </div>`;
   }).join('');
@@ -232,15 +256,31 @@ async function setPhone(i, allowed, blocked){
   const p = phonesData[i];
   const name = document.getElementById('pn'+i).value.trim();
   const { error } = await sb.rpc('admin_phone_user_save', { p_phone:p.phone, p_name:name, p_allowed:allowed, p_blocked:blocked });
-  if(error){ toast('טעות: '+error.message); return; }
+  if(error){ toast(errMsg(error)); return; }
   toast('געשפייכערט ✅'); loadPhones();
+}
+async function editPhone(i){
+  const p = phonesData[i];
+  const newPhone = normPhone(document.getElementById('pp'+i).value);
+  const name = document.getElementById('pn'+i).value.trim();
+  if(newPhone.length < 11){ toast('שרייב א פולן נומער (10 ציפערן)'); return; }
+  const { error } = await sb.rpc('admin_phone_user_update', { p_old:p.phone, p_new:newPhone, p_name:name });
+  if(error){ toast(errMsg(error)); return; }
+  toast('געשפייכערט ✅'); loadPhones();
+}
+async function delPhone(i){
+  const p = phonesData[i];
+  if(!confirm('זיכער אויסמעקן דעם נומער ' + p.phone + '?')) return;
+  const { error } = await sb.rpc('admin_phone_user_delete', { p_phone:p.phone });
+  if(error){ toast(errMsg(error)); return; }
+  toast('אויסגעמעקט'); loadPhones();
 }
 async function addPhone(){
   const phone = normPhone(document.getElementById('newPhone').value);
   const name = document.getElementById('newName').value.trim();
   if(phone.length < 11){ toast('שרייב א פולן נומער (10 ציפערן)'); return; }
   const { error } = await sb.rpc('admin_phone_user_save', { p_phone:phone, p_name:name, p_allowed:true, p_blocked:false });
-  if(error){ toast('טעות: '+error.message); return; }
+  if(error){ toast(errMsg(error)); return; }
   document.getElementById('newPhone').value=''; document.getElementById('newName').value='';
   toast('צוגעלייגט ✅'); loadPhones();
 }
