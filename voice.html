@@ -5,125 +5,163 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>CarReviews — טעלעפאן אדמין</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box}
-  body{font-family:Arial,Helvetica,sans-serif;background:#f1f5f9;margin:0;color:#0f172a}
-  header{background:linear-gradient(90deg,#1d4ed8,#0891b2);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-  header h1{font-size:18px;margin:0}
-  main{max-width:900px;margin:0 auto;padding:14px}
-  .card{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:14px;margin-bottom:12px}
-  input,select,textarea,button{font-size:15px;font-family:inherit}
-  input,select,textarea{width:100%;padding:8px;border:1px solid #94a3b8;border-radius:6px;margin:4px 0 8px}
-  textarea{resize:vertical;max-width:100%}
-  button{padding:8px 14px;border:0;border-radius:6px;cursor:pointer;background:#1d4ed8;color:#fff;margin:2px}
-  button.green{background:#16a34a} button.red{background:#dc2626} button.gray{background:#64748b} button.orange{background:#ea580c}
-  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-  .tabs button{background:#fff;color:#1d4ed8;border:2px solid #1d4ed8}
-  .tabs button.active{background:#1d4ed8;color:#fff}
-  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;color:#fff;margin:0 3px}
-  .b-green{background:#16a34a}.b-red{background:#dc2626}.b-gray{background:#64748b}.b-orange{background:#ea580c}
-  .ltr{direction:ltr;unicode-bidi:plaintext;display:inline-block}
-  input.ltr{display:block;text-align:left}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .muted{color:#64748b;font-size:13px}
-  .switch{display:flex;gap:12px;align-items:flex-start}
-  .switch input{width:26px;height:26px;margin-top:4px;flex:none}
-  .hidden{display:none}
-  #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:8px;display:none;z-index:50}
-  audio{width:100%;margin:6px 0}
+:root{--navy:#0b1f3a;--navy2:#122c52;--blue:#2563eb;--teal:#0891b2;--gold:#f59e0b;--green:#16a34a;--red:#dc2626;--orange:#ea580c;--purple:#7c3aed;
+  --bg:#f3f6fb;--card:#fff;--line:#e2e8f0;--text:#0f172a;--muted:#64748b;--shadow:0 6px 24px rgba(15,23,42,.06);--r:14px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Rubik,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px}
+button,input,select,textarea{font-family:inherit;font-size:15px}
+.hidden{display:none!important}
+.ltr{direction:ltr;unicode-bidi:plaintext;display:inline-block}
+svg.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:none}
+
+/* ---------- login ---------- */
+#loginView{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(circle at 20% 20%,#1e3a8a 0,transparent 45%),radial-gradient(circle at 80% 80%,#0e7490 0,transparent 45%),var(--navy)}
+.loginCard{width:min(420px,100%);background:#fff;border-radius:20px;padding:34px 30px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.loginCard .logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.loginCard .logo .mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff}
+.loginCard h1{font-size:22px;margin:0}
+.loginCard .sub{color:var(--muted);font-size:13px;margin:0 0 22px}
+label.f{display:block;font-weight:600;font-size:13px;color:#334155;margin:12px 0 5px}
+.in{width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:10px;background:#fff;outline:none;transition:.15s}
+.in:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+input.in.ltr{display:block;text-align:left}
+textarea.in{resize:vertical;max-width:100%;min-height:80px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border:0;border-radius:10px;cursor:pointer;font-weight:600;background:var(--blue);color:#fff;transition:.15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:default;transform:none}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn.green{background:var(--green)} .btn.red{background:var(--red)} .btn.orange{background:var(--orange)} .btn.gray{background:#64748b}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:#f8fafc}
+.btn.full{width:100%;justify-content:center;margin-top:18px;padding:12px}
+.err{color:var(--red);font-size:13px;margin-top:10px;min-height:18px}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+aside{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 22px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:16px}
+.brand .mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center}
+.brand b{display:block;font-size:17px} .brand small{color:#94a3b8;font-size:12px}
+nav button{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;border:0;border-radius:10px;background:transparent;color:#cbd5e1;cursor:pointer;text-align:start;font-weight:500;margin-bottom:4px;transition:.15s}
+nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+nav button.on{background:rgba(255,255,255,.14);color:#fff;font-weight:700}
+nav button .cnt{margin-inline-start:auto;background:var(--gold);color:#1a1a1a;border-radius:999px;font-size:11px;font-weight:800;padding:2px 8px;min-width:22px;text-align:center}
+nav button .cnt.red{background:var(--red);color:#fff}
+.me{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#94a3b8}
+.me .em{color:#fff;font-weight:600;word-break:break-all;display:block;margin-bottom:10px}
+.me .btn{width:100%;justify-content:center;background:rgba(255,255,255,.1)}
+main{padding:22px 26px 60px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.top h2{margin:0;font-size:24px;font-weight:800} .top p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.search{position:relative;min-width:260px}
+.search .ic{position:absolute;inset-inline-start:12px;top:12px;color:#94a3b8}
+.search input{padding-inline-start:38px}
+select.in{width:auto;padding:10px 32px 10px 12px}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.stat{display:flex;gap:14px;align-items:center;cursor:pointer;transition:.15s}
+.stat:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.1)}
+.stat .ico{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;flex:none}
+.stat .n{font-size:28px;font-weight:800;line-height:1}
+.stat .l{color:var(--muted);font-size:13px;margin-top:4px}
+.bg-blue{background:var(--blue)} .bg-teal{background:var(--teal)} .bg-gold{background:var(--gold)} .bg-green{background:var(--green)} .bg-red{background:var(--red)} .bg-orange{background:var(--orange)} .bg-purple{background:var(--purple)}
+.h3{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;margin:0 0 12px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.p-green{background:#dcfce7;color:#166534} .p-red{background:#fee2e2;color:#991b1b} .p-orange{background:#ffedd5;color:#9a3412}
+.p-gray{background:#f1f5f9;color:#334155} .p-blue{background:#dbeafe;color:#1e40af} .p-purple{background:#ede9fe;color:#5b21b6}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.empty .big{font-size:40px;margin-bottom:8px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.muted{color:var(--muted);font-size:13px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.sep{height:1px;background:var(--line);margin:12px 0}
+
+/* switches */
+.sw{display:flex;gap:16px;align-items:flex-start}
+.toggle{position:relative;width:52px;height:30px;flex:none;margin-top:2px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle span{position:absolute;inset:0;background:#cbd5e1;border-radius:999px;cursor:pointer;transition:.2s}
+.toggle span::before{content:'';position:absolute;width:24px;height:24px;top:3px;inset-inline-start:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.toggle input:checked+span{background:var(--green)}
+.toggle input:checked+span::before{transform:translateX(-22px)}
+.sw b{font-size:16px} .sw .muted{margin-top:4px;line-height:1.6}
+
+/* phones table */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:12px;color:var(--muted);text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr:hover td{background:#f8fafc}
+.num{font-weight:700;font-size:16px}
+.editbox{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:12px;margin-top:8px}
+@media (max-width:860px){.tbl thead{display:none}.tbl td{display:block;border:0;padding:4px 0}.tbl tr{display:block;border-bottom:1px solid var(--line);padding:12px 0}}
+
+/* reviews */
+.rev{border-inline-start:5px solid var(--blue)}
+.rev.pend{border-inline-start-color:var(--orange)}
+.stars{color:var(--gold);letter-spacing:1px;font-size:15px}
+.score{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;color:#fff;font-weight:800;font-size:17px}
+.kv{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#334155;margin-top:8px}
+.kv b{color:var(--text)}
+.cmt{background:#fffbeb;border-inline-start:3px solid var(--gold);padding:8px 12px;border-radius:8px;margin-top:10px;white-space:pre-wrap}
+audio{width:100%;margin:10px 0 2px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.cols{grid-template-columns:1fr}}
+
+/* toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:12px;display:none;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:600;align-items:center;gap:8px}
+#toast.ok{background:var(--green)} #toast.bad{background:var(--red)}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto;padding:14px}
+  .brand{padding-bottom:12px;margin-bottom:10px}
+  nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  nav button{width:auto;white-space:nowrap;margin:0}
+  .me{display:none}
+  main{padding:16px}
+  .search{min-width:0;flex:1}
+}
 </style>
 </head>
 <body>
 <div id="toast"></div>
 
-<div id="loginView" style="max-width:380px;margin:60px auto;padding:14px">
-  <div class="card">
-    <h2>אריינלאגין (נאר אדמינס)</h2>
-    <label>אימעיל</label>
-    <input id="email" type="email" class="ltr">
-    <label>פּאסווארט</label>
-    <input id="pass" type="password" class="ltr">
-    <button onclick="login()">אריין</button>
-    <div id="loginMsg" class="muted"></div>
+<div id="loginView">
+  <div class="loginCard">
+    <div class="logo"><div class="mark">${''}<svg class="ic" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <div><h1>CarReviews</h1><p class="sub">טעלעפאן אדמין · נאר פאר אדמינס</p></div></div>
+    <label class="f">אימעיל</label>
+    <input id="email" type="email" class="in ltr" autocomplete="username">
+    <label class="f">פּאסווארט</label>
+    <input id="pass" type="password" class="in ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn full" onclick="login()">אריינלאגין</button>
+    <div id="loginMsg" class="err"></div>
   </div>
 </div>
 
-<div id="appView" class="hidden">
-  <header>
-    <h1>📞 CarReviews — טעלעפאן אדמין</h1>
-    <button class="gray" onclick="logout()">ארויס</button>
-  </header>
+<div id="appView" class="app hidden">
+  <aside>
+    <div class="brand"><div class="mark"><svg class="ic" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <div><b>CarReviews</b><small>טעלעפאן אדמין</small></div></div>
+    <nav id="nav"></nav>
+    <div class="me"><span class="em ltr" id="meEmail"></span><button class="btn sm" onclick="logout()">ארויסלאגין</button></div>
+  </aside>
   <main>
-    <div class="tabs">
-      <button id="t-settings" onclick="showTab('settings')">⚙️ סוויטשעס</button>
-      <button id="t-phones" onclick="showTab('phones')">📱 טעלעפאן נומערן</button>
-      <button id="t-reviews" onclick="showTab('reviews')">⭐ טעלעפאן רעוויוס</button>
-      <button id="t-messages" onclick="showTab('messages')">🎙 הודעות</button>
+    <div class="top">
+      <div><h2 id="pageTitle"></h2><p id="pageSub"></p></div>
+      <div class="tools" id="tools"></div>
     </div>
-
-    <section id="p-settings" class="hidden">
-      <div class="card muted">ביידע קענען זײַן אן אדער אויס, יעדער אליין.</div>
-      <div class="card">
-        <div class="switch">
-          <input type="checkbox" id="swRequire" onchange="onSwitch('phone_require_approval', this)">
-          <div>
-            <b>נאר נומערן וואס איך האב דערלויבט</b>
-            <div class="muted">אן = נאר נומערן וואס דו האסט דערלויבט קענען רעוויוען. אומבאקאנטע נומערן ווערן געשפייכערט אין דער ליסטע, און הערן "נישט גילטיג".<br>
-            אויס = יעדער נייער נומער קען גלייך רעוויוען (עס ווערט אויטאמאטיש געמאכט אן אקאונט). בלאקירטע נומערן קענען אלעמאל נישט.</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="switch">
-          <input type="checkbox" id="swAuto" onchange="onSwitch('phone_reviews_auto_approve', this)">
-          <div>
-            <b>טעלעפאן רעוויוס גיין גלייך אויפן זייטל</b>
-            <div class="muted">אן = יעדער רעוויו פון טעלעפאן ווערט גלייך געוויזן.<br>
-            אויס = דער רעוויו בלייבט באהאלטן ביז דו באשטעטיגסט אים אין טאב "טעלעפאן רעוויוס".</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="p-phones" class="hidden">
-      <div class="card">
-        <h3>צולייגן נומער</h3>
-        <div class="row">
-          <div style="flex:1;min-width:180px"><label>טעלעפאן נומער</label><input id="newPhone" class="ltr" placeholder="845-783-6660"></div>
-          <div style="flex:1;min-width:180px"><label>נאמען (נאר פאר דיר)</label><input id="newName"></div>
-        </div>
-        <button class="green" onclick="addPhone()">צולייגן און דערלויבן</button>
-      </div>
-      <div id="phonesList"></div>
-    </section>
-
-    <section id="p-reviews" class="hidden">
-      <div class="card row">
-        <label>ווייז:</label>
-        <select id="revFilter" onchange="renderReviews()" style="width:auto">
-          <option value="all">אלע</option>
-          <option value="pending">ווארטן אויף באשטעטיגונג</option>
-          <option value="approved">באשטעטיגט</option>
-        </select>
-        <button class="gray" onclick="loadReviews()">🔄 אפדעיטן</button>
-      </div>
-      <div id="reviewsList"></div>
-    </section>
-
-    <section id="p-messages" class="hidden">
-      <div class="card row">
-        <label>סטאטוס:</label>
-        <select id="msgFilter" onchange="loadMessages()" style="width:auto">
-          <option value="">אלע</option>
-          <option value="new">נייע</option>
-          <option value="typed">אפגעשריבן</option>
-          <option value="approved">באשטעטיגט</option>
-          <option value="rejected">אפגעווארפן</option>
-        </select>
-        <button class="gray" onclick="loadMessages()">🔄 אפדעיטן</button>
-      </div>
-      <div id="messagesList"></div>
-    </section>
+    <div id="content"></div>
   </main>
 </div>
 
@@ -133,246 +171,318 @@ const SB_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
-let phonesData = [], reviewsData = [];
-
-function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; clearTimeout(window._tt); window._tt=setTimeout(()=>t.style.display='none',3500); }
-function fmtDate(d){ if(!d) return ''; try{ return new Date(d).toLocaleString('en-US'); }catch(e){ return d; } }
-function normPhone(p){ const d=String(p||'').replace(/\D/g,''); if(d.length===10) return '+1'+d; if(d.length===11 && d[0]==='1') return '+'+d; return d ? '+'+d : ''; }
-function showPhone(p){ return esc(p||''); }
+const I = {
+  dash:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+  sw:'<rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  mic:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  refresh:'<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>',
+  ban:'<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>',
+  play:'<polygon points="5 3 19 12 5 21 5 3"/>',
+  eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff:'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  up:'<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
+  down:'<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>',
+  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24">${I[n]}</svg>`;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = d => { if(!d) return '—'; try{ return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }catch(e){ return d; } };
+const fmtPhone = p => { let d=String(p||'').replace(/\D/g,''); if(d.length===11&&d[0]==='1') d=d.slice(1); return d.length===10 ? d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6) : String(p||''); };
+const normPhone = p => { const d=String(p||'').replace(/\D/g,''); if(d.length===10) return '+1'+d; if(d.length===11&&d[0]==='1') return '+'+d; return d?'+'+d:''; };
+const isToday = d => d && new Date(d).toDateString()===new Date().toDateString();
+const STATUS = { new:['נייע','p-blue'], typed:['אפגעשריבן','p-purple'], approved:['באשטעטיגט','p-green'], rejected:['אפגעווארפן','p-red'] };
 function errMsg(e){
-  const m = (e && e.message) || '';
-  if(m.includes('HAS_REVIEWS')) return 'לוייט נישט: דער נומער האט שוין רעוויוס. נוץ "בלאקירן".';
+  const m=(e&&e.message)||'';
+  if(m.includes('HAS_REVIEWS')) return 'מען קען נישט: דער נומער האט שוין רעוויוס. נוץ "בלאקירן".';
   if(m.includes('EXISTS')) return 'דער נומער איז שוין דא אין דער ליסטע';
   if(m.includes('not admin')) return 'נישט אדמין';
-  return 'טעות: ' + m;
+  return 'טעות: '+m;
 }
+let toastT;
+function toast(m, bad){ const t=$('toast'); t.className=bad?'bad':'ok'; t.innerHTML=ic(bad?'x':'check')+' '+esc(m); t.style.display='flex'; clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',3200); }
 
+let page='dash', phones=[], reviews=[], messages=[], settings={}, editIdx=null, q='', revF='all', msgF='';
+
+/* ---------- auth ---------- */
 async function login(){
-  const email=document.getElementById('email').value.trim();
-  const pass=document.getElementById('pass').value;
+  const email=$('email').value.trim(), pass=$('pass').value;
+  $('loginMsg').textContent='';
   const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if(error){ document.getElementById('loginMsg').textContent='טעות: '+error.message; return; }
+  if(error){ $('loginMsg').textContent='טעות: '+error.message; return; }
   init();
 }
 async function logout(){ await sb.auth.signOut(); location.reload(); }
-
 async function init(){
   const { data:{ session } } = await sb.auth.getSession();
   if(!session){ show(false); return; }
   const { data, error } = await sb.rpc('is_admin');
-  if(error || data !== true){
-    await sb.auth.signOut();
-    document.getElementById('loginMsg').textContent='דער אקאונט איז נישט אדמין';
-    show(false); return;
-  }
+  if(error || data!==true){ await sb.auth.signOut(); $('loginMsg').textContent='דער אקאונט איז נישט אדמין'; show(false); return; }
+  $('meEmail').textContent = session.user.email;
   show(true);
-  showTab('settings');
+  await loadAll();
+  go('dash');
 }
-function show(ok){
-  document.getElementById('loginView').classList.toggle('hidden', ok);
-  document.getElementById('appView').classList.toggle('hidden', !ok);
+function show(ok){ $('loginView').classList.toggle('hidden',ok); $('appView').classList.toggle('hidden',!ok); }
+
+/* ---------- data ---------- */
+async function loadSettingsData(){ const {data,error}=await sb.rpc('admin_phone_settings'); if(error){toast(error.message,true);return;} settings=data||{}; }
+async function loadPhonesData(){ const {data,error}=await sb.rpc('admin_phone_users_list'); if(error){toast(error.message,true);return;} phones=data||[]; }
+async function loadReviewsData(){ const {data,error}=await sb.rpc('admin_phone_reviews_list'); if(error){toast(error.message,true);return;} reviews=data||[]; }
+async function loadMessagesData(){ const {data,error}=await sb.from('voice_messages').select('*').order('created_at',{ascending:false}).limit(300); if(error){toast(error.message,true);return;} messages=data||[]; }
+async function loadAll(){ await Promise.all([loadSettingsData(),loadPhonesData(),loadReviewsData(),loadMessagesData()]); renderNav(); }
+async function refresh(){ await loadAll(); render(); toast('אפדעיטעד'); }
+
+const pendRev = () => reviews.filter(r=>!r.approved).length;
+const newMsg = () => messages.filter(m=>m.status==='new').length;
+const waitPh = () => phones.filter(p=>!p.allowed&&!p.blocked).length;
+
+/* ---------- nav ---------- */
+const PAGES = [
+  ['dash','dash','דאשבארד',()=>0],
+  ['settings','sw','סוויטשעס',()=>0],
+  ['phones','phone','טעלעפאן נומערן',waitPh],
+  ['reviews','star','טעלעפאן רעוויוס',pendRev],
+  ['messages','mic','הודעות',newMsg],
+];
+function renderNav(){
+  $('nav').innerHTML = PAGES.map(([k,i,l,c])=>{ const n=c(); return `<button class="${page===k?'on':''}" onclick="go('${k}')">${ic(i)} ${l}${n?`<span class="cnt ${k==='reviews'?'red':''}">${n}</span>`:''}</button>`; }).join('');
+  document.title = (pendRev()+newMsg()+waitPh() ? `(${pendRev()+newMsg()+waitPh()}) ` : '') + 'CarReviews — טעלעפאן אדמין';
+}
+function go(p){ page=p; q=''; editIdx=null; renderNav(); render(); window.scrollTo({top:0}); }
+
+/* ---------- render ---------- */
+function head(t,s,tools){ $('pageTitle').textContent=t; $('pageSub').textContent=s; $('tools').innerHTML=tools||''; }
+const searchBox = ph => `<div class="search">${ic('search')}<input class="in" placeholder="${esc(ph)}" value="${esc(q)}" oninput="q=this.value;renderList()"></div>`;
+const refreshBtn = `<button class="btn ghost" onclick="refresh()">${ic('refresh')} אפדעיטן</button>`;
+const empty = (t,e) => `<div class="card empty"><div class="big">${e||'🗂️'}</div>${esc(t)}</div>`;
+
+function render(){
+  if(page==='dash') return renderDash();
+  if(page==='settings') return renderSettings();
+  if(page==='phones') return renderPhones();
+  if(page==='reviews') return renderReviews();
+  if(page==='messages') return renderMessages();
+}
+function renderList(){ if(page==='phones') $('listBox').innerHTML=phonesHtml(); if(page==='reviews') $('listBox').innerHTML=reviewsHtml(); if(page==='messages') $('listBox').innerHTML=messagesHtml(); }
+
+/* dashboard */
+function renderDash(){
+  head('דאשבארד','איבערבליק פון דער טעלעפאן סיסטעם', refreshBtn);
+  const callsToday = phones.filter(p=>isToday(p.last_call)).length;
+  const stat=(n,l,c,p)=>`<div class="card stat" onclick="go('${p}')"><div class="ico ${c}">${ic(p==='phones'?'phone':p==='reviews'?'star':p==='messages'?'mic':'clock')}</div><div><div class="n">${n}</div><div class="l">${l}</div></div></div>`;
+  const att = [];
+  reviews.filter(r=>!r.approved).slice(0,5).forEach(r=>att.push(`<div class="row between"><div>${ic('star')} <b>${esc(r.company||'?')}</b> <span class="muted ltr">${esc(fmtPhone(r.phone))}</span></div><button class="btn sm green" onclick="setApproved('${r.id}',true)">${ic('check')} באשטעטיג</button></div>`));
+  messages.filter(m=>m.status==='new').slice(0,5).forEach(m=>att.push(`<div class="row between"><div>${ic('mic')} נייע הודעה <span class="muted ltr">${esc(fmtPhone(m.from_number))}</span> · ${esc(m.duration_seconds||0)}s</div><button class="btn sm ghost" onclick="go('messages')">עפן</button></div>`));
+  phones.filter(p=>!p.allowed&&!p.blocked).slice(0,5).forEach(p=>att.push(`<div class="row between"><div>${ic('phone')} נומער ווארט <b class="ltr">${esc(fmtPhone(p.phone))}</b></div><button class="btn sm green" onclick="setPhone('${esc(p.phone)}',true,false)">דערלויבן</button></div>`));
+  const req = String(settings.phone_require_approval??'true')==='true', auto = String(settings.phone_reviews_auto_approve??'false')==='true';
+  $('content').innerHTML = `
+    <div class="grid">
+      ${stat(phones.length,'טעלעפאן נומערן','bg-blue','phones')}
+      ${stat(pendRev(),'רעוויוס ווארטן','bg-orange','reviews')}
+      ${stat(newMsg(),'נייע הודעות','bg-purple','messages')}
+      ${stat(callsToday,'רופן היינט','bg-teal','phones')}
+      ${stat(reviews.length,'אלע טעלעפאן רעוויוס','bg-green','reviews')}
+    </div>
+    <div class="cols" style="margin-top:14px">
+      <div class="card"><div class="h3">⚡ דארף אויפמערקזאמקייט</div>${att.length?att.join('<div class="sep"></div>'):'<div class="muted">אלעס איז ריין. קיין זאך ווארט נישט.</div>'}</div>
+      <div class="card"><div class="h3">${ic('sw')} איצטיקע סוויטשעס</div>
+        <div class="row between" style="margin-bottom:10px"><span>נאר דערלויבטע נומערן</span><span class="pill ${req?'p-green':'p-gray'}">${req?'אן':'אויס'}</span></div>
+        <div class="row between"><span>רעוויוס גיין גלייך אויפן זייטל</span><span class="pill ${auto?'p-green':'p-gray'}">${auto?'אן':'אויס'}</span></div>
+        <div class="sep"></div>
+        <button class="btn ghost sm" onclick="go('settings')">${ic('edit')} ענדערן</button>
+      </div>
+    </div>`;
 }
 
-function showTab(name){
-  ['settings','phones','reviews','messages'].forEach(n=>{
-    document.getElementById('p-'+n).classList.toggle('hidden', n!==name);
-    document.getElementById('t-'+n).classList.toggle('active', n===name);
-  });
-  if(name==='settings') loadSettings();
-  if(name==='phones') loadPhones();
-  if(name==='reviews') loadReviews();
-  if(name==='messages') loadMessages();
-}
-
-/* ---------- סוויטשעס ---------- */
-async function setSetting(key, val){
-  const { error } = await sb.rpc('admin_set_setting', { p_key:key, p_value: val ? 'true' : 'false' });
-  if(error){ toast('טעות: '+error.message); return false; }
-  return true;
-}
-async function loadSettings(){
-  const { data, error } = await sb.rpc('admin_phone_settings');
-  if(error){ toast('טעות: '+error.message); return; }
-  const s = data || {};
-  const req = (s.phone_require_approval === undefined) ? true : String(s.phone_require_approval) === 'true';
-  const auto = (s.phone_reviews_auto_approve === undefined) ? false : String(s.phone_reviews_auto_approve) === 'true';
-  document.getElementById('swRequire').checked = req;
-  document.getElementById('swAuto').checked = auto;
+/* settings */
+function renderSettings(){
+  head('סוויטשעס','ביידע קענען זײַן אן אדער אויס, יעדער אליין', refreshBtn);
+  const req = String(settings.phone_require_approval??'true')==='true', auto = String(settings.phone_reviews_auto_approve??'false')==='true';
+  const sw=(id,key,on,title,a,b)=>`<div class="card"><div class="sw"><label class="toggle"><input type="checkbox" id="${id}" ${on?'checked':''} onchange="onSwitch('${key}',this)"><span></span></label>
+    <div><b>${title}</b><div class="muted"><b>אן</b> = ${a}<br><b>אויס</b> = ${b}</div></div></div></div>`;
+  $('content').innerHTML =
+    sw('swRequire','phone_require_approval',req,'נאר נומערן וואס איך האב דערלויבט',
+      'נאר נומערן וואס דו האסט דערלויבט קענען רעוויוען. אומבאקאנטע נומערן ווערן געשפייכערט אין דער ליסטע און הערן "נישט גילטיג".',
+      'יעדער נייער נומער קען גלייך רעוויוען (עס ווערט אויטאמאטיש געמאכט אן אקאונט). בלאקירטע נומערן קענען אלעמאל נישט.') +
+    sw('swAuto','phone_reviews_auto_approve',auto,'טעלעפאן רעוויוס גיין גלייך אויפן זייטל',
+      'יעדער רעוויו פון טעלעפאן ווערט גלייך געוויזן אויפן זייטל.',
+      'דער רעוויו בלייבט באהאלטן ביז דו באשטעטיגסט אים אין "טעלעפאן רעוויוס".');
 }
 async function onSwitch(key, el){
-  const ok = await setSetting(key, el.checked);
-  if(ok) toast('געשפייכערט ✅'); else loadSettings();
+  const { error } = await sb.rpc('admin_set_setting',{ p_key:key, p_value: el.checked?'true':'false' });
+  if(error){ toast(error.message,true); el.checked=!el.checked; return; }
+  settings[key]=el.checked?'true':'false'; toast('געשפייכערט');
 }
 
-/* ---------- נומערן ---------- */
-async function loadPhones(){
-  const { data, error } = await sb.rpc('admin_phone_users_list');
-  if(error){ toast('טעות: '+error.message); return; }
-  phonesData = data || [];
-  renderPhones();
-}
+/* phones */
 function renderPhones(){
-  const box=document.getElementById('phonesList');
-  if(!phonesData.length){ box.innerHTML='<div class="card muted">נאך קיין נומערן</div>'; return; }
-  box.innerHTML = phonesData.map((p,i)=>{
-    const st = p.blocked ? '<span class="badge b-red">בלאקירט</span>'
-             : p.allowed ? '<span class="badge b-green">דערלויבט</span>'
-             : '<span class="badge b-orange">ווארט אויף דערלויבן</span>';
-    return `<div class="card">
-      <div class="row" style="justify-content:space-between">
-        <div>${st}<span class="badge b-gray">${p.n_reviews||0} רעוויוס</span></div>
-        <div class="muted">לעצטע רוף: ${esc(fmtDate(p.last_call)) || '—'}</div>
+  head('טעלעפאן נומערן',`${phones.length} נומערן · ${waitPh()} ווארטן · ${phones.filter(p=>p.blocked).length} בלאקירט`, searchBox('זוך נומער אדער נאמען...')+refreshBtn);
+  $('content').innerHTML = `
+    <div class="card"><div class="h3">${ic('plus')} צולייגן נומער</div>
+      <div class="cols">
+        <div><label class="f">טעלעפאן נומער</label><input id="newPhone" class="in ltr" placeholder="845-555-1234" onkeydown="if(event.key==='Enter')addPhone()"></div>
+        <div><label class="f">נאמען (נאר פאר דיר)</label><input id="newName" class="in" onkeydown="if(event.key==='Enter')addPhone()"></div>
       </div>
-      <div class="row">
-        <div style="flex:1;min-width:180px"><label>נומער</label><input id="pp${i}" class="ltr" value="${esc(p.phone||'')}"></div>
-        <div style="flex:1;min-width:180px"><label>נאמען</label><input id="pn${i}" value="${esc(p.name||'')}"></div>
-      </div>
-      <div>
-        <button onclick="editPhone(${i})">💾 שפייכערן ענדערונג</button>
-        ${p.allowed && !p.blocked
-          ? `<button class="orange" onclick="setPhone(${i},false,false)">נעם אוועק דערלויבן</button>`
-          : `<button class="green" onclick="setPhone(${i},true,false)">דערלויבן</button>`}
-        ${p.blocked
-          ? `<button class="gray" onclick="setPhone(${i},${!!p.allowed},false)">אנטבלאקירן</button>`
-          : `<button class="red" onclick="setPhone(${i},false,true)">בלאקירן</button>`}
-        <button class="red" onclick="delPhone(${i})">🗑 מעק אויס</button>
-      </div>
-    </div>`;
+      <div class="actions"><button class="btn green" onclick="addPhone()">${ic('check')} צולייגן און דערלויבן</button></div>
+    </div>
+    <div id="listBox">${phonesHtml()}</div>`;
+}
+function phonesHtml(){
+  const s=q.trim().toLowerCase().replace(/[-\s()]/g,'');
+  const list = phones.filter(p=>!s || String(p.phone||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')) || (p.name||'').toLowerCase().includes(q.trim().toLowerCase()));
+  if(!list.length) return empty('קיין נומערן נישט געפונען','📱');
+  const rows = list.map((p,i)=>{
+    const idx = phones.indexOf(p);
+    const st = p.blocked ? '<span class="pill p-red">בלאקירט</span>' : p.allowed ? '<span class="pill p-green">דערלויבט</span>' : '<span class="pill p-orange">ווארט</span>';
+    const edit = editIdx===idx ? `<tr><td colspan="6"><div class="editbox"><div class="cols">
+        <div><label class="f">נומער</label><input id="pp${idx}" class="in ltr" value="${esc(fmtPhone(p.phone))}"></div>
+        <div><label class="f">נאמען</label><input id="pn${idx}" class="in" value="${esc(p.name||'')}"></div></div>
+        <div class="actions"><button class="btn sm" onclick="editPhone(${idx})">${ic('save')} שפייכערן</button><button class="btn sm ghost" onclick="editIdx=null;renderList()">${ic('x')} אפשטעלן</button></div></div></td></tr>` : '';
+    return `<tr>
+      <td>${st}</td>
+      <td><span class="num ltr">${esc(fmtPhone(p.phone))}</span></td>
+      <td>${esc(p.name||'')||'<span class="muted">—</span>'}</td>
+      <td><span class="pill p-gray">${p.n_reviews||0} רעוויוס</span></td>
+      <td class="muted">${ic('clock')} ${esc(fmtDate(p.last_call))}</td>
+      <td><div class="row" style="gap:4px;justify-content:flex-end">
+        <button class="btn sm ghost" title="ענדערן" onclick="editIdx=${editIdx===idx?'null':idx};renderList()">${ic('edit')}</button>
+        ${p.allowed&&!p.blocked ? `<button class="btn sm orange" onclick="setPhone('${esc(p.phone)}',false,false)">נעם אוועק</button>` : `<button class="btn sm green" onclick="setPhone('${esc(p.phone)}',true,false)">דערלויבן</button>`}
+        ${p.blocked ? `<button class="btn sm gray" onclick="setPhone('${esc(p.phone)}',${!!p.allowed},false)">אנטבלאקירן</button>` : `<button class="btn sm red" onclick="setPhone('${esc(p.phone)}',false,true)">${ic('ban')} בלאקירן</button>`}
+        <button class="btn sm ghost" title="מעק אויס" onclick="delPhone('${esc(p.phone)}')">${ic('trash')}</button>
+      </div></td></tr>${edit}`;
   }).join('');
+  return `<div class="card" style="padding:6px 14px"><table class="tbl"><thead><tr><th>סטאטוס</th><th>נומער</th><th>נאמען</th><th>רעוויוס</th><th>לעצטער רוף</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
-async function setPhone(i, allowed, blocked){
-  const p = phonesData[i];
-  const name = document.getElementById('pn'+i).value.trim();
-  const { error } = await sb.rpc('admin_phone_user_save', { p_phone:p.phone, p_name:name, p_allowed:allowed, p_blocked:blocked });
-  if(error){ toast(errMsg(error)); return; }
-  toast('געשפייכערט ✅'); loadPhones();
+async function setPhone(phone, allowed, blocked){
+  const p = phones.find(x=>x.phone===phone);
+  const { error } = await sb.rpc('admin_phone_user_save',{ p_phone:phone, p_name:(p&&p.name)||'', p_allowed:allowed, p_blocked:blocked });
+  if(error){ toast(errMsg(error),true); return; }
+  toast('געשפייכערט'); await loadPhonesData(); renderNav(); render();
 }
-async function editPhone(i){
-  const p = phonesData[i];
-  const newPhone = normPhone(document.getElementById('pp'+i).value);
-  const name = document.getElementById('pn'+i).value.trim();
-  if(newPhone.length < 11){ toast('שרייב א פולן נומער (10 ציפערן)'); return; }
-  const { error } = await sb.rpc('admin_phone_user_update', { p_old:p.phone, p_new:newPhone, p_name:name });
-  if(error){ toast(errMsg(error)); return; }
-  toast('געשפייכערט ✅'); loadPhones();
+async function editPhone(idx){
+  const p=phones[idx]; const newPhone=normPhone($('pp'+idx).value), name=$('pn'+idx).value.trim();
+  if(newPhone.length<11){ toast('שרייב א פולן נומער (10 ציפערן)',true); return; }
+  const { error } = await sb.rpc('admin_phone_user_update',{ p_old:p.phone, p_new:newPhone, p_name:name });
+  if(error){ toast(errMsg(error),true); return; }
+  editIdx=null; toast('געשפייכערט'); await loadPhonesData(); render();
 }
-async function delPhone(i){
-  const p = phonesData[i];
-  if(!confirm('זיכער אויסמעקן דעם נומער ' + p.phone + '?')) return;
-  const { error } = await sb.rpc('admin_phone_user_delete', { p_phone:p.phone });
-  if(error){ toast(errMsg(error)); return; }
-  toast('אויסגעמעקט'); loadPhones();
+async function delPhone(phone){
+  if(!confirm('זיכער אויסמעקן דעם נומער '+fmtPhone(phone)+'?')) return;
+  const { error } = await sb.rpc('admin_phone_user_delete',{ p_phone:phone });
+  if(error){ toast(errMsg(error),true); return; }
+  toast('אויסגעמעקט'); await loadPhonesData(); renderNav(); render();
 }
 async function addPhone(){
-  const phone = normPhone(document.getElementById('newPhone').value);
-  const name = document.getElementById('newName').value.trim();
-  if(phone.length < 11){ toast('שרייב א פולן נומער (10 ציפערן)'); return; }
-  const { error } = await sb.rpc('admin_phone_user_save', { p_phone:phone, p_name:name, p_allowed:true, p_blocked:false });
-  if(error){ toast(errMsg(error)); return; }
-  document.getElementById('newPhone').value=''; document.getElementById('newName').value='';
-  toast('צוגעלייגט ✅'); loadPhones();
+  const phone=normPhone($('newPhone').value), name=$('newName').value.trim();
+  if(phone.length<11){ toast('שרייב א פולן נומער (10 ציפערן)',true); return; }
+  const { error } = await sb.rpc('admin_phone_user_save',{ p_phone:phone, p_name:name, p_allowed:true, p_blocked:false });
+  if(error){ toast(errMsg(error),true); return; }
+  toast('צוגעלייגט'); await loadPhonesData(); renderNav(); render();
 }
 
-/* ---------- טעלעפאן רעוויוס ---------- */
-async function loadReviews(){
-  const { data, error } = await sb.rpc('admin_phone_reviews_list');
-  if(error){ toast('טעות: '+error.message); return; }
-  reviewsData = data || [];
-  renderReviews();
-}
+/* reviews */
 function renderReviews(){
-  const f=document.getElementById('revFilter').value;
-  const list = reviewsData.filter(r => f==='all' || (f==='pending' && !r.approved) || (f==='approved' && r.approved));
-  const box=document.getElementById('reviewsList');
-  if(!list.length){ box.innerHTML='<div class="card muted">קיין רעוויוס נישטא</div>'; return; }
-  box.innerHTML = list.map(r=>{
-    const ratings = [['אנקום',r.punctuality],['סערוויס',r.service],['רייניקייט',r.cleanliness],['פארן',r.driving],['דרייווער',r.driver_service]]
-      .filter(x=>x[1]!=null).map(x=>`${x[0]}: ${x[1]}`).join(' · ');
-    const ride = [r.trip_from && r.trip_to ? `${esc(r.trip_from)} → ${esc(r.trip_to)}` : '', r.price_paid!=null ? '$'+esc(r.price_paid) : '', esc(r.trip_date||'')].filter(Boolean).join(' · ');
-    return `<div class="card">
-      <div class="row" style="justify-content:space-between">
-        <div><b>${esc(r.company||'?')}</b>
-          ${r.approved ? '<span class="badge b-green">אויפן זייטל</span>' : '<span class="badge b-orange">באהאלטן</span>'}</div>
-        <div class="muted">${esc(fmtDate(r.created_at))}</div>
+  head('טעלעפאן רעוויוס',`${reviews.length} רעוויוס · ${pendRev()} ווארטן אויף באשטעטיגונג`,
+    searchBox('זוך קאמפאני אדער נומער...')+`<select class="in" onchange="revF=this.value;renderList()">
+      <option value="all" ${revF==='all'?'selected':''}>אלע</option><option value="pending" ${revF==='pending'?'selected':''}>ווארטן</option><option value="approved" ${revF==='approved'?'selected':''}>אויפן זייטל</option></select>`+refreshBtn);
+  $('content').innerHTML = `<div id="listBox">${reviewsHtml()}</div>`;
+}
+function reviewsHtml(){
+  const s=q.trim().toLowerCase();
+  const list = reviews.filter(r => (revF==='all'||(revF==='pending'&&!r.approved)||(revF==='approved'&&r.approved)) &&
+    (!s || (r.company||'').toLowerCase().includes(s) || String(r.phone||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')||'§')));
+  if(!list.length) return empty('קיין רעוויוס נישטא','⭐');
+  return list.map(r=>{
+    const vals=[r.punctuality,r.service,r.cleanliness,r.driving,r.driver_service].filter(v=>v!=null);
+    const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    const tone = avg>=4?'bg-green':avg>=3?'bg-gold':'bg-red';
+    const stars = '★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));
+    const kv=[['אנקום',r.punctuality],['סערוויס',r.service],['רייניקייט',r.cleanliness],['פארן',r.driving],['דרייווער',r.driver_service]].filter(x=>x[1]!=null).map(x=>`<span>${x[0]} <b>${x[1]}</b></span>`).join('');
+    const ride=[r.trip_from&&r.trip_to?`${esc(r.trip_from)} → ${esc(r.trip_to)}`:'', r.price_paid!=null?'$'+esc(r.price_paid):'', esc(r.trip_date||'')].filter(Boolean).join(' · ');
+    return `<div class="card rev ${r.approved?'':'pend'}">
+      <div class="row between">
+        <div class="row">${avg?`<span class="score ${tone}">${avg.toFixed(1)}</span>`:''}<div><b style="font-size:17px">${esc(r.company||'?')}</b><div class="row" style="gap:8px">${avg?`<span class="stars">${stars}</span>`:''}${r.approved?'<span class="pill p-green">אויפן זייטל</span>':'<span class="pill p-orange">ווארט אויף באשטעטיגונג</span>'}${r.recommend===true?`<span class="pill p-green">${ic('up')} רעקאמענדירט</span>`:r.recommend===false?`<span class="pill p-red">${ic('down')} נישט רעקאמענדירט</span>`:''}</div></div></div>
+        <div class="muted" style="text-align:end">${ic('clock')} ${esc(fmtDate(r.created_at))}<br>${ic('phone')} <span class="ltr">${esc(fmtPhone(r.phone))||'?'}</span></div>
       </div>
-      <div>📞 <b class="ltr">${showPhone(r.phone)||'?'}</b></div>
-      <div class="muted">${ratings||'קיין רייטינגס'}${r.recommend===true?' · רעקאמענדירט ✅':r.recommend===false?' · נישט רעקאמענדירט ❌':''}</div>
-      ${r.tags&&r.tags.length?`<div class="muted">טאגס: ${esc(r.tags.join(', '))}</div>`:''}
-      ${ride?`<div class="muted">${ride}</div>`:''}
-      ${r.comment?`<div>${esc(r.comment)}</div>`:''}
-      ${r.voice_path?`<button class="gray" onclick="playVoice(this,'${esc(r.voice_path)}')">▶ הער דעם קאמענט</button>`:''}
-      <div>
-        ${r.approved
-          ? `<button class="orange" onclick="setApproved('${r.id}',false)">באהאלט</button>`
-          : `<button class="green" onclick="setApproved('${r.id}',true)">באשטעטיג</button>`}
-        <button class="red" onclick="delReview('${r.id}')">מעק אויס</button>
-      </div>
-    </div>`;
+      <div class="kv">${kv||'<span class="muted">קיין רייטינגס</span>'}</div>
+      ${r.tags&&r.tags.length?`<div class="row" style="margin-top:8px;gap:5px">${r.tags.map(t=>`<span class="pill p-gray">${esc(t)}</span>`).join('')}</div>`:''}
+      ${ride?`<div class="muted" style="margin-top:8px">🚗 ${ride}</div>`:''}
+      ${r.comment?`<div class="cmt">${esc(r.comment)}</div>`:''}
+      ${r.voice_path?`<div id="v-${r.id}" style="margin-top:10px"><button class="btn sm ghost" onclick="playVoice('v-${r.id}','${esc(r.voice_path)}')">${ic('play')} הער דעם קאמענט</button></div>`:''}
+      <div class="actions">
+        ${r.approved?`<button class="btn sm orange" onclick="setApproved('${r.id}',false)">${ic('eyeoff')} באהאלט</button>`:`<button class="btn sm green" onclick="setApproved('${r.id}',true)">${ic('check')} באשטעטיג</button>`}
+        <button class="btn sm ghost" onclick="delReview('${r.id}')">${ic('trash')} מעק אויס</button>
+      </div></div>`;
   }).join('');
 }
-async function setApproved(id, v){
-  const { error } = await sb.rpc('admin_review_set_approved', { p_id:id, p_approved:v });
-  if(error){ toast('טעות: '+error.message); return; }
-  toast('געשפייכערט ✅'); loadReviews();
+async function setApproved(id,v){
+  const { error } = await sb.rpc('admin_review_set_approved',{ p_id:id, p_approved:v });
+  if(error){ toast(error.message,true); return; }
+  toast(v?'באשטעטיגט':'באהאלטן'); await loadReviewsData(); renderNav(); render();
 }
 async function delReview(id){
   if(!confirm('זיכער אויסמעקן דעם רעוויו?')) return;
-  const { error } = await sb.rpc('admin_review_delete', { p_id:id });
-  if(error){ toast('טעות: '+error.message); return; }
-  toast('אויסגעמעקט'); loadReviews();
+  const { error } = await sb.rpc('admin_review_delete',{ p_id:id });
+  if(error){ toast(error.message,true); return; }
+  toast('אויסגעמעקט'); await loadReviewsData(); renderNav(); render();
 }
-async function playVoice(btn, path){
+async function playVoice(boxId, path){
   const { data, error } = await sb.storage.from('voice-messages').createSignedUrl(path, 600);
-  if(error){ toast('טעות: '+error.message); return; }
+  if(error){ toast(error.message,true); return; }
   const a=document.createElement('audio'); a.controls=true; a.src=data.signedUrl; a.autoplay=true;
-  btn.replaceWith(a);
+  const box=$(boxId); box.innerHTML=''; box.appendChild(a);
 }
 
-/* ---------- הודעות ---------- */
-async function loadMessages(){
-  const f=document.getElementById('msgFilter').value;
-  let q = sb.from('voice_messages').select('*').order('created_at',{ascending:false}).limit(200);
-  if(f) q = q.eq('status', f);
-  const { data, error } = await q;
-  if(error){ toast('טעות: '+error.message); return; }
-  const box=document.getElementById('messagesList');
-  if(!data.length){ box.innerHTML='<div class="card muted">0 הודעות</div>'; return; }
-  box.innerHTML = data.map(m=>`<div class="card">
-    <div class="row" style="justify-content:space-between">
-      <div>📞 <b class="ltr">${showPhone(m.from_number)}</b> <span class="badge b-gray">${esc(m.status||'')}</span></div>
-      <div class="muted">${esc(fmtDate(m.created_at))} · ${esc(m.duration_seconds||0)}s</div>
+/* messages */
+function renderMessages(){
+  head('הודעות',`${messages.length} הודעות · ${newMsg()} נייע`,
+    searchBox('זוך נומער, נאמען אדער טעקסט...')+`<select class="in" onchange="msgF=this.value;renderList()">
+      <option value="" ${msgF===''?'selected':''}>אלע סטאטוסן</option>${Object.keys(STATUS).map(k=>`<option value="${k}" ${msgF===k?'selected':''}>${STATUS[k][0]}</option>`).join('')}</select>`+refreshBtn);
+  $('content').innerHTML = `<div id="listBox">${messagesHtml()}</div>`;
+}
+function messagesHtml(){
+  const s=q.trim().toLowerCase();
+  const list = messages.filter(m => (!msgF||m.status===msgF) && (!s || String(m.from_number||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')||'§') || (m.reviewer_name||'').toLowerCase().includes(s) || (m.typed_text||'').toLowerCase().includes(s) || (m.admin_notes||'').toLowerCase().includes(s)));
+  if(!list.length) return empty('0 הודעות','🎙️');
+  return list.map(m=>{ const st=STATUS[m.status]||[m.status,'p-gray']; return `<div class="card">
+    <div class="row between">
+      <div class="row"><span class="pill ${st[1]}">${esc(st[0])}</span><b class="num ltr">${esc(fmtPhone(m.from_number))}</b>${m.reviewer_name?`<span class="muted">· ${esc(m.reviewer_name)}</span>`:''}</div>
+      <div class="muted">${ic('clock')} ${esc(fmtDate(m.created_at))} · ${esc(m.duration_seconds||0)}s</div>
     </div>
-    ${m.storage_path?`<button class="gray" onclick="playVoice(this,'${esc(m.storage_path)}')">▶ הער</button>`:''}
-    <label>נאמען</label><input id="mn${m.id}" value="${esc(m.reviewer_name||'')}">
-    <label>אפגעשריבענער טעקסט</label><textarea id="mt${m.id}" rows="3">${esc(m.typed_text||'')}</textarea>
-    <label>נאטיצן</label><input id="mo${m.id}" value="${esc(m.admin_notes||'')}">
-    <label>סטאטוס</label>
-    <select id="ms${m.id}">
-      ${['new','typed','approved','rejected'].map(s=>`<option value="${s}" ${m.status===s?'selected':''}>${s}</option>`).join('')}
-    </select>
-    <button class="green" onclick="saveMsg('${m.id}')">שפייכערן</button>
-    <button class="red" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">מעק אויס</button>
-  </div>`).join('');
+    ${m.storage_path?`<div id="m-${m.id}"><button class="btn sm ghost" style="margin-top:10px" onclick="playVoice('m-${m.id}','${esc(m.storage_path)}')">${ic('play')} הער</button></div>`:'<div class="muted" style="margin-top:8px">קיין אודיא</div>'}
+    <div class="cols" style="margin-top:6px">
+      <div><label class="f">נאמען</label><input id="mn${m.id}" class="in" value="${esc(m.reviewer_name||'')}"></div>
+      <div><label class="f">סטאטוס</label><select id="ms${m.id}" class="in" style="width:100%">${Object.keys(STATUS).map(k=>`<option value="${k}" ${m.status===k?'selected':''}>${STATUS[k][0]}</option>`).join('')}</select></div>
+    </div>
+    <label class="f">אפגעשריבענער טעקסט</label><textarea id="mt${m.id}" class="in" rows="3">${esc(m.typed_text||'')}</textarea>
+    <label class="f">נאטיצן</label><input id="mo${m.id}" class="in" value="${esc(m.admin_notes||'')}">
+    <div class="actions"><button class="btn sm green" onclick="saveMsg('${m.id}')">${ic('save')} שפייכערן</button><button class="btn sm ghost" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">${ic('trash')} מעק אויס</button></div>
+  </div>`; }).join('');
 }
 async function saveMsg(id){
-  const { error } = await sb.from('voice_messages').update({
-    reviewer_name: document.getElementById('mn'+id).value,
-    typed_text: document.getElementById('mt'+id).value,
-    admin_notes: document.getElementById('mo'+id).value,
-    status: document.getElementById('ms'+id).value
-  }).eq('id', id);
-  if(error){ toast('טעות: '+error.message); return; }
-  toast('געשפייכערט ✅');
+  const { error } = await sb.from('voice_messages').update({ reviewer_name:$('mn'+id).value, typed_text:$('mt'+id).value, admin_notes:$('mo'+id).value, status:$('ms'+id).value }).eq('id',id);
+  if(error){ toast(error.message,true); return; }
+  toast('געשפייכערט'); await loadMessagesData(); renderNav(); renderList();
 }
-async function delMsg(id, path){
-  if(!confirm('זיכער אויסמעקן?')) return;
+async function delMsg(id,path){
+  if(!confirm('זיכער אויסמעקן די הודעה?')) return;
   if(path) await sb.storage.from('voice-messages').remove([path]);
-  const { error } = await sb.from('voice_messages').delete().eq('id', id);
-  if(error){ toast('טעות: '+error.message); return; }
-  toast('אויסגעמעקט'); loadMessages();
+  const { error } = await sb.from('voice_messages').delete().eq('id',id);
+  if(error){ toast(error.message,true); return; }
+  toast('אויסגעמעקט'); await loadMessagesData(); renderNav(); render();
 }
 
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&editIdx!==null){ editIdx=null; renderList(); } });
 init();
 </script>
 </body>
