@@ -232,7 +232,8 @@ async function login(){
   if(error){ $('loginMsg').textContent='טעות: '+error.message; return; }
   init();
 }
-function togglePw(){ const p=$('pass'); p.type = p.type==='password' ? 'text' : 'password'; }async function logout(){ await sb.auth.signOut(); location.reload(); }
+function togglePw(){ const p=$('pass'); p.type = p.type==='password' ? 'text' : 'password'; }
+  async function logout(){ await sb.auth.signOut(); location.reload(); }
 async function init(){
   const { data:{ session } } = await sb.auth.getSession();
   if(!session){ show(false); return; }
