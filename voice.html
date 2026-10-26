@@ -60,15 +60,14 @@
       <button id="t-messages" onclick="showTab('messages')">🎙 הודעות</button>
     </div>
 
-    <!-- סוויטשעס -->
     <section id="p-settings" class="hidden">
-      <div class="card muted">נאר איינער פון די צוויי קען זײַן אן אינאיינעם. ביידע קענען זײַן אויס.</div>
+      <div class="card muted">ביידע קענען זײַן אן אדער אויס, יעדער אליין.</div>
       <div class="card">
         <div class="switch">
           <input type="checkbox" id="swRequire" onchange="onSwitch('phone_require_approval', this)">
           <div>
             <b>נאר נומערן וואס איך האב דערלויבט</b>
-            <div class="muted">אן = נאר נומערן וואס דו האסט דערלויבט קענען רעוויוען. אומבאקאנטע נומערן ווערן געשפייכלערט אין דער ליסטע, און הערן "נישט גילטיג".<br>
+            <div class="muted">אן = נאר נומערן וואס דו האסט דערלויבט קענען רעוויוען. אומבאקאנטע נומערן ווערן געשפייכערט אין דער ליסטע, און הערן "נישט גילטיג".<br>
             אויס = יעדער נייער נומער קען גלייך רעוויוען (עס ווערט אויטאמאטיש געמאכט אן אקאונט). בלאקירטע נומערן קענען אלעמאל נישט.</div>
           </div>
         </div>
@@ -85,7 +84,6 @@
       </div>
     </section>
 
-    <!-- נומערן -->
     <section id="p-phones" class="hidden">
       <div class="card">
         <h3>צולייגן נומער</h3>
@@ -98,7 +96,6 @@
       <div id="phonesList"></div>
     </section>
 
-    <!-- רעוויוס -->
     <section id="p-reviews" class="hidden">
       <div class="card row">
         <label>ווייז:</label>
@@ -112,7 +109,6 @@
       <div id="reviewsList"></div>
     </section>
 
-    <!-- הודעות -->
     <section id="p-messages" class="hidden">
       <div class="card row">
         <label>סטאטוס:</label>
@@ -188,7 +184,7 @@ function showTab(name){
   if(name==='messages') loadMessages();
 }
 
-/* ---------- סוויטשעס (נאר איינער אן) ---------- */
+/* ---------- סוויטשעס ---------- */
 async function setSetting(key, val){
   const { error } = await sb.rpc('admin_set_setting', { p_key:key, p_value: val ? 'true' : 'false' });
   if(error){ toast('טעות: '+error.message); return false; }
@@ -199,20 +195,12 @@ async function loadSettings(){
   if(error){ toast('טעות: '+error.message); return; }
   const s = data || {};
   const req = (s.phone_require_approval === undefined) ? true : String(s.phone_require_approval) === 'true';
-  let auto = (s.phone_reviews_auto_approve === undefined) ? false : String(s.phone_reviews_auto_approve) === 'true';
-  if(req && auto){ auto = false; await setSetting('phone_reviews_auto_approve', false); }
+  const auto = (s.phone_reviews_auto_approve === undefined) ? false : String(s.phone_reviews_auto_approve) === 'true';
   document.getElementById('swRequire').checked = req;
   document.getElementById('swAuto').checked = auto;
 }
 async function onSwitch(key, el){
-  const otherEl = document.getElementById(key==='phone_require_approval' ? 'swAuto' : 'swRequire');
-  const otherKey = key==='phone_require_approval' ? 'phone_reviews_auto_approve' : 'phone_require_approval';
-  let ok = true;
-  if(el.checked && otherEl.checked){
-    otherEl.checked = false;
-    ok = await setSetting(otherKey, false);
-  }
-  if(ok) ok = await setSetting(key, el.checked);
+  const ok = await setSetting(key, el.checked);
   if(ok) toast('געשפייכערט ✅'); else loadSettings();
 }
 
