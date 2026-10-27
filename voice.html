@@ -227,6 +227,7 @@ function errMsg(e){
 let toastT;
 function toast(m, bad){ const t=$('toast'); t.className=bad?'bad':'ok'; t.innerHTML=ic(bad?'x':'check')+' '+esc(m); t.style.display='flex'; clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',3200); }
 
+let companies=[];
 let page='dash', phones=[], reviews=[], messages=[], settings={}, editIdx=null, q='', revF='all', msgF='';
 
 function togglePw(){
@@ -261,7 +262,8 @@ async function loadSettingsData(){ const {data,error}=await sb.rpc('admin_phone_
 async function loadPhonesData(){ const {data,error}=await sb.rpc('admin_phone_users_list'); if(error){toast(error.message,true);return;} phones=data||[]; }
 async function loadReviewsData(){ const {data,error}=await sb.rpc('admin_phone_reviews_list'); if(error){toast(error.message,true);return;} reviews=data||[]; }
 async function loadMessagesData(){ const {data,error}=await sb.from('voice_messages').select('*').order('created_at',{ascending:false}).limit(300); if(error){toast(error.message,true);return;} messages=data||[]; }
-async function loadAll(){ await Promise.all([loadSettingsData(),loadPhonesData(),loadReviewsData(),loadMessagesData()]); renderNav(); }
+async function loadCompaniesData(){ const {data}=await sb.from('companies').select('id,name,phone_code').order('name'); companies=data||[]; }
+async function loadAll(){ await Promise.all([loadSettingsData(),loadPhonesData(),loadReviewsData(),loadMessagesData(),loadCompaniesData()]); renderNav(); }
 async function refresh(){ await loadAll(); render(); toast('אפדעיטעד'); }
 
 const pendRev = () => reviews.filter(r=>!r.approved).length;
@@ -493,13 +495,25 @@ function messagesHtml(){
     </div>
     <label class="f">אפגעשריבענער טעקסט</label><textarea id="mt${m.id}" class="in" rows="3">${esc(m.typed_text||'')}</textarea>
     <label class="f">נאטיצן</label><input id="mo${m.id}" class="in" value="${esc(m.admin_notes||'')}">
-    <div class="actions"><button class="btn green" onclick="saveMsg('${m.id}')">${ic('save')} שפייכערן</button><button class="btn ghost danger" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">${ic('trash')} מעק אויס</button></div>
+        <label class="f">קאמפאני (פאר פובליצירן)</label>
+    <select id="mc${m.id}" class="in"><option value="">— קלויב קאמפאני —</option>${companies.map(c=>`<option value="${c.id}">${c.phone_code?'#'+String(c.phone_code).padStart(2,'0')+' · ':''}${esc(c.name)}</option>`).join('')}</select>
+    ${m.published_review_id?'<div class="pill p-green" style="margin-top:8px">✔ שוין פובליצירט אויפן וועבסייט</div>':''}
+    <div class="actions"><button class="btn" onclick="publishMsg('${m.id}')">פובליצירן אלס רעוויו</button><button class="btn green" onclick="saveMsg('${m.id}')">${ic('save')} שפייכערן</button><button class="btn ghost danger" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">${ic('trash')} מעק אויס</button></div>
   </div>`; }).join('')+'</div>';
 }
 async function saveMsg(id){
   const { error } = await sb.from('voice_messages').update({ reviewer_name:$('mn'+id).value, typed_text:$('mt'+id).value, admin_notes:$('mo'+id).value, status:$('ms'+id).value }).eq('id',id);
   if(error){ toast(error.message,true); return; }
   toast('געשפייכערט'); await loadMessagesData(); renderNav(); renderList();
+}
+async function publishMsg(id){
+  const txt=$('mt'+id).value.trim(), co=$('mc'+id).value;
+  if(!txt){ toast('שרייב ערשט דעם טעקסט',true); return; }
+  if(!co){ toast('קלויב א קאמפאני',true); return; }
+  await sb.from('voice_messages').update({ reviewer_name:$('mn'+id).value, typed_text:txt, admin_notes:$('mo'+id).value }).eq('id',id);
+  const { error } = await sb.rpc('admin_publish_message',{ p_id:id, p_company:co, p_text:txt });
+  if(error){ toast(/NO_PHONE_USER/.test(error.message)?'דער נומער איז נישט אין "טעלעפאן נומערן"':error.message,true); return; }
+  toast('פובליצירט אויפן וועבסייט'); await Promise.all([loadMessagesData(),loadReviewsData()]); renderNav(); renderList();
 }
 async function delMsg(id,path){
   if(!confirm('זיכער אויסמעקן די הודעה?')) return;
