@@ -1,511 +1,2447 @@
 <!DOCTYPE html>
-<html lang="yi" dir="rtl">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>CarReviews — טעלעפאן אדמין</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--navy:#0b1f3a;--navy2:#122c52;--blue:#2563eb;--teal:#0891b2;--gold:#f59e0b;--green:#16a34a;--red:#dc2626;--orange:#ea580c;--purple:#7c3aed;
-  --bg:#e6ebf3;--card:#fff;--line:#b9c4d4;--line2:#dde3ec;--text:#0f172a;--muted:#475569;--shadow:0 4px 18px rgba(15,23,42,.12);--r:14px}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%}
-body{font-family:Rubik,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px}
-button,input,select,textarea{font-family:inherit;font-size:15px}
-.hidden{display:none!important}
-.ltr{direction:ltr;unicode-bidi:plaintext;display:inline-block}
-svg.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarReviews</title>
+  <link rel="icon" id="favicon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { --navy:#0b1f3a; --navy2:#122c52; --blue:#2563eb; --teal:#0891b2; --gold:#f59e0b; --green:#16a34a; --red:#dc2626; --amber:#f59e0b; --purple:#7c3aed;
+            --bg:#e6ebf3; --line:#b9c4d4; --line2:#dde3ec; --soft:#f1f5f9; --text:#0f172a; --muted:#475569;
+            --shadow:0 4px 18px rgba(15,23,42,.12); --top:linear-gradient(90deg,#0b1f3a,#1e3a8a 55%,#0e7490); }
+    * { box-sizing:border-box; }
+    html { scroll-padding-top:84px; }
+    body { font-family:Rubik,-apple-system,"Segoe UI",Arial,sans-serif; margin:0; padding:0 0 60px; color:var(--text); background:var(--bg); min-height:100vh; font-size:15px; }
+    .wrap { max-width:1040px; margin:0 auto; padding:0 16px; }
+    svg.ic { width:1.1em; height:1.1em; vertical-align:-0.15em; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+    button svg, .chip svg { pointer-events:none; }
 
-/* ---------- login ---------- */
-#loginView{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
-  background:radial-gradient(circle at 20% 20%,#1e3a8a 0,transparent 45%),radial-gradient(circle at 80% 80%,#0e7490 0,transparent 45%),var(--navy)}
-.loginCard{width:min(420px,100%);background:#fff;border-radius:20px;padding:34px 30px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
-.loginCard .logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-.mark{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
-.loginCard h1{font-size:22px;margin:0}
-.loginCard .sub{color:var(--muted);font-size:13px;margin:0 0 22px}
-label.f{display:block;font-weight:700;font-size:14px;color:#1e293b;margin:12px 0 6px}
-.in{width:100%;padding:11px 13px;border:1.5px solid #94a3b8;border-radius:10px;background:#fff;outline:none;transition:.15s;color:var(--text)}
-.in:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
-input.in.ltr{display:block;text-align:left}
-textarea.in{resize:vertical;max-width:100%;min-height:84px;line-height:1.5}
-.pwrow{display:flex;direction:ltr;align-items:stretch;border:1.5px solid #94a3b8;border-radius:10px;background:#fff;overflow:hidden}
-.pwrow:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
-.pwrow input{flex:1;min-width:0;border:0;outline:0;padding:11px 13px;background:transparent;text-align:left;direction:ltr;color:var(--text)}
-.pwrow button.eye{flex:none;width:48px;border:0;border-inline-start:1px solid #cbd5e1;background:#f1f5f9;color:#334155;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0;border-radius:0;box-shadow:none}
-.pwrow button.eye:hover{background:#e2e8f0;transform:none;filter:none}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:0;border-radius:10px;cursor:pointer;font-weight:700;font-size:15px;background:var(--blue);color:#fff;transition:.15s;white-space:nowrap;box-shadow:0 2px 6px rgba(15,23,42,.15)}
-.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn:disabled{opacity:.6;cursor:default;transform:none}
-.btn.sm{padding:9px 14px;font-size:14px}
-.btn.green{background:var(--green)} .btn.red{background:var(--red)} .btn.orange{background:var(--orange)} .btn.gray{background:#475569}
-.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid #94a3b8;box-shadow:none}
-.btn.ghost:hover{background:#f1f5f9}
-.btn.ghost.danger{color:var(--red);border-color:#fca5a5}
-.btn.full{width:100%;justify-content:center;margin-top:18px;padding:13px}
-.err{color:var(--red);font-size:13px;margin-top:10px;min-height:18px}
+    .ltr, .contact span.em, #userbar .em, input[type=email], input[type=tel] { direction:ltr; unicode-bidi:plaintext; }
+    input[type=email]::placeholder, input[type=tel]::placeholder { direction:rtl; }
+    .em { unicode-bidi:isolate; direction:ltr; display:inline-block; }
+    a.tel { color:var(--navy); font-weight:700; text-decoration:none; border-bottom:1px dotted var(--navy); }
 
-/* ---------- layout ---------- */
-.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
-aside{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
-.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:16px}
-.brand .mark{width:42px;height:42px}
-.brand b{display:block;font-size:17px} .brand small{color:#94a3b8;font-size:12px}
-nav button{width:100%;display:flex;align-items:center;gap:11px;padding:12px 12px;border:0;border-radius:10px;background:transparent;color:#cbd5e1;cursor:pointer;text-align:start;font-weight:500;font-size:15px;margin-bottom:4px;transition:.15s}
-nav button:hover{background:rgba(255,255,255,.08);color:#fff}
-nav button.on{background:rgba(255,255,255,.16);color:#fff;font-weight:700}
-nav button .cnt{margin-inline-start:auto;background:var(--gold);color:#1a1a1a;border-radius:999px;font-size:11px;font-weight:800;padding:2px 8px;min-width:22px;text-align:center}
-nav button .cnt.red{background:var(--red);color:#fff}
-.me{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:#94a3b8}
-.me .em{color:#fff;font-weight:600;word-break:break-all;display:block;margin-bottom:10px}
-.me .btn{width:100%;justify-content:center;background:rgba(255,255,255,.12);box-shadow:none}
-main{padding:22px 26px 60px;min-width:0}
-.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
-.top h2{margin:0;font-size:26px;font-weight:800} .top p{margin:3px 0 0;color:var(--muted);font-size:14px;font-weight:500}
-.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.search{position:relative;min-width:280px}
-.search .ic{position:absolute;inset-inline-start:12px;top:13px;color:#64748b}
-.search input{padding-inline-start:38px}
-select.in{width:auto;padding:11px 34px 11px 12px;font-weight:600}
+    .topbar { position:sticky; top:0; z-index:60; background:var(--top); color:#fff; box-shadow:0 6px 20px rgba(11,31,58,.35); }
+    .topbar .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px; }
+    .tbrand { display:flex; align-items:center; gap:10px; font-weight:900; font-size:20px; letter-spacing:.2px; }
+    .tbrand .mark { width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,var(--blue),var(--teal)); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,.25); }
+    .tbrand span b { color:#fbbf24; }
+    .topbar select { background:#fff; color:var(--text); }
+    #userbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:14px; }
+    #userbar .em { font-weight:600; opacity:.95; }
+    #langSel { width:auto; margin:0; padding:8px 10px; border:0; border-radius:9px; font-weight:600; }
+    #calBtn { background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.45); font-size:15px; padding:8px 14px; border-radius:10px; }
+    #calBtn:hover { background:rgba(255,255,255,.24); }
+    #logoutBtn { background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.45); padding:7px 14px; }
 
-/* ---------- cards ---------- */
-.card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
-.chead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#f1f5f9;border-bottom:1.5px solid var(--line2);margin:-18px -18px 14px;padding:12px 18px;border-radius:var(--r) var(--r) 0 0}
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.g2{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(440px,1fr))}
-.g2 .card{margin:0}
-@media (max-width:980px){.g2{grid-template-columns:1fr}}
-.stat{display:flex;gap:14px;align-items:center;cursor:pointer;transition:.15s}
-.stat:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.16)}
-.stat .ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;flex:none}
-.stat .n{font-size:30px;font-weight:800;line-height:1}
-.stat .l{color:var(--muted);font-size:13px;margin-top:4px;font-weight:600}
-.bg-blue{background:var(--blue)} .bg-teal{background:var(--teal)} .bg-gold{background:var(--gold)} .bg-green{background:var(--green)} .bg-red{background:var(--red)} .bg-orange{background:var(--orange)} .bg-purple{background:var(--purple)}
-.h3{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:800;margin:0 0 12px}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-size:13px;font-weight:700;border:1px solid transparent}
-.p-green{background:#dcfce7;color:#166534;border-color:#86efac} .p-red{background:#fee2e2;color:#991b1b;border-color:#fca5a5} .p-orange{background:#ffedd5;color:#9a3412;border-color:#fdba74}
-.p-gray{background:#f1f5f9;color:#1e293b;border-color:#cbd5e1} .p-blue{background:#dbeafe;color:#1e40af;border-color:#93c5fd} .p-purple{background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}
-.empty{text-align:center;color:var(--muted);padding:40px 10px;font-weight:600}
-.empty .big{font-size:40px;margin-bottom:8px}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.between{justify-content:space-between}
-.muted{color:var(--muted);font-size:13px;font-weight:500}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1.5px solid var(--line2)}
-.sep{height:1.5px;background:var(--line2);margin:12px 0}
+    .hero { display:flex; justify-content:center; margin:14px auto 6px; }
+    .logoCard { background:#fff; border-radius:18px; padding:6px 18px; box-shadow:var(--shadow); border:1.5px solid var(--line); border-top:5px solid var(--gold); width:100%; }
+    .logoBox { max-width:380px; margin:0 auto; }
+    .logoBox img { display:block; width:100%; height:auto; mix-blend-mode:multiply; }
 
-/* switches */
-.sw{display:flex;gap:16px;align-items:flex-start}
-.toggle{position:relative;width:56px;height:32px;flex:none;margin-top:2px}
-.toggle input{opacity:0;width:0;height:0}
-.toggle span{position:absolute;inset:0;background:#94a3b8;border-radius:999px;cursor:pointer;transition:.2s}
-.toggle span::before{content:'';position:absolute;width:26px;height:26px;top:3px;inset-inline-start:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.toggle input:checked+span{background:var(--green)}
-.toggle input:checked+span::before{transform:translateX(-24px)}
-.sw b{font-size:17px} .sw .muted{margin-top:6px;line-height:1.7;font-size:14px}
+    .card { background:#fff; border:1.5px solid var(--line); border-radius:16px; padding:18px; margin:14px 0; box-shadow:var(--shadow); }
+    .card.co { border-inline-start:6px solid var(--navy); padding:14px 18px; margin:14px 0; }
+    .box { max-width:430px; margin:10px auto 30px; }
+    input, textarea, select { width:100%; padding:11px 13px; margin:6px 0; border:1.5px solid #94a3b8; border-radius:10px; font-family:inherit; font-size:15px; background:#fff; color:var(--text); }
+    input:focus, textarea:focus, select:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.18); }
+    input[type=checkbox] { width:20px; height:20px; margin:0; padding:0; accent-color:var(--navy); flex:none; }
+    textarea { resize:vertical; max-width:100%; min-height:70px; }
+    select:required:invalid { color:#64748b; }
+    select:required:invalid option { color:var(--text); }
+    ::placeholder { color:#64748b; opacity:1; }
+    .plabel { display:block; font-weight:700; font-size:13px; color:var(--navy); margin:0 0 2px; }
+    .pwwrap { position:relative; }
+    .pwwrap input { padding-inline-end:84px; }
+    .pwwrap button { position:absolute; inset-inline-end:6px; top:12px; padding:5px 12px; font-size:12px; background:#e2e8f0; color:var(--navy); box-shadow:none; }
 
-/* phones table */
-.tbl{width:100%;border-collapse:collapse}
-.tbl th{font-size:13px;color:#1e293b;text-align:start;padding:10px 12px;border-bottom:2px solid var(--line);font-weight:700;background:#f1f5f9}
-.tbl td{padding:13px 12px;border-bottom:1.5px solid var(--line2);vertical-align:middle}
-.tbl tr:last-child td{border-bottom:0}
-.tbl tbody tr:hover td{background:#f8fafc}
-.num{font-weight:800;font-size:17px}
-.editbox{background:#f1f5f9;border:1.5px dashed #94a3b8;border-radius:10px;padding:12px}
-@media (max-width:860px){.tbl thead{display:none}.tbl td{display:block;border:0;padding:4px 0}.tbl tr{display:block;border-bottom:1.5px solid var(--line);padding:12px 0}}
+    .pricewrap { direction:ltr; display:flex; align-items:center; border:1.5px solid #94a3b8; border-radius:10px; background:#fff; margin:6px 0; padding-left:12px; }
+    .pricewrap:focus-within { border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.18); }
+    .pricewrap .dol { font-weight:800; color:var(--navy); font-size:18px; }
+    .pricewrap input { border:0; margin:0; outline:none !important; background:transparent; box-shadow:none !important; }
+    .rtcheck { display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; color:var(--navy); margin-top:8px; padding:9px 12px; background:#fff; border:1.5px solid #94a3b8; border-radius:10px; }
+    .rtbadge { background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; border-radius:999px; padding:2px 10px; font-size:12px; font-weight:800; }
 
-/* reviews */
-.rev{border-inline-start:6px solid var(--blue);padding-top:14px}
-.rev.pend{border-inline-start-color:var(--orange)}
-.stars{color:var(--gold);letter-spacing:1px;font-size:16px}
-.score{display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:13px;color:#fff;font-weight:800;font-size:19px;flex:none}
-.rt{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.rt span{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:600;color:#334155}
-.rt span b{color:var(--navy);font-size:14px;margin-inline-start:4px}
-.cmt{background:#fffbeb;border:1px solid #fde68a;border-inline-start:4px solid var(--gold);padding:9px 12px;border-radius:8px;margin-top:10px;white-space:pre-wrap}
-audio{width:100%;margin:8px 0 2px}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:700px){.cols{grid-template-columns:1fr}}
-.meta{display:flex;flex-direction:column;gap:4px;align-items:flex-end;color:var(--muted);font-size:13px;font-weight:600;text-align:end}
+    button { padding:10px 17px; border:0; border-radius:10px; background:var(--navy); color:#fff; cursor:pointer; font-size:15px; font-weight:700; display:inline-flex; align-items:center; gap:7px; font-family:inherit; box-shadow:0 2px 6px rgba(15,23,42,.15); transition:.15s; }
+    button:hover { filter:brightness(1.1); transform:translateY(-1px); }
+    button:disabled { opacity:.6; cursor:default; transform:none; }
+    button.link { background:none; color:var(--blue); text-decoration:underline; padding:4px; font-weight:600; box-shadow:none; }
+    button.gold { background:var(--gold); color:#1a1a1a; }
+    button.green { background:var(--green); }
+    button.danger { background:var(--red); }
+    button.ghost { background:#fff; color:var(--navy); border:1.5px solid #94a3b8; box-shadow:none; }
+    button.ghost:hover { background:var(--soft); }
+    button.small { padding:7px 13px; font-size:13px; margin-top:6px; }
 
-/* toast */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:13px 22px;border-radius:12px;display:none;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.35);font-weight:700;align-items:center;gap:8px}
-#toast.ok{background:var(--green)} #toast.bad{background:var(--red)}
+    .msg { padding:10px 14px; border-radius:10px; margin:8px 0; display:none; font-weight:600; }
+    .err { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+    .ok  { background:#dcfce7; color:#166534; border:1px solid #86efac; }
+    .banner { background:#fee2e2; color:#991b1b; border:1.5px solid #fca5a5; border-radius:12px; padding:12px 16px; margin:12px 0; font-weight:700; }
+    .note { background:#dbeafe; border:1.5px solid #93c5fd; color:#1e3a8a; border-radius:10px; padding:10px 14px; margin:8px 0; font-size:14px; font-weight:500; }
+    .note.warn { background:#fef3c7; border-color:#fcd34d; color:#78350f; }
+    .hidden { display:none !important; }
+    .row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+    .toolbar { margin:14px 0 6px; }
+    .toolbar .btns { display:flex; gap:8px; flex-wrap:wrap; }
+    h2 { margin:10px 0; color:var(--navy); font-size:26px; font-weight:900; }
+    h4 { margin:0 0 8px; color:var(--navy); font-size:16px; display:flex; align-items:center; gap:8px; font-weight:800; }
+    .fileline { font-size:13px; color:var(--muted); margin:6px 0 2px; font-weight:600; }
+    #ver { text-align:center; color:#64748b; font-size:12px; margin-top:28px; font-weight:600; }
 
-@media (max-width:900px){
-  .app{grid-template-columns:1fr}
-  aside{position:static;height:auto;padding:14px}
-  .brand{padding-bottom:12px;margin-bottom:10px}
-  nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
-  nav button{width:auto;white-space:nowrap;margin:0}
-  .me{display:none}
-  main{padding:16px}
-  .search{min-width:0;flex:1}
-}
-</style>
+    .filters { display:flex; gap:10px; margin:8px 0 4px; flex-wrap:wrap; }
+    .filters .sw { position:relative; flex:2 1 260px; }
+    .filters .sw svg { position:absolute; inset-inline-start:13px; top:20px; color:#64748b; }
+    .filters .sw input { padding-inline-start:40px; margin:6px 0; }
+    .filters select { flex:1 1 160px; font-weight:600; }
+
+    /* ---------- company card ---------- */
+    .chead { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
+    .cinfo { display:flex; align-items:center; gap:14px; min-width:0; flex:1 1 300px; }
+    .clogo { width:60px; height:60px; object-fit:contain; border-radius:12px; border:1.5px solid var(--line2); background:#fff; flex:none; }
+    .cname { font-weight:900; color:var(--navy); font-size:21px; line-height:1.25; }
+    .codeBadge { display:inline-block; background:#0b1f3a; color:#fbbf24; border-radius:8px; padding:2px 10px; font-size:15px; font-weight:900; margin-inline-start:10px; vertical-align:middle; letter-spacing:1px; }
+    .meta { color:var(--muted); font-size:14px; margin-top:3px; font-weight:500; }
+    .contact { display:flex; flex-wrap:wrap; gap:8px 18px; color:var(--muted); font-size:14px; margin-top:6px; align-items:center; font-weight:500; }
+    .contact span { display:inline-flex; align-items:center; gap:6px; }
+    .score { display:flex; flex-direction:row; align-items:center; gap:10px; flex:0 0 auto; background:#fff; border:1.5px solid var(--line2); border-radius:14px; padding:6px 14px; box-shadow:0 2px 8px rgba(15,23,42,.08); }
+    .score .big { font-size:28px; font-weight:900; line-height:1; }
+    .score .cnt { font-size:12px; color:var(--muted); font-weight:600; }
+    .score .scol { display:flex; flex-direction:column; align-items:flex-start; gap:1px; }
+    .good { color:var(--green); } .mid { color:#b45309; } .bad { color:var(--red); }
+    .bg-good { background:var(--green); } .bg-mid { background:var(--amber); } .bg-bad { background:var(--red); }
+    .stars { color:var(--gold); letter-spacing:1px; font-size:16px; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:999px; font-size:13px; font-weight:700; background:#dcfce7; color:#166534; border:1px solid #86efac; margin-top:4px; }
+    .pill.low { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+
+    .callbtn { display:inline-flex; align-items:center; gap:7px; background:var(--green); color:#fff !important; text-decoration:none; font-weight:800; padding:9px 16px; border-radius:999px; direction:ltr; box-shadow:0 3px 8px rgba(22,163,74,.35); font-size:15px; }
+    .callbtn:hover { filter:brightness(1.1); }
+    .callbtn.sm { padding:4px 11px; font-size:12px; margin-inline-start:6px; }
+    .urow.idle { background:#fef3c7; border-radius:10px; padding-inline:10px; }
+    .ustat { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; background:#e2e8f0; color:var(--navy); border-radius:999px; padding:2px 10px; margin-inline-end:4px; }
+    .ustat.warn { background:#fde68a; color:#78350f; }
+
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .tabs button { background:#fff; color:var(--c); border:2px solid var(--c); padding:10px 16px; box-shadow:none; font-size:15px; }
+    .tabs button.on { background:var(--c); color:#fff; }
+    .tabs button .n { background:rgba(0,0,0,.1); border-radius:10px; padding:1px 8px; font-size:12px; font-weight:800; }
+    .tabs button.on .n { background:rgba(255,255,255,.3); }
+    .tabs button[data-open] { --c:#1e3a8a; }
+    .tabs button[data-prices] { --c:#0e7490; }
+    .tabs button[data-comments] { --c:#6d28d9; }
+    .tabs button[data-write] { --c:#15803d; }
+    .more { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1.5px solid var(--line2); }
+    .more button { font-size:15px; padding:9px 16px; background:#fff; color:var(--c); border:1.5px solid var(--c); box-shadow:none; }
+    .more button[data-sendlogo] { --c:#be185d; }
+    .more button[data-edco] { --c:#c2410c; }
+    .more button.gold { background:var(--gold); color:#1a1a1a; border:0; }
+    .more button.danger { background:var(--red); color:#fff; border:0; }
+
+    .detail { margin-top:16px; border-top:2px solid var(--line2); padding-top:14px; }
+    .dhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
+    .dhead h4 { margin:0; font-size:18px; }
+    .dhead button { margin:0; }
+    .sect { background:var(--soft); border:1.5px solid var(--line2); border-radius:14px; padding:14px; margin:12px 0; }
+    .sect.white { background:#fff; }
+    .sect.ride { background:#eff6ff; border-color:#bfdbfe; }
+    .sect.sug { background:#fef3c7; border:1.5px dashed var(--gold); }
+    .cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width:640px) { .cols { grid-template-columns:1fr; } }
+    .detail .sect > .cols { grid-template-columns:1fr; gap:10px; }
+    .detail .sect > .cols > div { background:#fff; border:1.5px solid var(--line2); border-radius:12px; padding:12px 14px; }
+    .detail .sect.white > .cols { grid-template-columns:1fr 1fr; gap:14px; }
+    .detail .sect.white > .cols > div { background:none; border:0; padding:0; }
+    @media (max-width:640px) { .detail .sect.white > .cols { grid-template-columns:1fr; } }
+    .grp { font-weight:800; color:var(--navy); font-size:13px; text-transform:uppercase; letter-spacing:.6px; margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+    .bar { display:grid; grid-template-columns:26px minmax(110px,170px) 1fr 52px; align-items:center; gap:10px; padding:8px 0; font-size:15px; font-weight:700; }
+    .bar .track { height:14px; background:#cbd5e1; border-radius:8px; overflow:hidden; }
+    .bar .fill { height:100%; border-radius:8px; }
+    .bar .val { font-weight:900; font-size:17px; text-align:end; }
+    .bar > span:first-child svg { width:1.3em; height:1.3em; }
+    @media (max-width:640px) { .bar { grid-template-columns:24px 1fr 80px 40px; gap:6px; font-size:14px; } }
+
+    .field { border:1.5px solid #cbd5e1; background:#fff; border-radius:12px; padding:12px 14px; margin:10px 0; }
+    .optbox { border:2px dashed #94a3b8; border-radius:12px; padding:12px 14px; margin:12px 0; background:#fff; }
+
+    .catrow { display:flex; justify-content:space-between; align-items:flex-end; padding:2px 0; gap:8px; font-size:14px; }
+    .catrow .lbl { display:flex; align-items:center; gap:8px; font-weight:700; padding-bottom:4px; }
+    .pick { direction:ltr; display:flex; }
+    .pick .st { cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; padding:0 3px; user-select:none; }
+    .pick .st .sn { font-style:normal; font-size:13px; font-weight:800; color:#475569; line-height:1; margin-bottom:2px; }
+    .pick .st .sg { font-size:30px; line-height:1; color:#cbd5e1; }
+    .pick .st.on .sg { color:var(--gold); }
+    .pick .st.on .sn { color:var(--navy); }
+    .opt { font-size:12px; color:#64748b; font-weight:500; }
+    .hintline { font-size:13px; color:#475569; margin:4px 0 0; font-weight:500; }
+
+    .ptq { font-weight:800; font-size:15px; color:var(--navy); margin:2px 0 8px; display:flex; align-items:center; gap:8px; }
+    .ptopts { display:grid; gap:8px; }
+    .optcard { display:flex; align-items:center; justify-content:flex-start; gap:10px; width:100%; background:#fff; color:var(--text); border:2px solid #94a3b8; border-radius:12px; padding:12px 14px; font-weight:600; text-align:start; box-shadow:none; }
+    .optcard::before { content:''; flex:none; width:18px; height:18px; border-radius:50%; border:2px solid #64748b; background:#fff; }
+    .optcard:hover { border-color:var(--navy); background:#eff6ff; filter:none; transform:none; }
+    .optcard.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+    .optcard.on::before { border-color:#fff; background:radial-gradient(circle,#fff 0 4px,var(--navy) 5px); }
+    .optcard.yes.on { background:var(--green); border-color:var(--green); }
+    .optcard.yes.on::before { background:radial-gradient(circle,#fff 0 4px,var(--green) 5px); }
+    .optcard.no.on { background:var(--red); border-color:var(--red); }
+    .optcard.no.on::before { background:radial-gradient(circle,#fff 0 4px,var(--red) 5px); }
+    .recbtns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0; }
+    .chip { padding:9px 15px; border-radius:14px; font-size:13px; background:#fff; border:2px solid #94a3b8; color:#334155; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:5px; }
+    .chip.pos { border-color:var(--green); color:#15803d; }
+    .chip.neg { border-color:var(--red); color:#b91c1c; }
+    .chip.pos.on { background:var(--green); color:#fff; }
+    .chip.neg.on { background:var(--red); color:#fff; }
+    .chip.static { cursor:default; padding:4px 11px; border-width:1.5px; }
+    .two { display:flex; gap:10px; flex-wrap:wrap; }
+    .two > * { flex:1 1 150px; }
+    .placebox { flex:1 1 150px; }
+    .placebox select, .placebox input { margin-bottom:0; }
+    .placebox input { margin-top:6px; }
+
+    .datebtn { width:100%; justify-content:flex-start; background:#fff; color:#64748b; border:1.5px solid #94a3b8; padding:11px 13px; margin:6px 0 0; font-weight:500; font-size:15px; text-align:start; box-shadow:none; }
+    .datebtn.has { color:var(--text); font-weight:700; }
+
+    .rev { background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0; }
+    .rev .rh { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .badge { color:#fff; font-weight:900; border-radius:9px; padding:5px 11px; font-size:16px; }
+    .rev .mini { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; color:var(--muted); margin-top:8px; font-weight:500; }
+    .rev .mini b { color:var(--text); }
+    .rev .mini span { display:inline-flex; align-items:center; gap:5px; }
+    .rev details { margin-top:8px; }
+    .rev summary { cursor:pointer; font-size:13px; color:var(--blue); font-weight:600; }
+    .cmt { background:#fffbeb; border:1px solid #fde68a; border-inline-start:4px solid var(--gold); padding:9px 12px; border-radius:8px; margin-top:10px; white-space:pre-wrap; word-break:break-word; }
+    .yn { font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
+    .ridebox { background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:9px 12px; margin-top:10px; font-size:14px; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; font-weight:500; }
+    .ridebox span { display:inline-flex; align-items:center; gap:6px; }
+    .price { background:var(--navy); color:#fff; border-radius:8px; padding:3px 12px; font-weight:900; direction:ltr; white-space:nowrap; }
+    .showmore { text-align:center; margin-top:12px; }
+    .flag { background:#fef3c7; color:#78350f; border:1px solid #fcd34d; border-radius:6px; padding:2px 9px; font-size:12px; font-weight:800; display:inline-block; margin:2px 0; }
+
+    .rtgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin-bottom:6px; }
+    .rt { background:#fff; border:1.5px solid #bfdbfe; border-radius:14px; padding:14px; }
+    .rt-route { font-weight:800; color:var(--navy); font-size:14px; display:flex; align-items:center; gap:6px; }
+    .rt-price { font-size:30px; font-weight:900; color:#0e7490; margin-top:4px; margin-bottom:10px; direction:ltr; }
+    .rt-sub { font-size:12px; color:var(--muted); margin-top:2px; font-weight:600; }
+    .prow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1.5px solid var(--line2); font-size:14px; }
+    .prow:last-child { border-bottom:0; }
+    .pr-route { font-weight:700; color:var(--text); }
+    .pr-meta { font-size:12px; color:var(--muted); margin-top:2px; font-weight:500; }
+
+    .author { background:#fef3c7; border:1.5px dashed var(--gold); border-radius:10px; padding:8px 12px; margin-top:10px; font-size:13px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-weight:500; }
+    .tagban { background:var(--red); color:#fff; border-radius:6px; padding:2px 9px; font-size:12px; font-weight:800; }
+    .sugrow { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid #fcd34d; flex-wrap:wrap; }
+    .sugrow:last-child { border-bottom:0; }
+    .sugrow img { width:90px; height:56px; object-fit:contain; background:#fff; border:1px solid var(--line2); border-radius:8px; }
+    .sugrow .sbtns { display:flex; gap:6px; margin-inline-start:auto; }
+
+    .reqitem { padding:12px 0; border-bottom:1.5px solid #fcd34d; }
+    .reqitem:last-child { border-bottom:0; }
+    .reqitem .kv { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; margin:6px 0; }
+    .reqitem .old { color:#64748b; text-decoration:line-through; }
+    .tagkind { background:var(--navy); color:#fff; border-radius:6px; padding:2px 9px; font-size:12px; font-weight:800; }
+    .prof { display:flex; flex-wrap:wrap; gap:4px 16px; font-size:14px; margin:6px 0; align-items:center; }
+    .prof span { display:inline-flex; align-items:center; gap:6px; }
+
+    .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1.5px solid var(--line2); flex-wrap:wrap; }
+    .urow:last-child { border-bottom:0; }
+
+    .welcome { max-width:720px; margin:16px auto 18px; padding:0; overflow:hidden; border:0; border-radius:22px; box-shadow:0 16px 40px rgba(11,31,58,.22); }
+    .wHead { background:var(--top); color:#fff; padding:28px 22px 24px; text-align:center; }
+    .wHead .wlogo { font-size:40px; line-height:1; }
+    .wHead h3 { margin:8px 0 0; font-size:28px; color:#fff; letter-spacing:.3px; font-weight:900; }
+    .wBody { padding:22px 24px 24px; background:#fff; }
+    .wBlock { margin:0 0 18px; }
+    .wBlock h5 { margin:0 0 6px; color:var(--navy); font-size:17px; display:flex; align-items:center; gap:8px; font-weight:800; }
+    .wBlock h5::before { content:''; width:5px; height:18px; border-radius:3px; background:var(--gold); flex:none; }
+    .wBlock p { margin:0; font-size:15px; line-height:1.7; color:#1e293b; }
+    .wSteps { list-style:none; margin:0; padding:0; counter-reset:st; display:grid; gap:10px; }
+    .wSteps li { counter-increment:st; display:flex; gap:12px; align-items:flex-start; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px; padding:11px 13px; font-size:15px; line-height:1.55; }
+    .wSteps li::before { content:counter(st); flex:none; width:28px; height:28px; border-radius:50%; background:var(--navy); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; }
+    .wPriv { display:flex; gap:10px; align-items:flex-start; background:#dcfce7; border:1.5px solid #86efac; border-radius:12px; padding:11px 14px; font-size:15px; line-height:1.55; margin-bottom:18px; }
+    .wAsk { text-align:center; background:linear-gradient(135deg,#fef3c7,#fde68a); border:3px solid var(--gold); border-radius:18px; padding:20px 16px; margin:0 0 18px; box-shadow:0 6px 18px rgba(245,158,11,.3); }
+    .wAsk .t1 { font-size:16px; font-weight:900; color:#78350f; }
+    .wAsk .t2 { font-size:22px; font-weight:900; color:#451a03; line-height:1.35; margin-top:6px; }
+    .wRules { margin:0; padding-inline-start:22px; }
+    .wRules li { font-size:15px; line-height:1.6; margin:3px 0; }
+    .wFoot { margin-top:16px; padding-top:14px; border-top:1.5px solid var(--line2); text-align:center; color:var(--muted); font-size:15px; line-height:1.7; }
+    .wFoot b { color:var(--navy); }
+
+    #toast { position:fixed; top:80px; left:50%; transform:translateX(-50%); width:max-content; max-width:92vw; text-align:center; background:var(--green); color:#fff; padding:12px 20px; border-radius:12px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.3); display:none; z-index:80; align-items:center; gap:8px; }
+    #toast.err { background:var(--red); }
+
+    #calModal { position:fixed; inset:0; background:rgba(10,20,40,.6); display:none; align-items:center; justify-content:center; z-index:70; padding:12px; }
+    .calBox { direction:rtl; background:#fff; border-radius:18px; width:min(480px,100%); max-height:96vh; overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.4); }
+    .calHead { display:flex; align-items:center; gap:8px; padding:14px; background:var(--top); color:#fff; }
+    .calNav { margin:0; width:40px; height:40px; padding:0; justify-content:center; font-size:20px; border-radius:50%; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.5); color:#fff; flex:none; box-shadow:none; }
+    .calTitle { text-align:center; flex:1; }
+    .calTitle b { display:block; font-size:24px; letter-spacing:.3px; }
+    .calTitle small { display:block; color:#e0f2fe; direction:ltr; unicode-bidi:isolate; font-size:12px; margin-top:2px; }
+    .calHint { background:#fef3c7; color:#78350f; font-size:13px; font-weight:700; text-align:center; padding:7px 10px; }
+    #calBody { padding:12px 12px 6px; }
+    .calGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+    .cw { text-align:center; font-weight:800; color:var(--navy); font-size:11px; line-height:1.15; padding:5px 0; border-bottom:2px solid var(--line2); }
+    .cw.sat { color:#5b21b6; border-bottom-color:#ddd6fe; }
+    @media (max-width:480px) { .cw { font-size:9px; } }
+    .cd { text-align:center; border-radius:10px; padding:6px 0 5px; background:#f8fafc; border:1.5px solid #cbd5e1; min-height:58px; }
+    .cd b { display:block; font-size:20px; color:var(--text); line-height:1.15; }
+    .cd small { display:block; color:#64748b; font-size:11px; direction:ltr; unicode-bidi:isolate; }
+    .cd .hl { display:block; font-style:normal; font-size:9.5px; font-weight:800; color:#c2410c; line-height:1.15; margin-top:1px; }
+    .cd.sat { background:#f5f3ff; border-color:#c4b5fd; }
+    .cd.sat b { color:#5b21b6; }
+    .cd.today { border:2px solid var(--gold); background:#fef3c7; }
+    .cd.sel { background:var(--navy); border-color:var(--navy); }
+    .cd.sel b, .cd.sel small { color:#fff; }
+    .cd.sel .hl { color:#fde68a; }
+    .cd.blank { background:none; border:0; }
+    .cd[data-day] { cursor:pointer; }
+    .cd[data-day]:hover { background:#dbeafe; border-color:#60a5fa; }
+    .cd.sel[data-day]:hover { background:var(--navy); }
+    .cd.fut { opacity:.35; }
+    .calFoot { display:flex; justify-content:space-between; gap:8px; padding:10px 14px 14px; }
+  </style>
 </head>
 <body>
-<div id="toast"></div>
+  <div id="toast"></div>
+  <input type="file" id="sugFile" accept="image/*" class="hidden">
 
-<div id="loginView">
-  <div class="loginCard">
-    <div class="logo"><div class="mark"><svg class="ic" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-      <div><h1>CarReviews</h1><p class="sub">טעלעפאן אדמין · נאר פאר אדמינס</p></div></div>
-    <label class="f">אימעיל</label>
-    <input id="email" type="email" class="in ltr" autocomplete="username">
-    <label class="f">פּאסווארט</label>
-    <div class="pwrow">
-      <input id="pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
-      <button type="button" class="eye" id="eyeBtn" title="ווײַזן / באַהאַלטן" onclick="togglePw()"><svg class="ic" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  <div id="calModal">
+    <div class="calBox">
+      <div class="calHead">
+        <button class="calNav" type="button" data-cal="prev">&#8594;</button>
+        <div class="calTitle"><b id="calTitle"></b><small id="calSub"></small></div>
+        <button class="calNav" type="button" data-cal="next">&#8592;</button>
+      </div>
+      <div class="calHint hidden" id="calHint"></div>
+      <div id="calBody"></div>
+      <div class="calFoot">
+        <button class="ghost small" data-cal="today" id="calTodayBtn" style="margin:0"></button>
+        <button class="small" data-cal="close" id="calCloseBtn" style="margin:0"></button>
+      </div>
     </div>
-    <button class="btn full" onclick="login()">אריינלאגין</button>
-    <div id="loginMsg" class="err"></div>
   </div>
-</div>
 
-<div id="appView" class="app hidden">
-  <aside>
-    <div class="brand"><div class="mark"><svg class="ic" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-      <div><b>CarReviews</b><small>טעלעפאן אדמין</small></div></div>
-    <nav id="nav"></nav>
-    <div class="me"><span class="em ltr" id="meEmail"></span><button class="btn sm" onclick="logout()">ארויסלאגין</button></div>
-  </aside>
-  <main>
-    <div class="top">
-      <div><h2 id="pageTitle"></h2><p id="pageSub"></p></div>
-      <div class="tools" id="tools"></div>
-    </div>
-    <div id="content"></div>
-  </main>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SB_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
-const sb = supabase.createClient(SB_URL, SB_KEY);
-
-const I = {
-  dash:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
-  sw:'<rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/>',
-  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
-  star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
-  mic:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>',
-  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
-  refresh:'<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
-  check:'<polyline points="20 6 9 17 4 12"/>',
-  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
-  trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>',
-  ban:'<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>',
-  play:'<polygon points="5 3 19 12 5 21 5 3"/>',
-  eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>',
-  eyeoff:'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>',
-  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
-  up:'<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
-  down:'<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>',
-  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
-  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
-};
-const ic = n => `<svg class="ic" viewBox="0 0 24 24">${I[n]}</svg>`;
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmtDate = d => { if(!d) return '—'; try{ return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }catch(e){ return d; } };
-const fmtPhone = p => { let d=String(p||'').replace(/\D/g,''); if(d.length===11&&d[0]==='1') d=d.slice(1); return d.length===10 ? d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6) : String(p||''); };
-const normPhone = p => { const d=String(p||'').replace(/\D/g,''); if(d.length===10) return '+1'+d; if(d.length===11&&d[0]==='1') return '+'+d; return d?'+'+d:''; };
-const isToday = d => d && new Date(d).toDateString()===new Date().toDateString();
-const STATUS = { new:['נייע','p-blue'], typed:['אפגעשריבן','p-purple'], approved:['באשטעטיגט','p-green'], rejected:['אפגעווארפן','p-red'] };
-const TAGN = { polite:'העפלעך',clean:'ריין',fair_price:'ריכטיגער פרייז',safe:'זיכער',great_service:'גוטער סערוויס',rude:'גראב',dirty:'שמוציג',overcharged:'צו טייער',unsafe:'נישט זיכער',no_answer:'שווער צו דערגרייכן' };
-function errMsg(e){
-  const m=(e&&e.message)||'';
-  if(m.includes('HAS_REVIEWS')) return 'מען קען נישט: דער נומער האט שוין רעוויוס. נוץ "בלאקירן".';
-  if(m.includes('EXISTS')) return 'דער נומער איז שוין דא אין דער ליסטע';
-  if(m.includes('not admin')) return 'נישט אדמין';
-  return 'טעות: '+m;
-}
-let toastT;
-function toast(m, bad){ const t=$('toast'); t.className=bad?'bad':'ok'; t.innerHTML=ic(bad?'x':'check')+' '+esc(m); t.style.display='flex'; clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',3200); }
-
-let page='dash', phones=[], reviews=[], messages=[], settings={}, editIdx=null, q='', revF='all', msgF='';
-
-function togglePw(){
-  const p=$('pass'); const show = p.type==='password';
-  p.type = show ? 'text' : 'password';
-  $('eyeBtn').innerHTML = ic(show ? 'eyeoff' : 'eye').replace('<svg class="ic"','<svg class="ic" style="width:22px;height:22px"');
-}
-
-/* ---------- auth ---------- */
-async function login(){
-  const email=$('email').value.trim(), pass=$('pass').value;
-  $('loginMsg').textContent='';
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if(error){ $('loginMsg').textContent='טעות: '+error.message; return; }
-  init();
-}
-async function logout(){ await sb.auth.signOut(); location.reload(); }
-async function init(){
-  const { data:{ session } } = await sb.auth.getSession();
-  if(!session){ show(false); return; }
-  const { data, error } = await sb.rpc('is_admin');
-  if(error || data!==true){ await sb.auth.signOut(); $('loginMsg').textContent='דער אקאונט איז נישט אדמין'; show(false); return; }
-  $('meEmail').textContent = session.user.email;
-  show(true);
-  await loadAll();
-  go('dash');
-}
-function show(ok){ $('loginView').classList.toggle('hidden',ok); $('appView').classList.toggle('hidden',!ok); }
-
-/* ---------- data ---------- */
-async function loadSettingsData(){ const {data,error}=await sb.rpc('admin_phone_settings'); if(error){toast(error.message,true);return;} settings=data||{}; }
-async function loadPhonesData(){ const {data,error}=await sb.rpc('admin_phone_users_list'); if(error){toast(error.message,true);return;} phones=data||[]; }
-async function loadReviewsData(){ const {data,error}=await sb.rpc('admin_phone_reviews_list'); if(error){toast(error.message,true);return;} reviews=data||[]; }
-async function loadMessagesData(){ const {data,error}=await sb.from('voice_messages').select('*').order('created_at',{ascending:false}).limit(300); if(error){toast(error.message,true);return;} messages=data||[]; }
-async function loadAll(){ await Promise.all([loadSettingsData(),loadPhonesData(),loadReviewsData(),loadMessagesData()]); renderNav(); }
-async function refresh(){ await loadAll(); render(); toast('אפדעיטעד'); }
-
-const pendRev = () => reviews.filter(r=>!r.approved).length;
-const newMsg = () => messages.filter(m=>m.status==='new').length;
-const waitPh = () => phones.filter(p=>!p.allowed&&!p.blocked).length;
-
-/* ---------- nav ---------- */
-const PAGES = [
-  ['dash','dash','דאשבארד',()=>0],
-  ['settings','sw','סוויטשעס',()=>0],
-  ['phones','phone','טעלעפאן נומערן',waitPh],
-  ['reviews','star','טעלעפאן רעוויוס',pendRev],
-  ['messages','mic','הודעות',newMsg],
-];
-function renderNav(){
-  $('nav').innerHTML = PAGES.map(([k,i,l,c])=>{ const n=c(); return `<button class="${page===k?'on':''}" onclick="go('${k}')">${ic(i)} ${l}${n?`<span class="cnt ${k==='reviews'?'red':''}">${n}</span>`:''}</button>`; }).join('');
-  document.title = (pendRev()+newMsg()+waitPh() ? `(${pendRev()+newMsg()+waitPh()}) ` : '') + 'CarReviews — טעלעפאן אדמין';
-}
-function go(p){ page=p; q=''; editIdx=null; renderNav(); render(); window.scrollTo({top:0}); }
-
-/* ---------- render ---------- */
-function head(t,s,tools){ $('pageTitle').textContent=t; $('pageSub').textContent=s; $('tools').innerHTML=tools||''; }
-const searchBox = ph => `<div class="search">${ic('search')}<input class="in" placeholder="${esc(ph)}" value="${esc(q)}" oninput="q=this.value;renderList()"></div>`;
-const refreshBtn = `<button class="btn ghost" onclick="refresh()">${ic('refresh')} אפדעיטן</button>`;
-const empty = (t,e) => `<div class="card empty"><div class="big">${e||'🗂️'}</div>${esc(t)}</div>`;
-
-function render(){
-  if(page==='dash') return renderDash();
-  if(page==='settings') return renderSettings();
-  if(page==='phones') return renderPhones();
-  if(page==='reviews') return renderReviews();
-  if(page==='messages') return renderMessages();
-}
-function renderList(){ if(page==='phones') $('listBox').innerHTML=phonesHtml(); if(page==='reviews') $('listBox').innerHTML=reviewsHtml(); if(page==='messages') $('listBox').innerHTML=messagesHtml(); }
-
-/* dashboard */
-function renderDash(){
-  head('דאשבארד','איבערבליק פון דער טעלעפאן סיסטעם', refreshBtn);
-  const callsToday = phones.filter(p=>isToday(p.last_call)).length;
-  const stat=(n,l,c,p)=>`<div class="card stat" onclick="go('${p}')"><div class="ico ${c}">${ic(p==='phones'?'phone':p==='reviews'?'star':p==='messages'?'mic':'clock')}</div><div><div class="n">${n}</div><div class="l">${l}</div></div></div>`;
-  const att = [];
-  reviews.filter(r=>!r.approved).slice(0,5).forEach(r=>att.push(`<div class="row between"><div>${ic('star')} <b>${esc(r.company||'?')}</b> <span class="muted ltr">${esc(fmtPhone(r.phone))}</span></div><button class="btn sm green" onclick="setApproved('${r.id}',true)">${ic('check')} באשטעטיג</button></div>`));
-  messages.filter(m=>m.status==='new').slice(0,5).forEach(m=>att.push(`<div class="row between"><div>${ic('mic')} נייע הודעה <span class="muted ltr">${esc(fmtPhone(m.from_number))}</span> · ${esc(m.duration_seconds||0)}s</div><button class="btn sm ghost" onclick="go('messages')">עפן</button></div>`));
-  phones.filter(p=>!p.allowed&&!p.blocked).slice(0,5).forEach(p=>att.push(`<div class="row between"><div>${ic('phone')} נומער ווארט <b class="ltr">${esc(fmtPhone(p.phone))}</b></div><button class="btn sm green" onclick="setPhone('${esc(p.phone)}',true,false)">דערלויבן</button></div>`));
-  const req = String(settings.phone_require_approval??'true')==='true', auto = String(settings.phone_reviews_auto_approve??'false')==='true';
-  $('content').innerHTML = `
-    <div class="grid">
-      ${stat(phones.length,'טעלעפאן נומערן','bg-blue','phones')}
-      ${stat(pendRev(),'רעוויוס ווארטן','bg-orange','reviews')}
-      ${stat(newMsg(),'נייע הודעות','bg-purple','messages')}
-      ${stat(callsToday,'רופן היינט','bg-teal','phones')}
-      ${stat(reviews.length,'אלע טעלעפאן רעוויוס','bg-green','reviews')}
-    </div>
-    <div class="cols" style="margin-top:14px">
-      <div class="card"><div class="h3">⚡ דארף אויפמערקזאמקייט</div>${att.length?att.join('<div class="sep"></div>'):'<div class="muted">אלעס איז ריין. קיין זאך ווארט נישט.</div>'}</div>
-      <div class="card"><div class="h3">${ic('sw')} איצטיקע סוויטשעס</div>
-        <div class="row between" style="margin-bottom:10px"><span>נאר דערלויבטע נומערן</span><span class="pill ${req?'p-green':'p-gray'}">${req?'אן':'אויס'}</span></div>
-        <div class="row between"><span>רעוויוס גיין גלייך אויפן זייטל</span><span class="pill ${auto?'p-green':'p-gray'}">${auto?'אן':'אויס'}</span></div>
-        <div class="sep"></div>
-        <button class="btn ghost sm" onclick="go('settings')">${ic('edit')} ענדערן</button>
+  <div class="topbar">
+    <div class="wrap">
+      <div class="tbrand"><div class="mark"><svg class="ic" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M3 17h18v-4l-2-6H5l-2 6z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></div><span>Car<b>Reviews</b></span></div>
+      <button id="calBtn" type="button"></button>
+      <div id="userbar">
+        <select id="langSel">
+          <option value="en">English</option>
+          <option value="yi">ייִדיש</option>
+          <option value="ru">Русский</option>
+          <option value="es">Español</option>
+        </select>
+        <span id="userinfo"></span>
       </div>
-    </div>`;
-}
-
-/* settings */
-function renderSettings(){
-  head('סוויטשעס','ביידע קענען זײַן אן אדער אויס, יעדער אליין', refreshBtn);
-  const req = String(settings.phone_require_approval??'true')==='true', auto = String(settings.phone_reviews_auto_approve??'false')==='true';
-  const sw=(id,key,on,title,a,b)=>`<div class="card"><div class="sw"><label class="toggle"><input type="checkbox" id="${id}" ${on?'checked':''} onchange="onSwitch('${key}',this)"><span></span></label>
-    <div><b>${title}</b><div class="muted"><b>אן</b> = ${a}<br><b>אויס</b> = ${b}</div></div></div></div>`;
-  $('content').innerHTML =
-    sw('swRequire','phone_require_approval',req,'נאר נומערן וואס איך האב דערלויבט',
-      'נאר נומערן וואס דו האסט דערלויבט קענען רעוויוען. אומבאקאנטע נומערן ווערן געשפייכערט אין דער ליסטע און הערן "נישט גילטיג".',
-      'יעדער נייער נומער קען גלייך רעוויוען (עס ווערט אויטאמאטיש געמאכט אן אקאונט). בלאקירטע נומערן קענען אלעמאל נישט.') +
-    sw('swAuto','phone_reviews_auto_approve',auto,'טעלעפאן רעוויוס גיין גלייך אויפן זייטל',
-      'יעדער רעוויו פון טעלעפאן ווערט גלייך געוויזן אויפן זייטל.',
-      'דער רעוויו בלייבט באהאלטן ביז דו באשטעטיגסט אים אין "טעלעפאן רעוויוס".');
-}
-async function onSwitch(key, el){
-  const { error } = await sb.rpc('admin_set_setting',{ p_key:key, p_value: el.checked?'true':'false' });
-  if(error){ toast(error.message,true); el.checked=!el.checked; return; }
-  settings[key]=el.checked?'true':'false'; toast('געשפייכערט');
-}
-
-/* phones */
-function renderPhones(){
-  head('טעלעפאן נומערן',`${phones.length} נומערן · ${waitPh()} ווארטן · ${phones.filter(p=>p.blocked).length} בלאקירט`, searchBox('זוך נומער אדער נאמען...')+refreshBtn);
-  $('content').innerHTML = `
-    <div class="card"><div class="h3">${ic('plus')} צולייגן נומער</div>
-      <div class="cols">
-        <div><label class="f">טעלעפאן נומער</label><input id="newPhone" class="in ltr" placeholder="845-555-1234" onkeydown="if(event.key==='Enter')addPhone()"></div>
-        <div><label class="f">נאמען (נאר פאר דיר)</label><input id="newName" class="in" onkeydown="if(event.key==='Enter')addPhone()"></div>
-      </div>
-      <div class="actions"><button class="btn green" onclick="addPhone()">${ic('check')} צולייגן און דערלויבן</button></div>
     </div>
-    <div id="listBox">${phonesHtml()}</div>`;
-}
-function phonesHtml(){
-  const s=q.trim().toLowerCase().replace(/[-\s()]/g,'');
-  const list = phones.filter(p=>!s || String(p.phone||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')) || (p.name||'').toLowerCase().includes(q.trim().toLowerCase()));
-  if(!list.length) return empty('קיין נומערן נישט געפונען','📱');
-  const rows = list.map(p=>{
-    const idx = phones.indexOf(p);
-    const st = p.blocked ? '<span class="pill p-red">בלאקירט</span>' : p.allowed ? '<span class="pill p-green">דערלויבט</span>' : '<span class="pill p-orange">ווארט</span>';
-    const edit = editIdx===idx ? `<tr><td colspan="6"><div class="editbox"><div class="cols">
-        <div><label class="f">נומער</label><input id="pp${idx}" class="in ltr" value="${esc(fmtPhone(p.phone))}"></div>
-        <div><label class="f">נאמען</label><input id="pn${idx}" class="in" value="${esc(p.name||'')}"></div></div>
-        <div class="actions"><button class="btn sm" onclick="editPhone(${idx})">${ic('save')} שפייכערן</button><button class="btn sm ghost" onclick="editIdx=null;renderList()">${ic('x')} אפשטעלן</button></div></div></td></tr>` : '';
-    return `<tr>
-      <td>${st}</td>
-      <td><span class="num ltr">${esc(fmtPhone(p.phone))}</span></td>
-      <td><b>${esc(p.name||'')||'<span class="muted">—</span>'}</b></td>
-      <td><span class="pill p-gray">${p.n_reviews||0} רעוויוס</span></td>
-      <td class="muted">${ic('clock')} ${esc(fmtDate(p.last_call))}</td>
-      <td><div class="row" style="gap:6px;justify-content:flex-end">
-        <button class="btn sm ghost" onclick="editIdx=${editIdx===idx?'null':idx};renderList()">${ic('edit')} ענדערן</button>
-        ${p.allowed&&!p.blocked ? `<button class="btn sm orange" onclick="setPhone('${esc(p.phone)}',false,false)">נעם אוועק</button>` : `<button class="btn sm green" onclick="setPhone('${esc(p.phone)}',true,false)">${ic('check')} דערלויבן</button>`}
-        ${p.blocked ? `<button class="btn sm gray" onclick="setPhone('${esc(p.phone)}',${!!p.allowed},false)">אנטבלאקירן</button>` : `<button class="btn sm red" onclick="setPhone('${esc(p.phone)}',false,true)">${ic('ban')} בלאקירן</button>`}
-        <button class="btn sm ghost danger" onclick="delPhone('${esc(p.phone)}')">${ic('trash')}</button>
-      </div></td></tr>${edit}`;
-  }).join('');
-  return `<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>סטאטוס</th><th>נומער</th><th>נאמען</th><th>רעוויוס</th><th>לעצטער רוף</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-async function setPhone(phone, allowed, blocked){
-  const p = phones.find(x=>x.phone===phone);
-  const { error } = await sb.rpc('admin_phone_user_save',{ p_phone:phone, p_name:(p&&p.name)||'', p_allowed:allowed, p_blocked:blocked });
-  if(error){ toast(errMsg(error),true); return; }
-  toast('געשפייכערט'); await loadPhonesData(); renderNav(); render();
-}
-async function editPhone(idx){
-  const p=phones[idx]; const newPhone=normPhone($('pp'+idx).value), name=$('pn'+idx).value.trim();
-  if(newPhone.length<11){ toast('שרייב א פולן נומער (10 ציפערן)',true); return; }
-  const { error } = await sb.rpc('admin_phone_user_update',{ p_old:p.phone, p_new:newPhone, p_name:name });
-  if(error){ toast(errMsg(error),true); return; }
-  editIdx=null; toast('געשפייכערט'); await loadPhonesData(); render();
-}
-async function delPhone(phone){
-  if(!confirm('זיכער אויסמעקן דעם נומער '+fmtPhone(phone)+'?')) return;
-  const { error } = await sb.rpc('admin_phone_user_delete',{ p_phone:phone });
-  if(error){ toast(errMsg(error),true); return; }
-  toast('אויסגעמעקט'); await loadPhonesData(); renderNav(); render();
-}
-async function addPhone(){
-  const phone=normPhone($('newPhone').value), name=$('newName').value.trim();
-  if(phone.length<11){ toast('שרייב א פולן נומער (10 ציפערן)',true); return; }
-  const { error } = await sb.rpc('admin_phone_user_save',{ p_phone:phone, p_name:name, p_allowed:true, p_blocked:false });
-  if(error){ toast(errMsg(error),true); return; }
-  toast('צוגעלייגט'); await loadPhonesData(); renderNav(); render();
-}
+  </div>
 
-/* reviews */
-function renderReviews(){
-  head('טעלעפאן רעוויוס',`${reviews.length} רעוויוס · ${pendRev()} ווארטן אויף באשטעטיגונג`,
-    searchBox('זוך קאמפאני אדער נומער...')+`<select class="in" onchange="revF=this.value;renderList()">
-      <option value="all" ${revF==='all'?'selected':''}>אלע</option><option value="pending" ${revF==='pending'?'selected':''}>ווארטן</option><option value="approved" ${revF==='approved'?'selected':''}>אויפן זייטל</option></select>`+refreshBtn);
-  $('content').innerHTML = `<div id="listBox">${reviewsHtml()}</div>`;
-}
-function reviewsHtml(){
-  const s=q.trim().toLowerCase();
-  const list = reviews.filter(r => (revF==='all'||(revF==='pending'&&!r.approved)||(revF==='approved'&&r.approved)) &&
-    (!s || (r.company||'').toLowerCase().includes(s) || String(r.phone||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')||'§')));
-  if(!list.length) return empty('קיין רעוויוס נישטא','⭐');
-  return '<div class="g2">'+list.map(r=>{
-    const vals=[r.punctuality,r.service,r.cleanliness,r.driving,r.driver_service].filter(v=>v!=null);
-    const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
-    const tone = avg>=4?'bg-green':avg>=3?'bg-gold':'bg-red';
-    const stars = '★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));
-    const rt=[['אנקום',r.punctuality],['סערוויס',r.service],['רייניקייט',r.cleanliness],['פארן',r.driving],['דרייווער',r.driver_service]].filter(x=>x[1]!=null).map(x=>`<span>${x[0]}<b>${x[1]}</b></span>`).join('');
-    const ride=[r.trip_from&&r.trip_to?`${esc(r.trip_from)} → ${esc(r.trip_to)}`:'', r.price_paid!=null?'$'+esc(r.price_paid):'', esc(r.trip_date||'')].filter(Boolean).join(' · ');
-    return `<div class="card rev ${r.approved?'':'pend'}">
-      <div class="row between" style="align-items:flex-start">
-        <div class="row" style="gap:12px">${avg?`<span class="score ${tone}">${avg.toFixed(1)}</span>`:''}<div><b style="font-size:18px">${esc(r.company||'?')}</b><div class="row" style="gap:6px;margin-top:4px">${avg?`<span class="stars">${stars}</span>`:''}${r.approved?'<span class="pill p-green">אויפן זייטל</span>':'<span class="pill p-orange">ווארט</span>'}</div></div></div>
-        <div class="meta"><span>${ic('clock')} ${esc(fmtDate(r.created_at))}</span><span class="ltr">${ic('phone')} ${esc(fmtPhone(r.phone))||'?'}</span></div>
+  <div class="wrap">
+  <div class="hero"><div class="logoCard"><div class="logoBox"><img src="logo.png" alt="CarReviews"></div></div></div>
+
+  <div id="authView">
+    <div class="card welcome" id="welcome"></div>
+    <div class="box card">
+      <h2 id="authTitle"></h2>
+      <div id="msg" class="msg"></div>
+      <div id="nameWrap" class="hidden"><input id="fullName" type="text"></div>
+      <input id="email" type="email">
+      <div id="phoneWrap" class="hidden">
+        <input id="signPhone" type="tel" inputmode="tel">
+        <div class="hintline" id="phoneHint"></div>
       </div>
-      <div class="rt">${rt||'<span class="muted">קיין רייטינגס</span>'}${r.recommend===true?`<span style="background:#dcfce7;border-color:#86efac;color:#166534">${ic('up')} רעקאמענדירט</span>`:r.recommend===false?`<span style="background:#fee2e2;border-color:#fca5a5;color:#991b1b">${ic('down')} נישט רעקאמענדירט</span>`:''}</div>
-      ${r.tags&&r.tags.length?`<div class="row" style="margin-top:8px;gap:5px">${r.tags.map(t=>`<span class="pill p-gray">${esc(TAGN[t]||t)}</span>`).join('')}</div>`:''}
-      ${ride?`<div class="muted" style="margin-top:8px">🚗 ${ride}</div>`:''}
-      ${r.comment?`<div class="cmt">${esc(r.comment)}</div>`:''}
-      ${r.voice_path?`<div id="v-${r.id}" style="margin-top:10px"><button class="btn sm ghost" onclick="playVoice('v-${r.id}','${esc(r.voice_path)}')">${ic('play')} הער דעם קאמענט</button></div>`:''}
-      <div class="actions">
-        ${r.approved?`<button class="btn orange" onclick="setApproved('${r.id}',false)">${ic('eyeoff')} באהאלט</button>`:`<button class="btn green" onclick="setApproved('${r.id}',true)">${ic('check')} באשטעטיג</button>`}
-        <button class="btn ghost danger" onclick="delReview('${r.id}')">${ic('trash')} מעק אויס</button>
+      <div class="pwwrap">
+        <input id="password" type="password">
+        <button id="showPw" type="button"></button>
+      </div>
+      <button id="authBtn" style="width:100%;justify-content:center;margin-top:8px;padding:13px"></button>
+      <p style="text-align:center"><button id="toggleBtn" class="link"></button></p>
+    </div>
+  </div>
+
+  <div id="mainView" class="hidden">
+    <div id="bannedBanner" class="banner hidden"></div>
+    <div class="row toolbar">
+      <h2 id="tCompanies"></h2>
+      <div class="btns">
+        <button id="msgToggle" class="ghost hidden"></button>
+        <button id="usersToggle" class="ghost hidden"></button>
+        <button id="addToggle" class="gold"></button>
+      </div>
+    </div>
+
+    <div id="reqPanel" class="card hidden" style="background:#fef3c7;border:1.5px dashed var(--gold)"></div>
+    <div id="usersPanel" class="card hidden"></div>
+
+    <div id="msgForm" class="card hidden">
+      <div class="row" style="margin-bottom:6px">
+        <h3 id="msgTitle" style="margin:0"></h3>
+        <button class="ghost small" id="msgClose" type="button" style="margin:0"></button>
+      </div>
+      <div id="msgNote" class="msg"></div>
+      <textarea id="msgBody" rows="4" maxlength="2000"></textarea>
+      <button id="msgSend" type="button"></button>
+    </div>
+
+    <div id="addForm" class="card hidden">
+      <div class="row" style="margin-bottom:6px">
+        <h3 id="tAddTitle" style="margin:0"></h3>
+        <button class="ghost small" id="addClose" type="button" style="margin:0"></button>
+      </div>
+      <div id="tApprNote" class="note hidden"></div>
+      <div id="addMsg" class="msg"></div>
+      <input id="cName" type="text">
+      <div id="cCityBox"></div>
+      <textarea id="cDesc" rows="3"></textarea>
+      <input id="cPhone" type="text">
+      <input id="cEmail" type="email">
+      <div class="fileline" id="tLogoOpt"></div>
+      <input id="cLogoFile" type="file" accept="image/*">
+      <button id="saveCompany"></button>
+    </div>
+
+    <div class="filters">
+      <div class="sw"><span id="searchIc"></span><input id="search" type="text"></div>
+      <select id="sort">
+        <option value="code"></option>
+        <option value="rating"></option>
+        <option value="count"></option>
+        <option value="new"></option>
+        <option value="name"></option>
+      </select>
+    </div>
+
+    <div id="companies"></div>
+  </div>
+
+  <div id="ver">CarReviews v9.1</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function cleanYi(s) {
+      return String(s).normalize('NFD')
+        .replace(/[\u0591-\u05C7]/g, '')
+        .replace(/\u05F2/g, 'יי').replace(/\u05F0/g, 'וו').replace(/\u05F1/g, 'וי');
+    }
+
+    const P = {
+      clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      dollar:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+      chat:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+      drop:'<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+      shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      office:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+      car:'<path d="M3 17h18v-4l-2-6H5l-2 6z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>',
+      phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+      mail:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+      pin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+      up:'<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
+      down:'<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>',
+      cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+      check:'<polyline points="20 6 9 17 4 12"/>',
+      search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+      x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+      edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+      upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+      ban:'<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>'
+    };
+    const ic = n => `<svg class="ic" viewBox="0 0 24 24">${P[n]}</svg>`;
+    const KEY_ICON = { punctuality:'clock', service:'chat', driver_service:'user', cleanliness:'drop', driving:'shield' };
+
+    const PLACES = [
+      ['Williamsburg','וויליאמסבורג'], ['Boro Park','בארא פארק'], ['Crown Heights','קראון הייטס'],
+      ['Flatbush','פלעטבוש'], ['Midwood','מידוואד'], ['Kensington','קענסינגטאן'],
+      ['Kiryas Joel','קרית יואל'], ['Monsey','מאנסי'], ['Spring Valley','ספרינג וואלי'],
+      ['Monroe','מאנרא'], ['New Square','סקווירא'], ['Lakewood','לעיקוואוד'],
+      ['Passaic','פאסעיק'], ['Teaneck','טינעק'], ['Five Towns','פייוו טאונס'],
+      ['Far Rockaway','פאר ראקאוועי'], ['Kew Gardens Hills','קיו גארדענס הילס'],
+      ['Manhattan','מאנהעטען'], ['Staten Island','סטעטן איילענד'], ['Montreal','מאנטריאל'],
+      ['Swan Lake','סוואן לעיק'], ['Woodridge','וואודרידזש'], ['Monticello','מאנטיסעלאו'],
+      ['Liberty','ליבערטי'], ['Loch Sheldrake','לאק שעלדרעיק'], ['Kiamesha Lake','קיאמישא לעיק'],
+      ['Fallsburg','פאלסבורג'], ['South Fallsburg','סאוט פאלסבורג'], ['Hurleyville','הערליוויל'],
+      ['Parksville','פארקסוויל'], ['Spring Glen','ספרינג גלען'], ['Ellenville','עלענוויל'],
+      ['Kerhonkson','קערהאנקסאן'], ['Napanoch','נאפאנאטש'], ['Mountaindale','מאונטיינדייל'],
+      ['Rock Hill','ראק היל'], ['Bloomingburg','בלומינגבורג'],
+      ['Highland Mills','הייעלאנד מילס'], ['Woodbury','וואדבערי'], ['Blooming Grove','בלומינג גראוו'],
+      ['Chester','טשעסטער'], ['Middletown','מידלטאון'], ['Goshen','גאשען'],
+      ['Kaser','קעיסער'], ['Wesley Hills','וועסלי הילס'], ['New City','ניו סיטי'],
+      ['Airmont','עירמאנט'], ['Suffern','סאפערן'], ['Pomona','פאמאנא'], ['Nanuet','נעניועט'],
+      ['Nyack','נייאק'], ['Viola','וויאלא'], ['Chestnut Ridge','טשעסטנאט רידזש'],
+      ['JFK Airport','JFK עירפארט'], ['LaGuardia Airport','לאגווארדיע עירפארט'], ['Newark Airport','נוארק עירפארט'],
+      ['Stewart Airport','סטוארט עירפארט'], ['Westchester Airport','וועסטטשעסטער עירפארט'], ['Teterboro Airport','טעטערבארא עירפארט'],
+      ['Philadelphia','פילאדעלפיע']
+    ];
+    const placeLabel = v => {
+      if (lang !== 'yi') return v;
+      const p = PLACES.find(x => x[0] === v);
+      return p ? cleanYi(p[1]) : v;
+    };
+    const sortedPlaces = () => [...PLACES].sort((a, b) =>
+      lang === 'yi' ? cleanYi(a[1]).localeCompare(cleanYi(b[1]), 'he') : a[0].localeCompare(b[0]));
+
+    function placeSelect(id, val, label) {
+      const inList = PLACES.some(p => p[0] === val);
+      const sel = val ? (inList ? val : '__other') : '';
+      return `<div class="placebox">
+        <label class="plabel" for="${id}">${esc(label)}</label>
+        <select id="${id}" class="placeSel" required>
+          <option value="" disabled hidden ${sel ? '' : 'selected'}>${esc(t_('pickPlace'))}</option>
+          ${sortedPlaces().map(p => `<option value="${esc(p[0])}" ${sel === p[0] ? 'selected' : ''}>${esc(placeLabel(p[0]))}</option>`).join('')}
+          <option value="__other" ${sel === '__other' ? 'selected' : ''}>${esc(t_('otherPlace'))}</option>
+        </select>
+        <input id="${id}Txt" type="text" maxlength="120" placeholder="${esc(t_('otherPlaceType'))}" value="${esc(sel === '__other' ? val : '')}" class="${sel === '__other' ? '' : 'hidden'}">
+      </div>`;
+    }
+    function readPlace(id) {
+      const s = $(id).value;
+      if (s === '__other') return $(id + 'Txt').value.trim() || null;
+      return s || null;
+    }
+    function renderCityBox(reset) {
+      const cur = (!reset && $('cCity')) ? (readPlace('cCity') || '') : '';
+      $('cCityBox').innerHTML = placeSelect('cCity', cur, t_('cityPh'));
+    }
+
+    const PUNCT = [[5, 'pt_1'], [3, 'pt_2'], [2, 'pt_3'], [1, 'pt_4']];
+    const normP = v => v >= 5 ? 5 : (v >= 3 ? 3 : (v === 2 ? 2 : (v === 1 ? 1 : undefined)));
+    const punctLabel = v => { const p = PUNCT.find(x => x[0] === v); return p ? t_(p[1]) : null; };
+    // NOTE: ru / es contain only what is shown when browsing (reviews cannot be written in these languages).
+    // Missing keys automatically fall back to English.
+    const T = {
+      en: {
+        login: 'Log in', signup: 'Sign up', logout: 'Log out',
+        fullName: 'Full name', email: 'Email', password: 'Password (min 6 chars)',
+        phonePh: 'Phone number *', phoneHint: 'Kept private. One account per phone number.',
+        phoneBad: 'Please enter a valid phone number (10 digits)',
+        signupBlocked: 'This phone number is already used by another account. If you think this is a mistake, write to the admin.',
+        show: 'Show', hide: 'Hide',
+        noAccount: 'No account? Sign up', haveAccount: 'Have an account? Log in',
+        enterCreds: 'Enter email and a password of 6+ characters',
+        created: 'Account created', createdConfirm: 'Account created. Check your email to confirm, then log in.',
+        companies: 'Companies', addCompany: 'Add company', addTitle: 'Add a company',
+        companyName: 'Company name *', description: 'Description', phone: 'Phone',
+        cityPh: 'City / area', pickPlace: 'Choose the place', pickTod: 'Choose the time of day', pickDate: 'Choose the trip date',
+        logoOpt: 'Logo (optional):', saveCompany: 'Save company', sendForApproval: 'Send for approval',
+        apprNote: 'Your request is sent to the admin. It appears on the site only after the admin approves it.',
+        reqSent: 'Sent to the admin for approval', suggestChange: 'Suggest a change',
+        reqTitle: 'Approvals & messages', reqAdd: 'New company', reqEdit: 'Change', approve: 'Approve', reject: 'Reject',
+        confirmReject: 'Reject this request?',
+        revKind: 'Review to approve', pendingTag: 'Waiting',
+        revPending: 'Waiting for admin approval. For now only you can see it.',
+        permKind: 'Permission to write',
+        newAcct: 'New account', seenBtn: 'Seen', allowBtn: 'Allow writing', companyFlag: 'Looks like a company',
+        signedUp: 'Signed up', companyAcct: 'This is a company account. It cannot be approved.',
+        needPermTitle: 'You need permission to write reviews',
+        needPermText: 'You can see everything on the site. To write reviews, the admin must approve you first. Press the button below. The admin will be notified and will call you.',
+        reqPermBtn: 'Ask for permission to write',
+        reqPermSent: 'Request sent. The admin will call you.',
+        reqPermWaiting: 'Your request was sent. The admin will check it, and may call you.',
+        noPermNow: 'You do not have permission to write reviews yet.',
+        callBtn: 'Call', actCalls: 'Calls', actReviews: 'Reviews', actLogin: 'Last login',
+        actIdleOnly: 'Only: calls but no reviews', actAll: 'Show everyone', actIdle: 'Calls but no reviews',
+        roundTrip: 'Round trip', tollIncl: 'Toll included', firstHourFree: 'First hour was free', hourlyPrice: 'Price for each hour',
+        langBlock: 'Reviews can only be written in English or Yiddish. Please switch the language.',
+        sig_perfect: 'All 5 stars + recommend', sig_burst: '3+ reviews by this user in 24h',
+        sig_cluster: '4+ reviews on this company in 48h', sig_dupe: 'Same text as another review',
+        msgBtn: 'Message to admin', msgTitle: 'Send a note to the admin', msgPh: 'Write your note...', msgSend: 'Send',
+        msgSent: 'Sent to the admin', msgEmpty: 'Please write something first', msgKind: 'Message', done: 'Done',
+        search: 'Search companies...',
+        sortCode: 'By code number', sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
+        noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
+        reviews: 'Reviews', commentsBtn: 'Written comments', commentsTitle: 'Written comments', noComments: 'No written reviews yet.',
+        pricesBtn: 'Prices', pricesTitle: 'What people paid', byRoute: 'By route', avg: 'avg', reportsWord: 'reports',
+        allPriceReports: 'All price reports', noPrices: 'No prices reported yet.', routeUnknown: 'Route not specified',
+        showMore: 'Show more', detailsWord: 'Details',
+        writeBtn: 'Write a review', close: 'Close', edit: 'Edit', del: 'Delete',
+        editCompany: 'Edit company', currentLogo: 'Current logo:', replaceLogo: 'Replace logo (optional):',
+        save: 'Save', cancel: 'Cancel', nameRequired: 'Company name is required',
+        logoTooBig: 'Logo is too big (max 2 MB)',
+        sendLogo: 'Send logo to admin', logoSent: 'Logo sent to the admin',
+        logoSugTitle: 'Logo suggestions', useLogo: 'Use as logo', dismiss: 'Dismiss',
+        confirmDelCo: 'Delete this company and ALL its reviews? This cannot be undone.',
+        confirmDelAnyRev: 'Delete this review? This cannot be undone.',
+        ratingsByCat: 'Ratings overview', writeReview: 'Write a review', editReview: 'Edit your review',
+        anonymous: '(anonymous)', otherIssue: 'Anything else you want to write',
+        submit: 'Submit review', update: 'Update review', delMine: 'Delete my review',
+        confirmDelRev: 'Delete your review?',
+        optNote: 'Fill in only what you want. Everything is optional, but please answer at least one thing.',
+        needOne: 'Please fill in at least one thing before saving.',
+        priceNeedsRoute: 'To add a price, please fill in both "From where" and "To where".',
+        starsHint: 'Stars: 1 = lowest · 5 = highest. Click a choice again to remove it.',
+        badPrice: 'Price must be a valid number',
+        saved: 'Saved', deleted: 'Review deleted', notSaved: 'Not saved. Please log out, log in again and retry.',
+        allReviews: 'All reviews', beFirst: 'No reviews yet. Be the first!', loading: 'Loading...', error: 'Error',
+        grpOffice: 'Office / Dispatch', grpDriver: 'Driver & car',
+        punctuality: 'Punctuality', service: 'Service',
+        driver_service: 'Driver service', cleanliness: 'Cleanliness', driving: 'Safe driving',
+        punctQ: 'When did the driver arrive?',
+        pt_1: 'On time', pt_2: 'Up to 15 min late', pt_3: 'Up to an hour late', pt_4: 'More than an hour late / never came',
+        optional: 'optional',
+        recommendQ: 'Would you recommend this company?', yes: 'Yes', no: 'No',
+        recommendWord: 'recommend',
+        tagsTitle: 'What stood out?', saidTags: 'What people say',
+        rideTitle: 'Your ride & price', f_date: 'Trip date', fromPh: 'From where', toPh: 'To where', pricePh: 'Price',
+        otherPlace: 'Other place...', otherPlaceType: 'Type the place',
+        todPh: 'Time of day',
+        tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
+        trip: 'Trip',
+        tag_polite: 'Polite driver', tag_clean: 'Clean car',
+        tag_fair_price: 'Fair price', tag_safe: 'Safe driving', tag_great_service: 'Great service',
+        tag_rude: 'Rude driver', tag_dirty: 'Dirty car',
+        tag_overcharged: 'Overcharged', tag_unsafe: 'Unsafe driving', tag_no_answer: 'Hard to reach',
+        calToday: 'Back to today', calPickToday: 'Choose today', calClose: 'Close', calPick: 'Choose the trip date',
+        users: 'Users', usersTitle: 'All users', noUsers: 'No users',
+        ban: 'Ban', unban: 'Unban', banned: 'Banned', by: 'By',
+        bannedMsg: 'You are banned and cannot write reviews or add companies.',
+        confirmBan: 'Ban this user?',
+        confirmBanDel: 'Also delete ALL of their reviews?\nOK = ban and delete reviews, Cancel = ban only',
+        confirmUnban: 'Unban this user?'
+      },
+      yi: {
+        login: 'אַרײַנלאָגירן', signup: 'זיך רעגיסטרירן', logout: 'אַרויסלאָגירן',
+        fullName: 'פֿולער נאָמען', email: 'אימעיל', password: 'פּאַסווארט (מינימום 6 צייכנס)',
+        phonePh: 'טעלעפֿאָן נומער *', phoneHint: 'פריוואט. נאר איין אקאונט פאר יעדן נומער.',
+        phoneBad: 'ביטע שרייבט א ריכטיקן טעלעפאן נומער (10 ציפערן)',
+        signupBlocked: 'דער טעלעפאן נומער איז שוין באנוצט פון אן אנדער אקאונט. אויב איר מיינט אז עס איז א טעות, שרייבט צום אדמין.',
+        show: 'ווײַזן', hide: 'באַהאַלטן',
+        noAccount: 'קיין אַקאַונט נישט? רעגיסטרירט זיך', haveAccount: 'שוין אַן אַקאַונט? לאָגירט אײַן',
+        enterCreds: 'שרײַבט אימעיל און אַ פּאַסווארט פֿון 6+ צייכנס',
+        created: 'אַקאַונט באַשאַפֿן', createdConfirm: 'אַקאַונט באַשאַפֿן. קוקט אין אימעיל צו באַשטעטיקן, דערנאָך לאָגירט אײַן.',
+        companies: 'קאָמפּאַניעס', addCompany: 'לייגט צו אַ קאָמפּאַני', addTitle: 'לייגט צו אַ קאָמפּאַני',
+        companyName: 'נאָמען פֿון קאָמפּאַני *', description: 'באַשרײַבונג', phone: 'טעלעפֿאָן',
+        cityPh: 'שטאָט / געגנט', pickPlace: 'קלײַבט דעם פּלאַץ', pickTod: 'קלײַבט די צײַט פֿון טאָג', pickDate: 'קלײַבט דעם טאָג פֿון דער נסיעה',
+        logoOpt: 'לאָגאָ (אָפּציע):', saveCompany: 'שפּײַכערט קאָמפּאַני', sendForApproval: 'שיקט צו באשטעטיגונג',
+        apprNote: 'אײַער בקשה גייט צום אַדמין. עס ווײַזט זיך אויף דער זייט נאָר נאָכדעם וואָס דער אַדמין באַשטעטיקט עס.',
+        reqSent: 'געשיקט צום אַדמין צו באַשטעטיקן', suggestChange: 'שלאגט פאר א טויש',
+        reqTitle: 'באַשטעטיקונגען און הערות', reqAdd: 'נײַע קאָמפּאַני', reqEdit: 'ענדערונג', approve: 'באַשטעטיקן', reject: 'אָפּוואַרפֿן',
+        confirmReject: 'אָפּוואַרפֿן די בקשה?',
+        revKind: 'רעוויו צו באשטעטיקן', pendingTag: 'וואארט',
+        revPending: 'וואארט אויף באשטעטיקונג פונעם אדמין. פארן מאמענט זעט עס נאר איר.',
+        permKind: 'רשות צו שרייבן',
+        newAcct: 'נייער אקאונט', seenBtn: 'געזען', allowBtn: 'ערלויבט צו שרייבן', companyFlag: 'קוקט אויס ווי א קאמפאני',
+        signedUp: 'זיך אנגעמעלדן', companyAcct: 'דאס איז א קאמפאני־אקאונט. מען קען עס נישט באשטעטיקן.',
+        needPermTitle: 'איר דארפט רשות צו שרייבן רעוויוס',
+        needPermText: 'איר קענט זען אלעס אויף דער זייט. כדי צו שרייבן רעוויוס מוז דער אדמין אייך ערשט באשטעטיקן. דרוקט אויפן קנעפל אונטן. דער אדמין באקומט א מעלדונג און וועט אייך רופן.',
+        reqPermBtn: 'בעט רשות צו שרייבן',
+        reqPermSent: 'די בקשה איז געשיקט. דער אדמין וועט אייך רופן.',
+        reqPermWaiting: 'אייער בקשה איז געשיקט. דער אדמין וועט עס איבערקוקן, און קען אייך רופן.',
+        noPermNow: 'איר האט נאך נישט קיין רשות צו שרייבן רעוויוס.',
+        callBtn: 'רופט אן', actCalls: 'אנרופן', actReviews: 'רעוויוס', actLogin: 'לעצטע מאל אריינגעלאגירט',
+        actIdleOnly: 'נאר די וואס רופן אבער שרייבן נישט', actAll: 'ווייזט אלע', actIdle: 'רופט אבער שרייבט נישט',
+        roundTrip: 'ראונד טריפ', tollIncl: 'אריינגערעכנט טאול', firstHourFree: 'די ערשטע שעה איז געווען בחינם', hourlyPrice: 'וויפיל האט מען באצאלט יעדע שעה',
+        langBlock: 'מען קען שרייבן רעוויוס נאר אויף ענגליש אדער אידיש. ביטע טוישט די שפראך.',
+        sig_perfect: 'אלע 5 שטערן + רעקאמענדירט', sig_burst: '3+ רעוויוס פון דעם באניצער אין 24 שעה',
+        sig_cluster: '4+ רעוויוס אויף דער קאמפאני אין 48 שעה', sig_dupe: 'דער זעלבער טעקסט ווי אן אנדערער רעוויו',
+        msgBtn: 'שיקט אַ הערה צום אַדמין', msgTitle: 'שיקט אַ הערה צום אַדמין', msgPh: 'שרײַבט דאָ אײַער הערה...', msgSend: 'שיקן',
+        msgSent: 'געשיקט צום אַדמין', msgEmpty: 'שרײַבט ערשט עפּעס', msgKind: 'הערה', done: 'דערלעדיקט',
+        search: 'זוכט קאָמפּאַניעס...',
+        sortCode: 'לויט נומער', sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
+        noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
+        reviews: 'רעוויוס', commentsBtn: 'געשריבענע רעוויוס', commentsTitle: 'געשריבענע רעוויוס', noComments: 'נאך נישט דא קיין געשריבענע רעוויוס.',
+        pricesBtn: 'פּרײַזן', pricesTitle: 'וויפיל האט מען באצאלט', byRoute: 'לויט נסיעה', avg: 'דורכשניט', reportsWord: 'באַריכטן',
+        allPriceReports: 'אַלע פּרײַז־באַריכטן', noPrices: 'נאָך קיין פּרײַזן נישט באַריכט.', routeUnknown: 'נסיעה נישט אָנגעגעבן',
+        showMore: 'ווײַזט מער', detailsWord: 'פּרטים',
+        writeBtn: 'שרײַבט אַ רעוויו', close: 'צומאַכן', edit: 'ענדערן', del: 'אויסמעקן',
+        editCompany: 'ענדערט קאָמפּאַני', currentLogo: 'איצטיקער לאָגאָ:', replaceLogo: 'ערזעצט לאָגאָ (אָפּציע):',
+        save: 'שפּײַכערן', cancel: 'אָפּשטעלן', nameRequired: 'דער נאָמען פֿון קאָמפּאַני איז נייטיק',
+        logoTooBig: 'דער לאָגאָ איז צו גרויס (מאַקס 2 MB)',
+        sendLogo: 'שיקט לאָגאָ צום אַדמין', logoSent: 'דער לאָגאָ איז געשיקט געוואָרן צום אַדמין',
+        logoSugTitle: 'לאָגאָ פֿאָרשלאָגן', useLogo: 'ניצט דעם לאָגאָ', dismiss: 'אָפּוואַרפֿן',
+        confirmDelCo: 'אויסמעקן די קאָמפּאַני און ALLE איר רעוויוס? מען קען עס נישט צוריקבײַטן.',
+        confirmDelAnyRev: 'אויסמעקן דעם רעוויו? מען קען עס נישט צוריקבײַטן.',
+        ratingsByCat: 'איבערבליק פֿון באַוואַרטונגען', writeReview: 'שרײַבט אַ רעוויו', editReview: 'ענדערט אײַער רעוויו',
+        anonymous: '(אַנאָנים)', otherIssue: 'נאך עפעס וואס איר ווילט שרייבן',
+        submit: 'שיקט רעוויו', update: 'דערהײַנטיקט רעוויו', delMine: 'מעקט אויס מײַן רעוויו',
+        confirmDelRev: 'אויסמעקן אײַער רעוויו?',
+        optNote: 'פילט נאר אויס וואס איר ווילט. אלעס איז אפציע, נאר ביטע ענטפערט אויף לכל הפחות איין זאך.',
+        needOne: 'ביטע פילט אויס לכל הפחות איין זאך פארן שפייכערן.',
+        priceNeedsRoute: 'כדי צוצולייגן א פרייז, פילט אויס "פון וואו" און "צו וואו".',
+        starsHint: 'ביי די שטערן: 1 = נידעריגסט · 5 = העכסטע. קליקט נאכאמאל אויף א קלײַבונג כדי עס אפצושטעלן.',
+        badPrice: 'דער פּרײַז מוז זײַן אַ ריכטיקע צאָל',
+        saved: 'געשפּײַכערט', deleted: 'רעוויו אויסגעמעקט', notSaved: 'נישט געשפּײַכערט. לאָגירט אַרויס, לאָגירט ווידער אַרײַן און פּרוּווט נאָכאַמאָל.',
+        allReviews: 'אַלע רעוויוס', beFirst: 'נאָך קיין רעוויוס נישט. זײַט דער ערשטער!', loading: 'לאָדנט...', error: 'טעות',
+        grpOffice: 'אָפֿיס / דיספּעטש', grpDriver: 'דרײַווער און קאַר',
+        punctuality: 'פּינקטלעכקייט', service: 'סערוויס',
+        driver_service: 'דרײַווער סערוויס', cleanliness: 'רײנקייט', driving: 'זיכער פֿאָרן',
+        punctQ: 'ווען איז דער דרײַווער אָנגעקומען?',
+        pt_1: 'אויף צײַט', pt_2: 'ביז 15 מינוט שפּעט', pt_3: 'ביז אַ שעה שפּעט', pt_4: 'מער ווי אַ שעה שפּעט / בכלל נישט אָנגעקומען',
+        optional: 'אָפּציע',
+        recommendQ: 'וואָלט איר רעקאָמענדירט די קאָמפּאַני?', yes: 'יאָ', no: 'ניין',
+        recommendWord: 'רעקאָמענדירן',
+        tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
+        rideTitle: 'אײַער נסיעה און פּרײַז', f_date: 'דאַטום פֿון דער נסיעה', fromPh: 'פֿון וואו', toPh: 'צו וואו', pricePh: 'פרייז',
+        otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
+        todPh: 'צײַט פֿון טאָג',
+        tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
+        trip: 'נסיעה',
+        tag_polite: 'העפֿלעכער דרײַווער', tag_clean: 'רײנע קאַר',
+        tag_fair_price: 'ריכטיקער פּרײַז', tag_safe: 'זיכער געפֿאָרן', tag_great_service: 'אויסגעצייכנט סערוויס',
+        tag_rude: 'אומהעפֿלעכער דרײַווער', tag_dirty: 'שמוציקע קאַר',
+        tag_overcharged: 'צו טײַער', tag_unsafe: 'נישט זיכער געפֿאָרן', tag_no_answer: 'שווער צו דערגרייכן',
+        calToday: 'צוריק צו היינט', calPickToday: 'קלײַבט היינט', calClose: 'צומאַכן', calPick: 'קלײַבט דעם טאָג פֿון דער נסיעה',
+        users: 'באַניצער', usersTitle: 'אַלע באַניצער', noUsers: 'קיין באַניצער נישט',
+        ban: 'אַרויסשליסן', unban: 'צוריקלאָזן', banned: 'אַרויסגעשלאָסן', by: 'פֿון',
+        bannedMsg: 'איר זענט אַרויסגעשלאָסן און קענט נישט שרײַבן רעוויוס אָדער לייגן קאָמפּאַניעס.',
+        confirmBan: 'אַרויסשליסן דעם באַניצער?',
+        confirmBanDel: 'אויך אויסמעקן אַלע זײַנע רעוויוס?\nOK = אַרויסשליסן און אויסמעקן, Cancel = נאָר אַרויסשליסן',
+        confirmUnban: 'צוריקלאָזן דעם באַניצער?'
+      },
+      ru: {
+        login: 'Войти', signup: 'Регистрация', logout: 'Выйти',
+        fullName: 'Полное имя', email: 'Эл. почта', password: 'Пароль (мин. 6 символов)',
+        phonePh: 'Номер телефона *', phoneHint: 'Скрыт. Один аккаунт на один номер.',
+        phoneBad: 'Введите правильный номер телефона (10 цифр)',
+        signupBlocked: 'Этот номер телефона уже используется другим аккаунтом. Если это ошибка, напишите админу.',
+        show: 'Показать', hide: 'Скрыть',
+        noAccount: 'Нет аккаунта? Зарегистрируйтесь', haveAccount: 'Уже есть аккаунт? Войти',
+        enterCreds: 'Введите эл. почту и пароль от 6 символов',
+        created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
+        companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
+        companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
+        cityPh: 'Город / район', pickPlace: 'Выберите место', otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
+        sendForApproval: 'Отправить на одобрение',
+        apprNote: 'Ваш запрос отправляется админу. Он появится на сайте только после одобрения.',
+        reqSent: 'Отправлено админу на одобрение', suggestChange: 'Предложить изменение',
+        callBtn: 'Позвонить',
+        roundTrip: 'Туда и обратно', tollIncl: 'Платная дорога включена', firstHourFree: 'Первый час бесплатно', hourlyPrice: 'Цена за каждый час',
+        msgBtn: 'Сообщение админу', msgTitle: 'Написать админу', msgPh: 'Напишите сообщение...', msgSend: 'Отправить',
+        msgSent: 'Отправлено админу', msgEmpty: 'Сначала напишите что-нибудь',
+        search: 'Поиск компаний...',
+        sortCode: 'По номеру', sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
+        noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
+        reviews: 'Отзывы', commentsBtn: 'Письменные отзывы', commentsTitle: 'Письменные отзывы', noComments: 'Письменных отзывов пока нет.',
+        pricesBtn: 'Цены', pricesTitle: 'Сколько платили люди', byRoute: 'По маршрутам', avg: 'средн.', reportsWord: 'сообщ.',
+        allPriceReports: 'Все сообщения о ценах', noPrices: 'Цен пока нет.', routeUnknown: 'Маршрут не указан',
+        showMore: 'Показать ещё', detailsWord: 'Подробнее', close: 'Закрыть',
+        nameRequired: 'Укажите название компании', logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
+        sendLogo: 'Отправить логотип админу', logoSent: 'Логотип отправлен админу',
+        ratingsByCat: 'Обзор оценок', saved: 'Сохранено',
+        allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов.', loading: 'Загрузка...', error: 'Ошибка',
+        grpOffice: 'Офис / Диспетчер', grpDriver: 'Водитель и машина',
+        punctuality: 'Пунктуальность', service: 'Сервис',
+        driver_service: 'Обслуживание водителем', cleanliness: 'Чистота', driving: 'Безопасное вождение',
+        pt_1: 'Вовремя', pt_2: 'Опоздал до 15 мин', pt_3: 'Опоздал до часа', pt_4: 'Опоздал более чем на час / не приехал',
+        yes: 'Да', no: 'Нет', recommendWord: 'рекомендуют', saidTags: 'Что говорят люди',
+        tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
+        trip: 'Поездка',
+        tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
+        tag_fair_price: 'Честная цена', tag_safe: 'Безопасная езда', tag_great_service: 'Отличный сервис',
+        tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
+        tag_overcharged: 'Завышенная цена', tag_unsafe: 'Опасная езда', tag_no_answer: 'Не дозвониться',
+        calToday: 'К сегодняшнему дню', calClose: 'Закрыть',
+        bannedMsg: 'Вы заблокированы и не можете писать отзывы или добавлять компании.'
+      },
+      es: {
+        login: 'Iniciar sesión', signup: 'Registrarse', logout: 'Cerrar sesión',
+        fullName: 'Nombre completo', email: 'Correo electrónico', password: 'Contraseña (mín. 6 caracteres)',
+        phonePh: 'Número de teléfono *', phoneHint: 'Privado. Una cuenta por número de teléfono.',
+        phoneBad: 'Ingresa un número de teléfono válido (10 dígitos)',
+        signupBlocked: 'Este número de teléfono ya lo usa otra cuenta. Si crees que es un error, escribe al administrador.',
+        show: 'Mostrar', hide: 'Ocultar',
+        noAccount: '¿No tienes cuenta? Regístrate', haveAccount: '¿Ya tienes cuenta? Inicia sesión',
+        enterCreds: 'Ingresa tu correo y una contraseña de 6+ caracteres',
+        created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
+        companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
+        companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
+        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar', otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
+        sendForApproval: 'Enviar para aprobación',
+        apprNote: 'Tu solicitud se envía al administrador. Aparece en el sitio solo después de su aprobación.',
+        reqSent: 'Enviado al administrador para aprobación', suggestChange: 'Sugerir un cambio',
+        callBtn: 'Llamar',
+        roundTrip: 'Ida y vuelta', tollIncl: 'Peaje incluido', firstHourFree: 'Primera hora gratis', hourlyPrice: 'Precio por cada hora',
+        msgBtn: 'Mensaje al administrador', msgTitle: 'Enviar una nota al administrador', msgPh: 'Escribe tu nota...', msgSend: 'Enviar',
+        msgSent: 'Enviado al administrador', msgEmpty: 'Escribe algo primero',
+        search: 'Buscar empresas...',
+        sortCode: 'Por número', sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
+        noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
+        reviews: 'Reseñas', commentsBtn: 'Comentarios escritos', commentsTitle: 'Comentarios escritos', noComments: 'Aún no hay reseñas escritas.',
+        pricesBtn: 'Precios', pricesTitle: 'Lo que pagó la gente', byRoute: 'Por ruta', avg: 'prom.', reportsWord: 'reportes',
+        allPriceReports: 'Todos los precios reportados', noPrices: 'Aún no hay precios.', routeUnknown: 'Ruta no indicada',
+        showMore: 'Ver más', detailsWord: 'Detalles', close: 'Cerrar',
+        nameRequired: 'El nombre de la empresa es obligatorio', logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
+        sendLogo: 'Enviar logo al administrador', logoSent: 'Logo enviado al administrador',
+        ratingsByCat: 'Resumen de calificaciones', saved: 'Guardado',
+        allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas.', loading: 'Cargando...', error: 'Error',
+        grpOffice: 'Oficina / Despacho', grpDriver: 'Conductor y auto',
+        punctuality: 'Puntualidad', service: 'Servicio',
+        driver_service: 'Trato del conductor', cleanliness: 'Limpieza', driving: 'Conducción segura',
+        pt_1: 'A tiempo', pt_2: 'Hasta 15 min tarde', pt_3: 'Hasta una hora tarde', pt_4: 'Más de una hora tarde / nunca llegó',
+        yes: 'Sí', no: 'No', recommendWord: 'recomiendan', saidTags: 'Lo que dice la gente',
+        tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
+        trip: 'Viaje',
+        tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
+        tag_fair_price: 'Precio justo', tag_safe: 'Conducción segura', tag_great_service: 'Gran servicio',
+        tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
+        tag_overcharged: 'Cobro excesivo', tag_unsafe: 'Conducción peligrosa', tag_no_answer: 'Difícil de contactar',
+        calToday: 'Volver a hoy', calClose: 'Cerrar',
+        bannedMsg: 'Estás bloqueado y no puedes escribir reseñas ni agregar empresas.'
+      }
+    };
+    function detectLang() {
+      const saved = localStorage.getItem('lang');
+      if (saved && T[saved]) return saved;
+      const n = (navigator.language || 'en').slice(0, 2).toLowerCase();
+      return T[n] ? n : 'en';
+    }
+    let lang = detectLang();
+    const t_ = k => {
+      const v = (T[lang] && T[lang][k]) || T.en[k] || k;
+      return lang === 'yi' ? cleanYi(v) : v;
+    };
+    const dl = () => lang === 'yi' ? 'he' : lang;
+
+    const REQ_KEYS = ['punctuality', 'service', 'cleanliness', 'driving'];
+    const GROUPS = [
+      ['grpOffice', 'office', ['punctuality', 'service']],
+      ['grpDriver', 'car', ['driver_service', 'cleanliness', 'driving']]
+    ];
+    const ALL_KEYS = ['punctuality', 'service', 'driver_service', 'cleanliness', 'driving'];
+    const POS_TAGS = ['polite', 'clean', 'fair_price', 'safe', 'great_service'];
+    const NEG_TAGS = ['rude', 'dirty', 'overcharged', 'unsafe', 'no_answer'];
+    const LEGACY_TAGS = ['on_time', 'late'];
+    const TODS = ['morning', 'afternoon', 'evening', 'night'];
+    const isPos = k => POS_TAGS.includes(k);
+    const writeLangBlocked = () => !isAdmin && (lang === 'ru' || lang === 'es');
+
+    let isSignup = false, openId = null, openMode = 'view', editingId = null, draft = {};
+    let myUid = null, myEmail = '', myPhone = '', isAdmin = false, isBanned = false, loggedIn = false;
+    let canReview = false, myReqPending = false, permReqs = [];
+    let allCompanies = [], stats = {}, recStats = {}, cnts = {}, myReviewId = null;
+    let userMap = {}, usersOpen = false, usersFilter = false;
+    let sugMap = {}, sugList = [], sugTarget = null;
+    let reqList = [], msgList = [], reqOpen = true;
+    let pendRevs = [], adminRevs = [], flagMap = {};
+    let detailData = [], showN = 8;
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const stars = v => { const n = Math.round(Number(v) || 0); return '★'.repeat(n) + '☆'.repeat(5 - n); };
+    const tone = v => v >= 4 ? 'good' : v >= 3 ? 'mid' : 'bad';
+    const money = v => '$' + (Number(v) % 1 ? Number(v).toFixed(2) : Number(v).toFixed(0));
+    const coreOf = r => {
+      const vals = REQ_KEYS.map(k => r[k]).filter(v => v !== null && v !== undefined);
+      return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+    };
+    const fmtPhone = p => {
+      const d = String(p ?? '').replace(/\D/g, '');
+      if (d.length === 10) return d.slice(0,3) + '-' + d.slice(3,6) + '-' + d.slice(6);
+      if (d.length === 11 && d[0] === '1') return d.slice(1,4) + '-' + d.slice(4,7) + '-' + d.slice(7);
+      return String(p ?? '');
+    };
+    const telHref = p => 'tel:' + String(p).replace(/[^\d+]/g, '');
+    const telLink = p => p ? `<a class="tel em" href="${esc(telHref(p))}">${esc(fmtPhone(p))}</a>` : '';
+    const hasPrice = r => r.price_paid !== null && r.price_paid !== undefined && !!r.trip_from && !!r.trip_to;
+    const rtBadge = r => r.round_trip ? `<span class="rtbadge">${esc(t_('roundTrip'))}</span>` : '';
+
+    const CO_COLORS = [
+      ['#ffffff', '#93c5fd', '#1d4ed8'], ['#ffffff', '#86efac', '#15803d'], ['#ffffff', '#fcd34d', '#b45309'],
+      ['#ffffff', '#c4b5fd', '#6d28d9'], ['#ffffff', '#f9a8d4', '#be185d'], ['#ffffff', '#67e8f9', '#0e7490']
+    ];
+    function coStyle(id) {
+      let h = 0;
+      for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      const c = CO_COLORS[h % CO_COLORS.length];
+      return `background:${c[0]};border:1.5px solid ${c[1]};border-inline-start:7px solid ${c[2]};`;
+    }
+
+    function llGet() { try { return JSON.parse(localStorage.getItem('langSecs')) || {}; } catch (e) { return {}; } }
+    setInterval(() => {
+      if (document.hidden) return;
+      const o = llGet(); o[lang] = (o[lang] || 0) + 10;
+      localStorage.setItem('langSecs', JSON.stringify(o));
+    }, 10000);
+    async function langAlertIfNeeded() {
+      if (isAdmin || !myUid || lang === 'ru' || lang === 'es') return;
+      const o = llGet(), other = (o.ru || 0) + (o.es || 0), mine = (o.en || 0) + (o.yi || 0);
+      if (other < 300 || other <= mine * 2) return;
+      const k = 'langAlert_' + myUid, today = new Date().toDateString();
+      if (localStorage.getItem(k) === today) return;
+      localStorage.setItem(k, today);
+      await sb.from('admin_messages').insert({ user_id: myUid, body: 'ווארענונג: דער באניצער נוצט רוב צייט רוסיש/ספאניש, אבער האט זיך איבערגעטוישט צו ענגליש/אידיש כדי צו שרייבן א רעוויו.' });
+    }
+
+    const WELCOME = {
+      yi: {
+        title: 'ברוכים הבאים צו CarReviews',
+        what: 'וואס איז CarReviews?',
+        whatT: 'א סערוויס וואס איז אויפגעשטעלט געווארן דורך היימישע אידן ספעציעל פארן היימישן עולם. דא קענען אידן וואס נוצן קאר־סערוויסעס איבערלאזן זייערע רעוויוס אויף די קאמפאניס: למשל, ווער עס קומט אן אין צייט, וואס זענען די פרייזן, וויאזוי די סערוויס איז, און צי מען וואלט עס רעקאמענדירט פאר אנדערע, און נאך אזעלכע סארט זאכן.',
+        goal: 'וואס איז דער ציל?',
+        goalT: 'יעדער איינער פארט און צאלט געלט, אבער קיינער ווייסט נישט פון פאראויס וואס ער גייט באקומען פאר זיין געלט. ווען מיר טיילן זיך מיט איינער מיטן צווייטן אונזער עקספיריענס, קען יעדער אויסקלויבן די בעסטע סערוויס, און די קאמפאניס וועלן זיך מוזן פארבעסערן.',
+        how: 'וויאזוי ארבעט עס?',
+        steps: [
+          '<b>עפנט אן אקאונט:</b> דאס קאסט נישט קיין געלט, ס\'איז אינגאנצן בחינם.',
+          '<b>כאפט א בליק:</b> זעט וואס אנדערע שרייבן אין די רעוויוס, די פרייזן און די הערות. מען קען רופן א קאמפאני מיט בלויז איין דרוק אויפן קנעפל.',
+          '<b>נאך יעדע נסיעה:</b> לאזט איבער א רעוויו. עס נעמט נאר א קורצע מינוט, און איר פילט נאר אויס די זאכן וואס איר ווילט.'
+        ],
+        priv: '<b>אייער פריוואטקייט:</b> די רעוויוס זענען אנאנים. קיינער זעט נישט ווער עס האט עס געשריבן.',
+        ask1: 'א שטארקע בקשה צום ציבור',
+        ask2: 'ביטע שרייבט א רעוויו נאך יעדע נסיעה, אפילו אויב אלעס איז געווען פיין! אייער רעוויו העלפט דעם גאנצן ציבור.',
+        rules: 'כללים',
+        rulesL: [
+          'שרייבט נאר זאכן וואס איר האט באמת אליין מיטגעלעבט.',
+          'מיר ווילן האלטן די סיסטעם ערליך, דעריבער רעזערווירן מיר זיך דאס רעכט אראפצונעמען אקאונטס אדער רעוויוס וואס זענען נישט אמת.'
+        ],
+        foot: 'האט איר שאלות? שיקט א מעסעדזש דורך <b>"שיקט א הערה צום אדמין"</b>.<br>א גרויסן יישר כח פארן ארויסהעלפן אויפבויען א בעסערע סיסטעם פאר די ציבור!'
+      },
+      en: {
+        title: 'Welcome to CarReviews',
+        what: 'What is CarReviews?',
+        whatT: 'A service built by members of our community, especially for our community. Here, people who use car services can leave their reviews of the companies: for example, who arrives on time, what the prices are, how the service is, whether you would recommend it to others, and more.',
+        goal: 'What is the goal?',
+        goalT: 'Everyone travels and pays, but nobody knows in advance what they will get for their money. When we share our experience with each other, everyone can choose the best service, and the companies will have to improve.',
+        how: 'How does it work?',
+        steps: [
+          '<b>Open an account:</b> it costs nothing, it is completely free.',
+          '<b>Take a look:</b> see what others write in the reviews, the prices and the comments. You can call a company with just one tap.',
+          '<b>After every ride:</b> leave a review. It takes just a minute, and you fill in only what you want.'
+        ],
+        priv: '<b>Your privacy:</b> reviews are anonymous. Nobody sees who wrote them.',
+        ask1: 'A strong request to everyone',
+        ask2: 'Please write a review after every ride, even if everything was fine! Your review helps the whole community.',
+        rules: 'Rules',
+        rulesL: [
+          'Write only things you really experienced yourself.',
+          'We want to keep the system honest, so we reserve the right to remove accounts or reviews that are not true.'
+        ],
+        foot: 'Questions? Send a message through <b>"Message to admin"</b>.<br>A big thank you for helping to build a better system for the community!'
+      },
+      ru: {
+        title: 'Добро пожаловать в CarReviews',
+        what: 'Что такое CarReviews?',
+        whatT: 'Сервис, созданный членами нашей общины специально для нашей общины. Здесь те, кто пользуется автосервисами, могут оставлять отзывы о компаниях: например, кто приезжает вовремя, какие цены, каков сервис, порекомендуете ли вы его другим, и многое другое.',
+        goal: 'Какова цель?',
+        goalT: 'Все ездят и платят, но никто заранее не знает, что получит за свои деньги. Когда мы делимся опытом друг с другом, каждый может выбрать лучший сервис, а компаниям придётся улучшаться.',
+        how: 'Как это работает?',
+        steps: [
+          '<b>Создайте аккаунт:</b> это ничего не стоит, это полностью бесплатно.',
+          '<b>Загляните:</b> смотрите, что пишут другие в отзывах, ценах и комментариях. Позвонить в компанию можно одним нажатием.',
+          '<b>После каждой поездки:</b> оставьте отзыв (на английском или идише). Это займёт всего минуту.'
+        ],
+        priv: '<b>Ваша конфиденциальность:</b> отзывы анонимны. Никто не видит, кто их написал.',
+        ask1: 'Горячая просьба ко всем',
+        ask2: 'Пожалуйста, пишите отзыв после каждой поездки, даже если всё было хорошо! Ваш отзыв помогает всем.',
+        rules: 'Правила',
+        rulesL: [
+          'Пишите только то, что вы действительно пережили сами.',
+          'Мы хотим сохранить честность системы, поэтому оставляем за собой право удалять аккаунты или отзывы, не соответствующие действительности.'
+        ],
+        foot: 'Есть вопросы? Напишите через <b>«Сообщение админу»</b>.<br>Большое спасибо за помощь в создании лучшей системы для общины!'
+      },
+      es: {
+        title: 'Bienvenido a CarReviews',
+        what: '¿Qué es CarReviews?',
+        whatT: 'Un servicio creado por miembros de nuestra comunidad, especialmente para nuestra comunidad. Aquí, quienes usan servicios de autos pueden dejar sus reseñas de las empresas: por ejemplo, quién llega a tiempo, cuáles son los precios, cómo es el servicio, si lo recomendarías a otros, y más.',
+        goal: '¿Cuál es el objetivo?',
+        goalT: 'Todos viajamos y pagamos, pero nadie sabe de antemano qué recibirá por su dinero. Cuando compartimos nuestra experiencia, cada uno puede elegir el mejor servicio y las empresas tendrán que mejorar.',
+        how: '¿Cómo funciona?',
+        steps: [
+          '<b>Abre una cuenta:</b> no cuesta nada, es totalmente gratis.',
+          '<b>Echa un vistazo:</b> mira lo que otros escriben en las reseñas, los precios y los comentarios. Puedes llamar a una empresa con solo un toque.',
+          '<b>Después de cada viaje:</b> deja una reseña (en inglés o yidis). Toma solo un minuto.'
+        ],
+        priv: '<b>Tu privacidad:</b> las reseñas son anónimas. Nadie ve quién las escribió.',
+        ask1: 'Una petición importante a todos',
+        ask2: '¡Por favor escribe una reseña después de cada viaje, aunque todo haya estado bien! Tu reseña ayuda a toda la comunidad.',
+        rules: 'Reglas',
+        rulesL: [
+          'Escribe solo cosas que realmente viviste tú mismo.',
+          'Queremos mantener el sistema honesto, por eso nos reservamos el derecho de eliminar cuentas o reseñas que no sean verdaderas.'
+        ],
+        foot: '¿Preguntas? Envía un mensaje con <b>«Mensaje al administrador»</b>.<br>¡Muchas gracias por ayudar a construir un mejor sistema para la comunidad!'
+      }
+    };
+
+    function renderWelcome() {
+      const box = $('welcome');
+      if (!box) return;
+      const w = WELCOME[lang] || WELCOME.en;
+      const f = s => lang === 'yi' ? cleanYi(s) : s;
+      box.innerHTML = `
+        <div class="wHead"><div class="wlogo">🚗</div><h3>${f(w.title)}</h3></div>
+        <div class="wBody">
+          <div class="wBlock"><h5>${f(w.what)}</h5><p>${f(w.whatT)}</p></div>
+          <div class="wBlock"><h5>${f(w.goal)}</h5><p>${f(w.goalT)}</p></div>
+          <div class="wBlock"><h5>${f(w.how)}</h5><ol class="wSteps">${w.steps.map(s => `<li><div>${f(s)}</div></li>`).join('')}</ol></div>
+          <div class="wPriv"><span>🔒</span><div>${f(w.priv)}</div></div>
+          <div class="wAsk"><div class="t1">⭐ ${f(w.ask1)} ⭐</div><div class="t2">${f(w.ask2)}</div></div>
+          <div class="wBlock"><h5>${f(w.rules)}</h5><ul class="wRules">${w.rulesL.map(s => `<li>${f(s)}</li>`).join('')}</ul></div>
+          <div class="wFoot">${f(w.foot)}</div>
+        </div>`;
+    }
+
+    (function makeFavicon() {
+      try {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const x = c.getContext('2d');
+        x.fillStyle = '#fff';
+        x.fillRect(0, 0, 128, 128);
+        x.textAlign = 'center';
+        x.textBaseline = 'alphabetic';
+        x.fillStyle = '#1a3c6e';
+        x.font = 'italic 900 56px Arial, sans-serif';
+        x.fillText('Car', 64, 58);
+        x.fillStyle = '#e8660a';
+        x.font = 'italic 900 31px Arial, sans-serif';
+        x.fillText('Reviews', 64, 104);
+        $('favicon').href = c.toDataURL('image/png');
+      } catch (e) {}
+    })();
+
+    const hf = (d, o) => { try { return new Intl.DateTimeFormat('he-u-ca-hebrew', o).format(d); } catch (e) { return ''; } };
+    const hDay = d => {
+      try { return Number(new Intl.DateTimeFormat('en-u-ca-hebrew', { day: 'numeric' }).formatToParts(d).find(x => x.type === 'day').value); }
+      catch (e) { return 1; }
+    };
+    const hYearNum = d => {
+      try {
+        const p = new Intl.DateTimeFormat('en-u-ca-hebrew', { year: 'numeric' }).formatToParts(d)
+          .find(x => x.type === 'year' || x.type === 'relatedYear');
+        if (p) return Number(String(p.value).replace(/\D/g, ''));
+      } catch (e) {}
+      return Number((hf(d, { year: 'numeric' }).match(/\d+/) || [5787])[0]);
+    };
+    function gem(n) {
+      const hund = [[400,'ת'],[300,'ש'],[200,'ר'],[100,'ק']];
+      const tens = [[90,'צ'],[80,'פ'],[70,'ע'],[60,'ס'],[50,'נ'],[40,'מ'],[30,'ל'],[20,'כ'],[10,'י']];
+      const ones = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'];
+      let s = '';
+      for (const [v, l] of hund) { while (n >= v) { s += l; n -= v; } }
+      if (n === 15) { s += 'טו'; n = 0; }
+      else if (n === 16) { s += 'טז'; n = 0; }
+      for (const [v, l] of tens) { if (n >= v) { s += l; n -= v; } }
+      s += ones[n];
+      if (!s) return '';
+      return s.length === 1 ? s + '׳' : s.slice(0, -1) + '״' + s.slice(-1);
+    }
+    const gemYear = d => gem(hYearNum(d) % 1000);
+
+    const MONTHS = [
+      ['אדר א','adar1','אדר ראשון'], ['אדר ב','adar2','אדר שני'], ['תשרי','tishri','תשרי'],
+      ['חשו','cheshvan','חשוון'], ['מרחשו','cheshvan','חשוון'], ['כסלו','kislev','כסלו'], ['טבת','tevet','טבת'],
+      ['שבט','shvat','שבט'], ['אדר','adar','אדר'], ['ניסן','nisan','ניסן'], ['אייר','iyar','אייר'],
+      ['סיו','sivan','סיוון'], ['תמוז','tamuz','תמוז'], ['אב','av','מנחם אב'], ['אלול','elul','אלול']
+    ];
+    function monthInfo(d) {
+      const n = hf(d, { month: 'long' }).replace(/[׳״'"]/g, '').trim();
+      for (const [pre, key, name] of MONTHS) if (n.startsWith(pre)) return { key, name };
+      return { key: n, name: n };
+    }
+    const hMonth = d => hf(d, { month: 'long', year: 'numeric' });
+
+    const WD_YI = ['זונטאג','מאנטאג','דינסטאג','מיטוואך','דאנערשטאג','פרייטאג','שבת קודש'];
+    const WD_HE = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת קודש'];
+    const wdName = d => (lang === 'yi' ? WD_YI : WD_HE)[d.getDay()];
+    const WD_HDR = () => lang === 'yi' ? WD_YI : ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+    const hebStr = d => `${wdName(d)}, ${gem(hDay(d))} ${monthInfo(d).name} ${gemYear(d)}`;
+    const hebFromStr = s => s ? hebStr(new Date(s + 'T12:00:00')) : '';
+    const noon = d => { const x = new Date(d); x.setHours(12, 0, 0, 0); return x; };
+    const isoOf = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+    const dateLabel = iso => {
+      const dt = new Date(iso + 'T12:00:00');
+      return hebStr(dt) + ' · ' + dt.toLocaleDateString(dl(), { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
+    function dayMark(x) {
+      const hd = hDay(x), key = monthInfo(x).key, dow = x.getDay();
+      let hol = '';
+      switch (key) {
+        case 'tishri':
+          if (hd <= 2) hol = 'ר״ה';
+          else if ((hd === 3 && dow !== 6) || (hd === 4 && dow === 0)) hol = 'צום';
+          else if (hd === 10) hol = 'יוה״כ';
+          else if (hd === 15 || hd === 16) hol = 'סוכות';
+          else if (hd >= 17 && hd <= 20) hol = 'חוה״מ';
+          else if (hd === 21) hol = 'הו״ר';
+          else if (hd === 22) hol = 'שמ״ע';
+          else if (hd === 23) hol = 'שמח״ת';
+          break;
+        case 'kislev': if (hd >= 25) hol = 'חנוכה'; break;
+        case 'tevet':
+          if (hd <= 2) hol = 'חנוכה';
+          else if (hd === 3) { const p = new Date(x); p.setDate(p.getDate() - 3); if (hDay(p) === 29) hol = 'חנוכה'; }
+          else if (hd === 10) hol = 'צום';
+          break;
+        case 'shvat': if (hd === 15) hol = 'ט״ו'; break;
+        case 'adar': case 'adar2':
+          if ((hd === 13 && dow !== 6) || (hd === 11 && dow === 4)) hol = 'תענית';
+          else if (hd === 14) hol = 'פורים';
+          else if (hd === 15) hol = 'שושן';
+          break;
+        case 'nisan':
+          if (hd === 15 || hd === 16) hol = 'פסח';
+          else if (hd >= 17 && hd <= 20) hol = 'חוה״מ';
+          else if (hd === 21) hol = 'שביעי';
+          else if (hd === 22) hol = 'אחרון';
+          break;
+        case 'iyar': if (hd === 18) hol = 'ל״ג'; break;
+        case 'sivan': if (hd === 6 || hd === 7) hol = 'שבועות'; break;
+        case 'tamuz': if ((hd === 17 && dow !== 6) || (hd === 18 && dow === 0)) hol = 'צום'; break;
+        case 'av': if ((hd === 9 && dow !== 6) || (hd === 10 && dow === 0)) hol = 'ת״ב'; break;
+      }
+      const rc = (hd === 30 || (hd === 1 && key !== 'tishri')) ? 'ר״ח' : '';
+      return [rc, hol].filter(Boolean).join(' ');
+    }
+
+    let calAnchor = noon(new Date()), calFirst = null, calLast = null;
+    let pickMode = false;
+
+    function renderCal() {
+      const a = noon(calAnchor);
+      const first = new Date(a); first.setDate(a.getDate() - (hDay(a) - 1));
+      const label = hMonth(first);
+      const days = [];
+      const d = new Date(first);
+      while (hMonth(d) === label && days.length < 31) { days.push(new Date(d)); d.setDate(d.getDate() + 1); }
+      calFirst = first; calLast = days[days.length - 1];
+      const now = new Date();
+      const todayStr = now.toDateString();
+      const selIso = pickMode && $('revDate') ? $('revDate').value : '';
+
+      let html = WD_HDR().map((w, i) => `<div class="cw ${i === 6 ? 'sat' : ''}">${w}</div>`).join('');
+      for (let i = 0; i < first.getDay(); i++) html += '<div class="cd blank"></div>';
+      days.forEach((x, idx) => {
+        const iso = isoOf(x);
+        const future = x > now && x.toDateString() !== todayStr;
+        const mk = dayMark(x);
+        const g = (idx === 0 || x.getDate() === 1)
+          ? x.getDate() + ' ' + x.toLocaleDateString(dl(), { month: 'short' })
+          : String(x.getDate());
+        html += `<div class="cd ${x.getDay() === 6 ? 'sat' : ''} ${x.toDateString() === todayStr ? 'today' : ''} ${iso === selIso ? 'sel' : ''} ${pickMode && future ? 'fut' : ''}" ${pickMode && !future ? `data-day="${iso}"` : ''}>
+          <b>${esc(gem(hDay(x)))}</b><small>${esc(g)}</small>${mk ? `<i class="hl">${esc(mk)}</i>` : ''}</div>`;
+      });
+      $('calBody').innerHTML = `<div class="calGrid">${html}</div>`;
+      $('calTitle').textContent = monthInfo(first).name + ' ' + gemYear(first);
+      const o = { month: 'short', year: 'numeric' };
+      $('calSub').textContent = calFirst.toLocaleDateString(dl(), o) + ' – ' + calLast.toLocaleDateString(dl(), o);
+      $('calHint').textContent = t_('calPick');
+      $('calHint').classList.toggle('hidden', !pickMode);
+      $('calTodayBtn').textContent = pickMode ? t_('calPickToday') : t_('calToday');
+    }
+    function openCal() { pickMode = false; calAnchor = noon(new Date()); renderCal(); $('calModal').style.display = 'flex'; }
+    function openPick() {
+      pickMode = true;
+      const v = $('revDate') && $('revDate').value;
+      calAnchor = v ? noon(new Date(v + 'T12:00:00')) : noon(new Date());
+      renderCal();
+      $('calModal').style.display = 'flex';
+    }
+    function closeCal() { $('calModal').style.display = 'none'; pickMode = false; }
+    function setTripDate(iso) {
+      const inp = $('revDate');
+      if (!inp) return;
+      inp.value = iso;
+      draft.trip_date = iso;
+      const txt = $('revDateTxt');
+      if (txt) { txt.textContent = dateLabel(iso); txt.parentElement.classList.add('has'); }
+    }
+
+    let toastTimer;
+    function toast(text, isErr, ms) {
+      const el = $('toast');
+      el.className = isErr ? 'err' : '';
+      el.innerHTML = ic(isErr ? 'x' : 'check') + '<span>' + esc(text) + '</span>';
+      el.style.display = 'flex';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.style.display = 'none', ms || (isErr ? 4500 : 2500));
+    }
+
+    function applyStaticText() {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'yi' ? 'rtl' : 'ltr';
+      $('langSel').value = lang;
+      renderWelcome();
+      $('calBtn').innerHTML = ic('cal') + ' ' + esc(hebStr(new Date()));
+      $('calTodayBtn').textContent = pickMode ? t_('calPickToday') : t_('calToday');
+      $('calCloseBtn').textContent = t_('calClose');
+      $('authTitle').textContent = isSignup ? t_('signup') : t_('login');
+      $('authBtn').textContent = isSignup ? t_('signup') : t_('login');
+      $('toggleBtn').textContent = isSignup ? t_('haveAccount') : t_('noAccount');
+      $('fullName').placeholder = t_('fullName');
+      $('email').placeholder = t_('email');
+      $('signPhone').placeholder = t_('phonePh');
+      $('phoneHint').textContent = t_('phoneHint');
+      $('password').placeholder = t_('password');
+      $('showPw').textContent = $('password').type === 'password' ? t_('show') : t_('hide');
+      $('tCompanies').textContent = t_('companies');
+      $('addToggle').innerHTML = ic('plus') + esc(t_('addCompany'));
+      $('addToggle').classList.toggle('hidden', isBanned);
+      $('usersToggle').innerHTML = ic('users') + esc(t_('users'));
+      $('usersToggle').classList.toggle('hidden', !isAdmin);
+      $('msgToggle').innerHTML = ic('mail') + ' ' + esc(t_('msgBtn'));
+      $('msgToggle').classList.toggle('hidden', isAdmin || isBanned || !loggedIn);
+      $('msgTitle').textContent = t_('msgTitle');
+      $('msgClose').innerHTML = ic('x') + ' ' + esc(t_('close'));
+      $('msgBody').placeholder = t_('msgPh');
+      $('msgSend').innerHTML = ic('check') + ' ' + esc(t_('msgSend'));
+      $('bannedBanner').textContent = t_('bannedMsg');
+      $('bannedBanner').classList.toggle('hidden', !isBanned);
+      $('tAddTitle').textContent = t_('addTitle');
+      $('addClose').innerHTML = ic('x') + ' ' + esc(t_('close'));
+      $('tApprNote').textContent = t_('apprNote');
+      $('tApprNote').classList.toggle('hidden', isAdmin);
+      $('cName').placeholder = t_('companyName');
+      renderCityBox(false);
+      $('cDesc').placeholder = t_('description');
+      $('cPhone').placeholder = t_('phone');
+      $('cEmail').placeholder = t_('email');
+      $('tLogoOpt').textContent = t_('logoOpt');
+      $('tLogoOpt').classList.toggle('hidden', !isAdmin);
+      $('cLogoFile').classList.toggle('hidden', !isAdmin);
+      $('saveCompany').textContent = isAdmin ? t_('saveCompany') : t_('sendForApproval');
+      $('search').placeholder = t_('search');
+      $('searchIc').innerHTML = ic('search');
+      const opts = $('sort').options;
+      opts[0].textContent = t_('sortCode');
+      opts[1].textContent = t_('sortRating');
+      opts[2].textContent = t_('sortCount');
+      opts[3].textContent = t_('sortNew');
+      opts[4].textContent = t_('sortName');
+      if (loggedIn) {
+        $('userinfo').innerHTML = `<span class="em" dir="ltr">${esc(myEmail)}</span> <button id="logoutBtn">${esc(t_('logout'))}</button>`;
+        $('logoutBtn').onclick = logout;
+      } else {
+        $('userinfo').innerHTML = '';
+      }
+    }
+
+    $('langSel').onchange = () => {
+      syncDraft();
+      lang = $('langSel').value;
+      localStorage.setItem('lang', lang);
+      if (writeLangBlocked() && openMode === 'write') { openId = null; draft = {}; }
+      applyStaticText();
+      if ($('calModal').style.display === 'flex') renderCal();
+      if (loggedIn) { renderCompanies(); renderUsers(); renderRequests(); }
+    };
+    $('calBtn').onclick = openCal;
+
+    async function uploadLogo(file) {
+      if (!file) return null;
+      if (file.size > 2 * 1024 * 1024) throw new Error(t_('logoTooBig'));
+      const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      const { error } = await sb.storage.from('logos').upload(path, file, { contentType: file.type });
+      if (error) throw error;
+      return sb.storage.from('logos').getPublicUrl(path).data.publicUrl;
+    }
+
+    $('sugFile').onchange = async () => {
+      const f = $('sugFile').files[0];
+      const cid = sugTarget;
+      $('sugFile').value = '';
+      if (!f || !cid) return;
+      if (f.size > 2 * 1024 * 1024) { alert(t_('logoTooBig')); return; }
+      try {
+        const ext = (f.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const path = cid + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        const up = await sb.storage.from('logo-suggestions').upload(path, f, { contentType: f.type });
+        if (up.error) throw up.error;
+        const url = sb.storage.from('logo-suggestions').getPublicUrl(path).data.publicUrl;
+        const ins = await sb.from('logo_suggestions').insert({ company_id: cid, user_id: myUid, logo_url: url });
+        if (ins.error) throw ins.error;
+        toast(t_('logoSent'));
+      } catch (err) { alert(err.message || String(err)); }
+    };
+
+    async function checkAdmin() {
+      isAdmin = false; canReview = false;
+      if (!myUid) return;
+      try {
+        const { data } = await sb.from('profiles').select('role,can_review').eq('id', myUid).maybeSingle();
+        isAdmin = !!data && data.role === 'admin';
+        canReview = isAdmin || !!(data && data.can_review);
+      } catch (e) { isAdmin = false; canReview = false; }
+    }
+    async function checkBanned() {
+      isBanned = false;
+      if (!myUid) return;
+      try {
+        const { data } = await sb.from('banned_users').select('user_id').eq('user_id', myUid).maybeSingle();
+        isBanned = !!data;
+      } catch (e) { isBanned = false; }
+    }
+    async function loadMyReq() {
+      myReqPending = false;
+      if (!myUid || isAdmin || canReview) return;
+      try {
+        const { data } = await sb.from('review_requests').select('id').eq('user_id', myUid).maybeSingle();
+        myReqPending = !!data;
+      } catch (e) { myReqPending = false; }
+    }
+
+    $('showPw').onclick = () => {
+      const p = $('password');
+      p.type = p.type === 'password' ? 'text' : 'password';
+      $('showPw').textContent = p.type === 'password' ? t_('show') : t_('hide');
+    };
+
+    function showMsg(el, text, ok, autoMs) {
+      if (!el) return alert(text);
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'ok' : 'err');
+      el.style.display = 'block';
+      clearTimeout(el._t);
+      if (autoMs) el._t = setTimeout(() => { el.style.display = 'none'; }, autoMs);
+      try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    }
+
+    function setMode(signup) {
+      isSignup = signup;
+      $('nameWrap').classList.toggle('hidden', !signup);
+      $('phoneWrap').classList.toggle('hidden', !signup);
+      $('msg').style.display = 'none';
+      applyStaticText();
+    }
+    $('toggleBtn').onclick = () => setMode(!isSignup);
+
+    $('authBtn').onclick = async () => {
+      const email = $('email').value.trim();
+      const password = $('password').value;
+      if (!email || password.length < 6) return showMsg($('msg'), t_('enterCreds'), false);
+      if (isSignup) {
+        const full_name = $('fullName').value.trim();
+        const digits = $('signPhone').value.replace(/\D/g, '');
+        if (digits.length < 10) return showMsg($('msg'), t_('phoneBad'), false, 6000);
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name, phone: fmtPhone(digits) } } });
+        if (error) {
+          if (/database error/i.test(error.message)) return showMsg($('msg'), t_('signupBlocked'), false, 9000);
+          return showMsg($('msg'), error.message, false);
+        }
+        if (data.session) showMsg($('msg'), t_('created'), true);
+        else { showMsg($('msg'), t_('createdConfirm'), true); setMode(false); }
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) return showMsg($('msg'), error.message, false);
+      }
+    };
+
+    async function logout() { openId = null; editingId = null; await sb.auth.signOut(); }
+
+    function closeAdd() { $('addForm').classList.add('hidden'); $('addMsg').style.display = 'none'; }
+    $('addToggle').onclick = () => $('addForm').classList.toggle('hidden');
+    $('addClose').onclick = closeAdd;
+    $('usersToggle').onclick = () => { usersOpen = !usersOpen; renderUsers(); };
+
+    function closeMsg() { $('msgForm').classList.add('hidden'); $('msgNote').style.display = 'none'; }
+    $('msgToggle').onclick = () => $('msgForm').classList.toggle('hidden');
+    $('msgClose').onclick = closeMsg;
+    $('msgSend').onclick = async () => {
+      const body = $('msgBody').value.trim();
+      if (!body) return showMsg($('msgNote'), t_('msgEmpty'), false, 4000);
+      const btn = $('msgSend');
+      btn.disabled = true;
+      const { error } = await sb.from('admin_messages').insert({ user_id: myUid, body });
+      btn.disabled = false;
+      if (error) return showMsg($('msgNote'), error.message, false);
+      $('msgBody').value = '';
+      closeMsg();
+      toast(t_('msgSent'));
+    };
+
+    $('saveCompany').onclick = async () => {
+      const name = $('cName').value.trim();
+      if (!name) return showMsg($('addMsg'), t_('nameRequired'), false, 4000);
+      const btn = $('saveCompany');
+      btn.disabled = true;
+      try {
+        const phoneRaw = $('cPhone').value.trim();
+        const row = {
+          name,
+          city: readPlace('cCity'),
+          description: $('cDesc').value.trim() || null,
+          phone: phoneRaw ? fmtPhone(phoneRaw) : null,
+          email: $('cEmail').value.trim() || null
+        };
+        if (isAdmin) {
+          row.logo_url = await uploadLogo($('cLogoFile').files[0]);
+          const { error } = await sb.from('companies').insert(row);
+          if (error) throw error;
+        } else {
+          const { error } = await sb.from('change_requests').insert({ user_id: myUid, kind: 'add', company_id: null, data: row });
+          if (error) throw error;
+          toast(t_('reqSent'));
+        }
+        ['cName','cDesc','cPhone','cEmail','cLogoFile'].forEach(id => $(id).value = '');
+        renderCityBox(true);
+        closeAdd();
+        loadCompanies();
+      } catch (err) { showMsg($('addMsg'), err.message || String(err), false); }
+      btn.disabled = false;
+    };
+
+    $('search').oninput = () => renderCompanies();
+    $('sort').onchange = () => renderCompanies();
+
+    async function loadUsers() {
+      userMap = {};
+      if (!isAdmin) return;
+      const [a, b] = await Promise.all([sb.rpc('admin_users_v2'), sb.rpc('admin_user_activity')]);
+      if (!a.error && a.data) a.data.forEach(u => userMap[u.id] = u);
+      if (!b.error && b.data) b.data.forEach(x => { if (userMap[x.uid]) Object.assign(userMap[x.uid], x); });
+    }
+    async function loadSuggestions() {
+      sugMap = {}; sugList = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('logo_suggestions').select('*').order('created_at', { ascending: false });
+      if (!error && data) { sugList = data; data.forEach(s => { (sugMap[s.company_id] = sugMap[s.company_id] || []).push(s); }); }
+    }
+    async function loadRequests() {
+      reqList = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('change_requests').select('*').order('created_at', { ascending: true });
+      if (!error && data) reqList = data;
+    }
+    async function loadMessages() {
+      msgList = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('admin_messages').select('*').order('created_at', { ascending: true });
+      if (!error && data) msgList = data;
+    }
+    async function loadPermReqs() {
+      permReqs = [];
+      if (!isAdmin) return;
+      const { data, error } = await sb.from('review_requests').select('*').order('created_at', { ascending: true });
+      if (!error && data) permReqs = data;
+    }
+    async function loadReviewAdmin() {
+      pendRevs = []; adminRevs = []; flagMap = {};
+      if (!isAdmin) return;
+      const [p, a] = await Promise.all([
+        sb.from('reviews').select('*').eq('approved', false).order('created_at', { ascending: true }),
+        sb.from('reviews').select('id,user_id,company_id,created_at,punctuality,service,cleanliness,driving,recommend,comment')
+      ]);
+      if (!p.error && p.data) pendRevs = p.data;
+      if (!a.error && a.data) adminRevs = a.data;
+      computeFlags();
+    }
+    function computeFlags() {
+      flagMap = {};
+      const add = (id, k) => { (flagMap[id] = flagMap[id] || []).push(k); };
+      const byUser = {}, byComp = {}, byText = {};
+      adminRevs.forEach(r => {
+        (byUser[r.user_id] = byUser[r.user_id] || []).push(r);
+        (byComp[r.company_id] = byComp[r.company_id] || []).push(r);
+        const tx = (r.comment || '').trim().toLowerCase();
+        if (tx.length >= 15) (byText[tx] = byText[tx] || []).push(r);
+      });
+      const H = 3600 * 1000;
+      adminRevs.forEach(r => {
+        const t0 = new Date(r.created_at).getTime();
+        if ([r.punctuality, r.service, r.cleanliness, r.driving].every(v => v === 5) && r.recommend === true) add(r.id, 'perfect');
+        if (byUser[r.user_id].filter(x => Math.abs(new Date(x.created_at).getTime() - t0) <= 24 * H).length >= 3) add(r.id, 'burst');
+        if (byComp[r.company_id].filter(x => Math.abs(new Date(x.created_at).getTime() - t0) <= 48 * H).length >= 4) add(r.id, 'cluster');
+        const tx = (r.comment || '').trim().toLowerCase();
+        if (tx.length >= 15 && byText[tx].length > 1) add(r.id, 'dupe');
+      });
+    }
+    const flagHtml = id => (flagMap[id] || []).map(k => `<span class="flag">⚠ ${esc(t_('sig_' + k))}</span>`).join(' ');
+
+    const newUsersList = () => Object.values(userMap)
+      .filter(u => u.is_new && u.id !== myUid && !permReqs.some(p => p.user_id === u.id))
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+    function profileHtml(u, fallbackPhone) {
+      if (!u) return '';
+      const phone = u.phone || fallbackPhone || '';
+      return `<div class="prof">
+        <span>${ic('user')} <b>${esc(u.full_name || '—')}</b></span>
+        <span class="em">${ic('mail')} ${esc(u.email)}</span>
+        ${phone ? `<a class="callbtn sm" href="${esc(telHref(phone))}">${ic('phone')} ${esc(fmtPhone(phone))}</a>` : ''}
+        <span class="meta" style="margin:0">${esc(t_('signedUp'))}: ${esc(new Date(u.created_at).toLocaleString(dl()))}</span>
+        ${u.is_company ? `<span class="flag">⚠ ${esc(t_('companyFlag'))}</span>` : ''}
+      </div>`;
+    }
+
+    function rideHtml(r) {
+      const bits = [];
+      if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
+      if (hasPrice(r)) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
+      if (hasPrice(r) && r.toll_included) bits.push(`<span class="rtbadge">${esc(t_('tollIncl'))}</span>`);
+      if (hasPrice(r) && r.round_trip) bits.push(rtBadge(r));
+      if (hasPrice(r) && r.round_trip && r.first_hour_free) bits.push(`<span class="rtbadge">${esc(t_('firstHourFree'))}</span>`);
+      if (hasPrice(r) && r.round_trip && r.hourly_price != null) bits.push(`<span class="rtbadge">${esc(t_('hourlyPrice'))}: ${esc(money(r.hourly_price))}</span>`);
+      return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
+    }
+
+    function renderRequests() {
+      const box = $('reqPanel');
+      const newUsers = isAdmin ? newUsersList() : [];
+      const total = newUsers.length + permReqs.length + reqList.length + msgList.length + pendRevs.length;
+      document.title = (isAdmin && total ? '(' + total + ') ' : '') + 'CarReviews';
+      const show = isAdmin && total > 0;
+      box.classList.toggle('hidden', !show);
+      if (!show) return;
+      const head = `<div class="row" ${reqOpen ? 'style="margin-bottom:6px"' : ''}>
+          <h4 style="margin:0">${ic('check')} ${esc(t_('reqTitle'))} (${total})</h4>
+          <button class="ghost small" style="margin:0" data-reqtoggle="1">${ic(reqOpen ? 'x' : 'plus')}${reqOpen ? ' ' + esc(t_('close')) : ''}</button>
+        </div>`;
+      if (!reqOpen) { box.innerHTML = head; return; }
+
+      const newHtml = newUsers.map(u => `<div class="reqitem">
+          <div><span class="tagkind" style="background:#c2410c">${esc(t_('newAcct'))}</span></div>
+          ${profileHtml(u)}
+          <div class="row" style="justify-content:flex-start">
+            ${u.is_company ? '' : `<button class="green small" style="margin:6px 0 0" data-permok="${u.id}">${ic('check')} ${esc(t_('allowBtn'))}</button>`}
+            <button class="ghost small" style="margin:6px 0 0" data-seen="${u.id}">${ic('x')} ${esc(t_('seenBtn'))}</button>
+          </div>
+        </div>`).join('');
+
+      const permHtml = permReqs.map(p => {
+        const u = userMap[p.user_id];
+        return `<div class="reqitem">
+          <div><span class="tagkind" style="background:#0e7490">${esc(t_('permKind'))}</span></div>
+          ${profileHtml(u, p.phone)}
+          ${p.note ? `<div class="cmt">${esc(p.note)}</div>` : ''}
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:6px 0 0" data-permok="${p.user_id}">${ic('check')} ${esc(t_('approve'))}</button>
+            <button class="danger small" style="margin:6px 0 0" data-permno="${p.user_id}">${ic('x')} ${esc(t_('reject'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      const revHtml = pendRevs.map(r => {
+        const u = userMap[r.user_id];
+        const co = allCompanies.find(c => c.id === r.company_id) || {};
+        const core = coreOf(r);
+        const fl = flagHtml(r.id);
+        return `<div class="reqitem">
+          <div><span class="tagkind" style="background:#15803d">${esc(t_('revKind'))}</span>
+            <b>${esc(co.name || '?')}</b>
+            <span class="meta">${u ? esc(u.full_name || u.email) : ''}</span></div>
+          <div class="kv">${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>` : ''}
+            ${r.recommend === true ? `<span class="yn good">${ic('up')} ${esc(t_('yes'))}</span>` : (r.recommend === false ? `<span class="yn bad">${ic('down')} ${esc(t_('no'))}</span>` : '')}
+            <span class="meta" style="margin:0">${esc(punctLabel(r.punctuality) || '')}</span></div>
+          ${rideHtml(r)}
+          ${r.comment ? `<div class="cmt">${esc(r.comment)}</div>` : ''}
+          ${fl ? `<div>${fl}</div>` : ''}
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:6px 0 0" data-apprev="${r.id}">${ic('check')} ${esc(t_('approve'))}</button>
+            <button class="danger small" style="margin:6px 0 0" data-rejrev="${r.id}">${ic('x')} ${esc(t_('reject'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      const F = [['name','companyName'], ['city','cityPh'], ['description','description'], ['phone','phone'], ['email','email']];
+      const reqHtml = reqList.map(r => {
+        const u = userMap[r.user_id];
+        const cur = r.kind === 'edit' ? (allCompanies.find(c => c.id === r.company_id) || {}) : {};
+        const lines = F.filter(([k]) => r.data[k] !== undefined && (r.kind === 'add' ? r.data[k] : true)).map(([k, lbl]) => {
+          const nv = r.data[k] || '';
+          const ov = cur[k] || '';
+          if (r.kind === 'edit' && String(nv) === String(ov)) return '';
+          return `<span><b>${esc(t_(lbl).replace(' *',''))}:</b> ${r.kind === 'edit' && ov ? `<span class="old">${esc(k === 'city' ? placeLabel(ov) : ov)}</span> → ` : ''}${esc(k === 'city' ? placeLabel(nv) : nv) || '—'}</span>`;
+        }).join('');
+        return `<div class="reqitem">
+          <div><span class="tagkind">${esc(t_(r.kind === 'add' ? 'reqAdd' : 'reqEdit'))}</span>
+            ${r.kind === 'edit' ? `<b>${esc(cur.name || '?')}</b>` : ''}
+            <span class="meta">${u ? esc(u.full_name || u.email) : ''}</span></div>
+          <div class="kv">${lines}</div>
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:0" data-approve="${r.id}">${ic('check')} ${esc(t_('approve'))}</button>
+            <button class="danger small" style="margin:0" data-rejectreq="${r.id}">${ic('x')} ${esc(t_('reject'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+      const msgHtml = msgList.map(m => {
+        const u = userMap[m.user_id];
+        return `<div class="reqitem">
+          <div><span class="tagkind" style="background:#6d28d9">${esc(t_('msgKind'))}</span>
+            <span class="meta">${u ? esc(u.full_name || u.email) : ''} · ${esc(new Date(m.created_at).toLocaleDateString(dl()))}</span></div>
+          <div class="cmt">${esc(m.body)}</div>
+          <div class="row" style="justify-content:flex-start">
+            <button class="green small" style="margin:6px 0 0" data-delmsg="${m.id}">${ic('check')} ${esc(t_('done'))}</button>
+          </div>
+        </div>`;
+      }).join('');
+      box.innerHTML = head + permHtml + newHtml + revHtml + reqHtml + msgHtml;
+    }
+
+    function renderUsers() {
+      const box = $('usersPanel');
+      box.classList.toggle('hidden', !(isAdmin && usersOpen));
+      if (!(isAdmin && usersOpen)) return;
+      const idle = u => (u.n_calls || 0) > 0 && (u.n_reviews || 0) === 0;
+      let list = Object.values(userMap);
+      if (usersFilter) list = list.filter(idle);
+      list.sort((a, b) => (idle(b) - idle(a)) || ((b.n_calls || 0) - (a.n_calls || 0)));
+      const fmt = d => d ? new Date(d).toLocaleDateString(dl()) : '—';
+      box.innerHTML = `<div class="row">
+          <h4>${ic('users')} ${esc(t_('usersTitle'))} (${list.length})</h4>
+          <div class="row" style="gap:6px">
+            <button class="ghost small" style="margin:0" data-actfilter="1">${esc(t_(usersFilter ? 'actAll' : 'actIdleOnly'))}</button>
+            <button class="ghost small" style="margin:0" data-usersclose="1">${ic('x')} ${esc(t_('close'))}</button>
+          </div>
+        </div>` +
+        (list.length ? list.map(u => `
+          <div class="urow ${idle(u) ? 'idle' : ''}">
+            <div>
+              ${ic('user')} <b>${esc(u.full_name || '—')}</b> <span class="meta em">${esc(u.email)}</span>
+              ${u.phone ? `<a class="callbtn sm" href="${esc(telHref(u.phone))}">${ic('phone')} ${esc(fmtPhone(u.phone))}</a>` : ''}
+              <div style="margin-top:4px">
+                <span class="ustat ${idle(u) ? 'warn' : ''}">${ic('phone')} ${esc(t_('actCalls'))}: ${u.n_calls || 0}</span>
+                <span class="ustat">${ic('edit')} ${esc(t_('actReviews'))}: ${u.n_reviews || 0}</span>
+                <span class="ustat">${esc(t_('actLogin'))}: ${esc(fmt(u.last_login))}</span>
+                ${idle(u) ? `<span class="flag">⚠ ${esc(t_('actIdle'))}</span>` : ''}
+                ${u.can_review ? `<span class="ustat">${ic('check')}</span>` : ''}
+                ${u.is_company ? `<span class="flag">⚠ ${esc(t_('companyFlag'))}</span>` : ''}
+                ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}
+              </div>
+            </div>
+            ${u.id === myUid ? '' : (u.banned
+              ? `<button class="ghost small" data-unban="${u.id}">${esc(t_('unban'))}</button>`
+              : `<button class="danger small" data-ban="${u.id}">${ic('ban')} ${esc(t_('ban'))}</button>`)}
+          </div>`).join('') : `<p class="meta">${esc(t_('noUsers'))}</p>`);
+    }
+
+    // ===== END PART 1 =====
+        async function loadCompanies() {
+      const box = $('companies');
+      const [cRes, sRes, rRes, xRes] = await Promise.all([
+        sb.from('companies').select('*').order('created_at', { ascending: false }),
+        sb.from('company_stats').select('*'),
+        sb.from('company_recommend').select('*'),
+        sb.from('reviews').select('company_id,price_paid,comment,trip_from,trip_to,approved'),
+        loadUsers(), loadSuggestions(), loadRequests(), loadMessages(), loadPermReqs(), loadReviewAdmin()
+      ]);
+      if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
+      allCompanies = cRes.data;
+      stats = {}; (sRes.data || []).forEach(s => stats[s.company_id] = s);
+      recStats = {}; (rRes.data || []).forEach(s => recStats[s.company_id] = s);
+      cnts = {};
+      (xRes.data || []).forEach(r => {
+        if (r.approved === false) return;
+        const o = cnts[r.company_id] = cnts[r.company_id] || { p: 0, c: 0 };
+        if (hasPrice(r)) o.p++;
+        if (r.comment && String(r.comment).trim()) o.c++;
+      });
+      renderUsers();
+      renderRequests();
+      renderCompanies();
+    }
+
+    function renderCompanies() {
+      const box = $('companies');
+      const q = $('search').value.trim().toLowerCase();
+      const mode = $('sort').value;
+      const ov = c => (stats[c.id] && stats[c.id].overall != null) ? Number(stats[c.id].overall) : 0;
+      const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
+      const qNum = q.replace(/^#/, '');
+
+      let list = allCompanies.filter(c =>
+        !q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) ||
+        (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q) ||
+        (c.phone || '').includes(q) || (/^\d+$/.test(qNum) && String(c.phone_code || '') === String(Number(qNum))));
+
+      if (mode === 'code') list.sort((a, b) => (a.phone_code ?? 99999) - (b.phone_code ?? 99999));
+      else if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
+      else if (mode === 'count') list.sort((a, b) => cnt(b) - cnt(a));
+      else if (mode === 'name') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      else list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      const canWrite = !isBanned && !writeLangBlocked();
+
+      box.innerHTML = list.length ? list.map(c => {
+        if (editingId === c.id) {
+          return `
+          <div class="card">
+            <div class="row" style="margin-bottom:6px">
+              <h4 style="margin:0">${esc(isAdmin ? t_('editCompany') : t_('suggestChange'))}</h4>
+              <button class="ghost small" style="margin:0" data-canceledit="1">${ic('x')} ${esc(t_('close'))}</button>
+            </div>
+            ${isAdmin ? '' : `<div class="note">${esc(t_('apprNote'))}</div>`}
+            <div id="editMsg" class="msg"></div>
+            <input id="eName" type="text" value="${esc(c.name)}" placeholder="${esc(t_('companyName'))}">
+            ${placeSelect('eCity', (c.city || '').trim(), t_('cityPh'))}
+            <textarea id="eDesc" rows="3" placeholder="${esc(t_('description'))}">${esc(c.description || '')}</textarea>
+            <input id="ePhone" type="text" value="${esc(c.phone || '')}" placeholder="${esc(t_('phone'))}">
+            <input id="eEmail" type="email" value="${esc(c.email || '')}" placeholder="${esc(t_('email'))}">
+            ${isAdmin ? `
+              ${c.logo_url ? `<div class="fileline">${esc(t_('currentLogo'))}</div><img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
+              <div class="fileline">${esc(c.logo_url ? t_('replaceLogo') : t_('logoOpt'))}</div>
+              <input id="eLogoFile" type="file" accept="image/*">` : ''}
+            <button data-saveedit="${c.id}">${esc(isAdmin ? t_('save') : t_('sendForApproval'))}</button>
+          </div>`;
+        }
+        const s = stats[c.id], rc = recStats[c.id], overall = ov(c), cc = cnts[c.id] || { p: 0, c: 0 };
+        const recPill = rc && rc.rec_votes > 0
+          ? `<div class="pill ${Number(rc.rec_pct) < 50 ? 'low' : ''}">${ic(Number(rc.rec_pct) < 50 ? 'down' : 'up')} ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</div>` : '';
+        const scoreBox = (s && s.overall != null)
+          ? `<div class="score"><div class="big ${tone(overall)}">${overall.toFixed(1)}</div><div class="scol"><div class="stars">${stars(overall)}</div><div class="cnt">${s.review_count} ${esc(t_('reviews'))}</div></div></div>`
+          : `<div class="score"><div class="meta" style="margin:0">${esc(t_('noReviewsYet'))}</div></div>`;
+        const on = m => openId === c.id && openMode === m ? 'on' : '';
+        const nb = n => n ? `<span class="n">${n}</span>` : '';
+
+        const sugs = (isAdmin && sugMap[c.id]) ? sugMap[c.id] : [];
+        const sugHtml = sugs.length ? `
+          <div class="sect sug">
+            <h4>${ic('upload')} ${esc(t_('logoSugTitle'))} (${sugs.length})</h4>
+            ${sugs.map(sg => {
+              const u = userMap[sg.user_id];
+              return `<div class="sugrow">
+                <img src="${esc(sg.logo_url)}" alt="">
+                <span class="meta" style="margin:0">${u ? esc(u.full_name || u.email) : ''}</span>
+                <span class="sbtns">
+                  <button class="green small" style="margin:0" data-uselogo="${sg.id}">${ic('check')} ${esc(t_('useLogo'))}</button>
+                  <button class="ghost small" style="margin:0" data-dismisslogo="${sg.id}">${ic('x')} ${esc(t_('dismiss'))}</button>
+                </span>
+              </div>`;
+            }).join('')}
+          </div>` : '';
+
+        const codeB = c.phone_code ? ` <span class="codeBadge ltr" title="Phone code">#${esc(String(c.phone_code).padStart(2,'0'))}</span>` : '';
+
+        return `
+          <div class="card co" id="co-${c.id}" style="${coStyle(c.id)}">
+            <div class="chead">
+              <div class="cinfo">
+                ${c.logo_url ? `<img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
+                <div>
+                  <div class="cname">${esc(c.name)}${codeB}</div>
+                  ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
+                  ${recPill}
+                </div>
+              </div>
+              ${scoreBox}
+            </div>
+            <div class="contact">
+              ${c.city ? `<span>${ic('pin')}${esc(placeLabel((c.city || '').trim()))}</span>` : ''}
+              ${c.phone ? `<a class="callbtn" href="${esc(telHref(c.phone))}" data-call="${c.id}">${ic('phone')} ${esc(t_('callBtn'))} <span class="em">${esc(fmtPhone(c.phone))}</span></a>` : ''}
+              ${c.email ? `<span class="em">${ic('mail')}${esc(c.email)}</span>` : ''}
+            </div>
+            ${sugHtml}
+            <div class="tabs">
+              <button class="${on('view')}" data-open="${c.id}">${esc(t_('reviews'))}${nb(s ? s.review_count : 0)}</button>
+              <button class="${on('prices')}" data-prices="${c.id}">${ic('dollar')} ${esc(t_('pricesBtn'))}${nb(cc.p)}</button>
+              <button class="${on('comments')}" data-comments="${c.id}">${ic('chat')} ${esc(t_('commentsBtn'))}${nb(cc.c)}</button>
+              ${canWrite ? `<button class="${on('write')}" data-write="${c.id}">${ic('edit')} ${esc(t_('writeBtn'))}</button>` : ''}
+            </div>
+            <div class="more">
+              ${(!isAdmin && !isBanned) ? `<button data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
+              ${(!isAdmin && !isBanned) ? `<button data-edco="${c.id}">${ic('edit')} ${esc(t_('suggestChange'))}</button>` : ''}
+              ${isAdmin ? `<button class="gold" data-edco="${c.id}">${ic('edit')} ${esc(t_('edit'))}</button><button class="danger" data-delco="${c.id}">${esc(t_('del'))}</button>` : ''}
+            </div>
+            ${openId === c.id ? `<div class="detail" id="detail"></div>` : ''}
+          </div>`;
+      }).join('') : '<div class="card" style="text-align:center;color:var(--muted);font-weight:600">' + esc(t_('noCompanies')) + '</div>';
+
+      if (openId) loadDetail(openId);
+    }
+
+    function barRow(k, a, n) {
+      const has = n > 0;
+      const w = has ? Math.round(a / 5 * 100) : 0;
+      return `<div class="bar"><span class="${has ? tone(a) : ''}">${ic(KEY_ICON[k])}</span><span>${esc(t_(k))}</span>
+        <span class="track"><span class="fill bg-${has ? tone(a) : 'mid'}" style="display:block;width:${w}%"></span></span>
+        <span class="val ${has ? tone(a) : ''}">${has ? a.toFixed(1) : '-'}</span></div>`;
+    }
+
+    function authorHtml(r) {
+      if (!isAdmin) return '';
+      const u = userMap[r.user_id];
+      const who = u ? `<b>${esc(u.full_name || '—')}</b> <span class="meta em" style="margin:0">${esc(u.email)}</span> ${u.phone ? telLink(u.phone) : ''}` : `<span class="meta" style="margin:0">${esc(String(r.user_id).slice(0, 8))}</span>`;
+      const isB = u && u.banned;
+      const pend = r.approved === false
+        ? `<span class="tagban" style="background:#c2410c">${esc(t_('pendingTag'))}</span>
+           <button class="green small" style="margin:0" data-apprev="${r.id}">${ic('check')} ${esc(t_('approve'))}</button>` : '';
+      return `<div class="author">${ic('user')} ${esc(t_('by'))}: ${who}
+        ${isB ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}
+        ${pend}
+        ${r.user_id !== myUid ? (isB
+          ? `<button class="ghost small" style="margin:0" data-unban="${r.user_id}">${esc(t_('unban'))}</button>`
+          : `<button class="danger small" style="margin:0" data-ban="${r.user_id}">${ic('ban')} ${esc(t_('ban'))}</button>`) : ''}
+        ${flagHtml(r.id)}
+      </div>`;
+    }
+    const delRevBtn = r => (isAdmin && r.user_id !== myUid) ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '';
+    const moreBtn = total => total > showN
+      ? `<div class="showmore"><button class="ghost" data-more="1">${esc(t_('showMore'))} (${total - showN})</button></div>` : '';
+    const routeName = r => (r.trip_from || r.trip_to)
+      ? `${placeLabel(r.trip_from || '?')} → ${placeLabel(r.trip_to || '?')}` : t_('routeUnknown');
+
+    function catRowHtml(k) {
+      if (k === 'punctuality') {
+        return `<div class="field" data-field="punctuality">
+          <div class="ptq">${ic('clock')} ${esc(t_('punctQ'))}</div>
+          <div class="ptopts">${PUNCT.map(([v, key]) =>
+            `<button type="button" class="ptbtn optcard ${draft.punctuality === v ? 'on' : ''}" data-punct="${v}">${esc(t_(key))}</button>`).join('')}</div>
+        </div>`;
+      }
+      return `<div class="field" data-field="${k}"><div class="catrow"><span class="lbl">${ic(KEY_ICON[k])} ${esc(t_(k))}</span>
+        <span class="pick" data-cat="${k}">${[1,2,3,4,5].map(v =>
+          `<span class="st ${draft[k] >= v ? 'on' : ''}" data-v="${v}"><i class="sn">${v}</i><span class="sg">★</span></span>`).join('')}</span>
       </div></div>`;
-  }).join('')+'</div>';
-}
-async function setApproved(id,v){
-  const { error } = await sb.rpc('admin_review_set_approved',{ p_id:id, p_approved:v });
-  if(error){ toast(error.message,true); return; }
-  toast(v?'באשטעטיגט':'באהאלטן'); await loadReviewsData(); renderNav(); render();
-}
-async function delReview(id){
-  if(!confirm('זיכער אויסמעקן דעם רעוויו?')) return;
-  const { error } = await sb.rpc('admin_review_delete',{ p_id:id });
-  if(error){ toast(error.message,true); return; }
-  toast('אויסגעמעקט'); await loadReviewsData(); renderNav(); render();
-}
-async function playVoice(boxId, path){
-  const { data, error } = await sb.storage.from('voice-messages').createSignedUrl(path, 600);
-  if(error){ toast(error.message,true); return; }
-  const a=document.createElement('audio'); a.controls=true; a.src=data.signedUrl; a.autoplay=true;
-  const box=$(boxId); box.innerHTML=''; box.appendChild(a);
-}
+    }
 
-/* messages */
-function renderMessages(){
-  head('הודעות',`${messages.length} הודעות · ${newMsg()} נייע`,
-    searchBox('זוך נומער, נאמען אדער טעקסט...')+`<select class="in" onchange="msgF=this.value;renderList()">
-      <option value="" ${msgF===''?'selected':''}>אלע סטאטוסן</option>${Object.keys(STATUS).map(k=>`<option value="${k}" ${msgF===k?'selected':''}>${STATUS[k][0]}</option>`).join('')}</select>`+refreshBtn);
-  $('content').innerHTML = `<div id="listBox">${messagesHtml()}</div>`;
-}
-function messagesHtml(){
-  const s=q.trim().toLowerCase();
-  const list = messages.filter(m => (!msgF||m.status===msgF) && (!s || String(m.from_number||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')||'§') || (m.reviewer_name||'').toLowerCase().includes(s) || (m.typed_text||'').toLowerCase().includes(s) || (m.admin_notes||'').toLowerCase().includes(s)));
-  if(!list.length) return empty('0 הודעות','🎙️');
-  return '<div class="g2">'+list.map(m=>{ const st=STATUS[m.status]||[m.status,'p-gray']; return `<div class="card">
-    <div class="chead">
-      <div class="row"><span class="pill ${st[1]}">${esc(st[0])}</span><b class="num ltr">${esc(fmtPhone(m.from_number))}</b>${m.reviewer_name?`<b class="muted">· ${esc(m.reviewer_name)}</b>`:''}</div>
-      <div class="muted">${ic('clock')} ${esc(fmtDate(m.created_at))} · <b>${esc(m.duration_seconds||0)}s</b></div>
-    </div>
-    ${m.storage_path?`<div id="m-${m.id}"><button class="btn sm" onclick="playVoice('m-${m.id}','${esc(m.storage_path)}')">${ic('play')} הער די הודעה</button></div>`:'<div class="muted">קיין אודיא</div>'}
-    <div class="cols" style="margin-top:4px">
-      <div><label class="f">נאמען</label><input id="mn${m.id}" class="in" value="${esc(m.reviewer_name||'')}"></div>
-      <div><label class="f">סטאטוס</label><select id="ms${m.id}" class="in" style="width:100%">${Object.keys(STATUS).map(k=>`<option value="${k}" ${m.status===k?'selected':''}>${STATUS[k][0]}</option>`).join('')}</select></div>
-    </div>
-    <label class="f">אפגעשריבענער טעקסט</label><textarea id="mt${m.id}" class="in" rows="3">${esc(m.typed_text||'')}</textarea>
-    <label class="f">נאטיצן</label><input id="mo${m.id}" class="in" value="${esc(m.admin_notes||'')}">
-    <div class="actions"><button class="btn green" onclick="saveMsg('${m.id}')">${ic('save')} שפייכערן</button><button class="btn ghost danger" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">${ic('trash')} מעק אויס</button></div>
-  </div>`; }).join('')+'</div>';
-}
-async function saveMsg(id){
-  const { error } = await sb.from('voice_messages').update({ reviewer_name:$('mn'+id).value, typed_text:$('mt'+id).value, admin_notes:$('mo'+id).value, status:$('ms'+id).value }).eq('id',id);
-  if(error){ toast(error.message,true); return; }
-  toast('געשפייכערט'); await loadMessagesData(); renderNav(); renderList();
-}
-async function delMsg(id,path){
-  if(!confirm('זיכער אויסמעקן די הודעה?')) return;
-  if(path) await sb.storage.from('voice-messages').remove([path]);
-  const { error } = await sb.from('voice_messages').delete().eq('id',id);
-  if(error){ toast(error.message,true); return; }
-  toast('אויסגעמעקט'); await loadMessagesData(); renderNav(); render();
-}
+    function syncDraft() {
+      if (openMode !== 'write' || !$('revDate') || !$('revFrom')) return;
+      draft.trip_date = $('revDate').value;
+      draft.tod = $('revTod').value;
+      draft.from = readPlace('revFrom') || '';
+      draft.to = readPlace('revTo') || '';
+      draft.price = $('revPrice').value;
+      draft.round = $('revRound') ? $('revRound').checked : false;
+      draft.toll = $('revToll') ? $('revToll').checked : false;
+      draft.free = $('revFree') ? $('revFree').checked : false;
+      draft.hour = $('revHour') ? $('revHour').value : '';
+      draft.comment = $('revComment').value;
+    }
+    function hasAnyAnswer() {
+      if (ALL_KEYS.some(k => draft[k])) return true;
+      if (draft.rec === true || draft.rec === false) return true;
+      if (draft.trip_date || draft.tod || draft.from || draft.to) return true;
+      if (String(draft.price || '').trim() !== '') return true;
+      if ((draft.tags || []).length) return true;
+      if (String(draft.comment || '').trim() !== '') return true;
+      return false;
+    }
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&editIdx!==null){ editIdx=null; renderList(); } });
-init();
-</script>
+    async function loadDetail(companyId) {
+      const el = $('detail');
+      if (!el) return;
+      el.innerHTML = esc(t_('loading'));
+      const { data, error } = await sb.from('reviews').select('*').eq('company_id', companyId).order('created_at', { ascending: false });
+      if (error) { el.innerHTML = esc(t_('error')) + ': ' + esc(error.message); return; }
+      detailData = data;
+
+      const mine = data.find(r => r.user_id === myUid);
+      myReviewId = mine ? mine.id : null;
+      if (!Object.keys(draft).length && mine) {
+        ALL_KEYS.forEach(k => draft[k] = mine[k]);
+        draft.punctuality = normP(mine.punctuality);
+        draft.comment = mine.comment || '';
+        draft.rec = mine.recommend;
+        draft.tags = Array.isArray(mine.tags) ? mine.tags.filter(k => POS_TAGS.includes(k) || NEG_TAGS.includes(k)) : [];
+        draft.trip_date = mine.trip_date || '';
+        draft.tod = mine.time_of_day || '';
+        draft.from = mine.trip_from || '';
+        draft.to = mine.trip_to || '';
+        draft.round = !!mine.round_trip;
+        draft.toll = !!mine.toll_included;
+        draft.free = !!mine.first_hour_free;
+        draft.hour = (mine.hourly_price !== null && mine.hourly_price !== undefined) ? String(mine.hourly_price) : '';
+        draft.price = (mine.price_paid !== null && mine.price_paid !== undefined) ? String(mine.price_paid) : '';
+      }
+      paintDetail();
+    }
+
+    function paintDetail() {
+      const el = $('detail');
+      if (!el || !openId) return;
+      const companyId = openId;
+      const data = detailData;
+      const pub = data.filter(r => r.approved !== false);
+      const mine = data.find(r => r.user_id === myUid);
+
+      const head = title => `<div class="dhead"><h4>${title}</h4><button class="ghost small" data-close="${companyId}">${ic('x')} ${esc(t_('close'))}</button></div>`;
+
+      if (openMode === 'write') {
+        if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
+        if (writeLangBlocked()) { el.innerHTML = head('') + `<div class="banner">${esc(T.en.langBlock)}</div>`; return; }
+        langAlertIfNeeded();
+
+        if (!isAdmin && !canReview) {
+          el.innerHTML = head(esc(t_('writeReview'))) + `
+            <div class="sect white">
+              <div class="note warn"><b>${esc(t_('needPermTitle'))}</b><br>${esc(t_('needPermText'))}</div>
+              ${myReqPending
+                ? `<div class="note">${esc(t_('reqPermWaiting'))}</div>`
+                : `<button type="button" data-reqperm="1">${ic('check')} ${esc(t_('reqPermBtn'))}</button>`}
+            </div>`;
+          return;
+        }
+
+        const dTags = draft.tags || [];
+
+        const form = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
+          <div><div class="grp">${ic(gi)} ${esc(t_(g))}</div>
+          ${keys.map(k => catRowHtml(k)).join('')}</div>`).join('')}</div>`;
+
+        const recForm = `
+          <div class="field" data-field="rec">
+            <h4>${esc(t_('recommendQ'))}</h4>
+            <div class="recbtns">
+              <button type="button" class="recbtn optcard yes ${draft.rec === true ? 'on' : ''}" data-rec="1">${ic('up')} ${esc(t_('yes'))}</button>
+              <button type="button" class="recbtn optcard no ${draft.rec === false ? 'on' : ''}" data-rec="0">${ic('down')} ${esc(t_('no'))}</button>
+            </div>
+          </div>`;
+
+        const rideForm = `
+          <div class="sect ride">
+            <h4>${ic('car')} ${esc(t_('rideTitle'))}</h4>
+            <div class="two">
+              <div class="field" data-field="date">
+                <span class="plabel">${esc(t_('f_date'))}</span>
+                <input id="revDate" type="hidden" value="${esc(draft.trip_date || '')}">
+                <button type="button" class="datebtn ${draft.trip_date ? 'has' : ''}" data-pickdate="1">${ic('cal')} <span id="revDateTxt">${draft.trip_date ? esc(dateLabel(draft.trip_date)) : esc(t_('pickDate'))}</span></button>
+              </div>
+              <div class="field" data-field="tod">
+                <label class="plabel" for="revTod">${esc(t_('todPh'))}</label>
+                <select id="revTod" required>
+                  <option value="" disabled hidden ${draft.tod ? '' : 'selected'}>${esc(t_('pickTod'))}</option>
+                  ${TODS.map(k => `<option value="${k}" ${draft.tod === k ? 'selected' : ''}>${esc(t_('tod_' + k))}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div class="two">
+              <div class="field" data-field="from">${placeSelect('revFrom', draft.from || '', t_('fromPh'))}</div>
+              <div class="field" data-field="to">${placeSelect('revTo', draft.to || '', t_('toPh'))}</div>
+            </div>
+            <div class="field" data-field="price">
+              <label class="plabel" for="revPrice">${esc(t_('pricePh'))}</label>
+              <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.price || '')}"></div>
+              <label class="rtcheck"><input type="checkbox" id="revToll" ${draft.toll ? 'checked' : ''}> <span>${esc(t_('tollIncl'))}</span></label>
+              <label class="rtcheck"><input type="checkbox" id="revRound" ${draft.round ? 'checked' : ''}> <span>${esc(t_('roundTrip'))}</span></label>
+              <div id="rtExtra" class="${draft.round ? '' : 'hidden'}">
+                <label class="rtcheck"><input type="checkbox" id="revFree" ${draft.free ? 'checked' : ''}> <span>${esc(t_('firstHourFree'))}</span></label>
+                <label class="plabel" for="revHour" style="margin-top:8px">${esc(t_('hourlyPrice'))}</label>
+                <div class="pricewrap"><span class="dol">$</span><input id="revHour" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.hour || '')}"></div>
+              </div>
+            </div>
+          </div>`;
+
+        const tagForm = `
+          <div class="optbox">
+            <h4>${esc(t_('tagsTitle'))} <span class="opt">(${esc(t_('optional'))})</span></h4>
+            <div class="chips">
+              ${POS_TAGS.map(k => `<button type="button" class="chip pos ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+            </div>
+            <div class="chips">
+              ${NEG_TAGS.map(k => `<button type="button" class="chip neg ${dTags.includes(k) ? 'on' : ''}" data-tag="${k}">${esc(t_('tag_' + k))}</button>`).join('')}
+            </div>
+            <textarea id="revComment" rows="3" placeholder="${esc(t_('otherIssue'))} (${esc(t_('optional'))})">${esc(draft.comment || '')}</textarea>
+          </div>`;
+
+        el.innerHTML = head(`${esc(mine ? t_('editReview') : t_('writeReview'))} <span class="opt">${esc(t_('anonymous'))}</span>`) + `
+          <div class="sect white">
+            <div class="note">${esc(t_('optNote'))}</div>
+            <div class="hintline">${esc(t_('starsHint'))}</div>
+            <div id="revMsg" class="msg"></div>
+            ${form}
+            ${recForm}
+            ${rideForm}
+            ${tagForm}
+            <button id="submitReview" data-company="${companyId}">${ic('check')} ${esc(mine ? t_('update') : t_('submit'))}</button>
+            ${mine ? `<button id="deleteReview" class="danger" data-company="${companyId}">${esc(t_('delMine'))}</button>` : ''}
+          </div>`;
+        return;
+      }
+
+      if (openMode === 'prices') {
+        const priced = pub.filter(hasPrice);
+        if (!priced.length) {
+          el.innerHTML = head(`${ic('dollar')} ${esc(t_('pricesTitle'))}`) + `<p class="meta">${esc(t_('noPrices'))}</p>`;
+          return;
+        }
+        const groups = {};
+        priced.forEach(r => { const k = r.trip_from + '|' + r.trip_to; (groups[k] = groups[k] || []).push(r); });
+        const gl = Object.values(groups).sort((a, b) => b.length - a.length);
+        const cards = gl.map(arr => {
+          const ps = arr.map(r => Number(r.price_paid));
+          const avg = ps.reduce((a, b) => a + b, 0) / ps.length;
+          const mn = Math.min(...ps), mx = Math.max(...ps);
+          return `<div class="rt">
+            <div class="rt-route">${ic('pin')} ${esc(routeName(arr[0]))}</div>
+            <div class="rt-price">${esc(money(Math.round(avg)))}</div>
+            <div class="rt-sub">${arr.length > 1 ? `${esc(t_('avg'))} · ${esc(money(mn))}–${esc(money(mx))} · ` : ''}${arr.length} ${esc(t_('reportsWord'))}</div>
+          </div>`;
+        }).join('');
+        const rows = priced.slice(0, showN).map(r => {
+          const bits = [];
+          bits.push(r.trip_date ? new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl()) : new Date(r.created_at).toLocaleDateString(dl()));
+          if (r.time_of_day && TODS.includes(r.time_of_day)) bits.push(t_('tod_' + r.time_of_day));
+          return `<div class="prow">
+            <div><div class="pr-route">${esc(routeName(r))} ${rtBadge(r)}</div><div class="pr-meta">${esc(bits.join(' · '))}</div></div>
+            <span class="price">${esc(money(r.price_paid))}</span>
+          </div>`;
+        }).join('');
+        el.innerHTML = head(`${ic('dollar')} ${esc(t_('pricesTitle'))} (${priced.length})`) + `
+          <div class="sect ride"><h4>${esc(t_('byRoute'))}</h4><div class="rtgrid">${cards}</div></div>
+          <div class="sect white"><h4>${esc(t_('allPriceReports'))}</h4>${rows}${moreBtn(priced.length)}</div>`;
+        return;
+      }
+
+      if (openMode === 'comments') {
+        const withC = pub.filter(r => r.comment && String(r.comment).trim());
+        const items = withC.length ? withC.slice(0, showN).map(r => {
+          const core = coreOf(r);
+          return `<div class="rev">
+            <div class="rh">
+              ${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>` : ''}
+              <span class="meta" style="margin:0; margin-inline-start:auto">${new Date(r.created_at).toLocaleDateString(dl())}</span>
+            </div>
+            <div class="cmt">${esc(r.comment)}</div>
+            ${authorHtml(r)}
+            ${delRevBtn(r)}
+          </div>`;
+        }).join('') + moreBtn(withC.length) : `<p class="meta">${esc(t_('noComments'))}</p>`;
+        el.innerHTML = head(`${ic('chat')} ${esc(t_('commentsTitle'))} (${withC.length})`) + items;
+        return;
+      }
+
+      const avgOf = k => {
+        const vals = pub.map(r => r[k]).filter(v => v !== null && v !== undefined);
+        return { a: vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : 0, n: vals.length };
+      };
+      const overview = `<div class="cols">${GROUPS.map(([g, gi, keys]) => `
+        <div><div class="grp">${ic(gi)} ${esc(t_(g))}</div>${keys.map(k => { const r = avgOf(k); return barRow(k, r.a, r.n); }).join('')}</div>`).join('')}</div>`;
+
+      const counts = {};
+      pub.forEach(r => (r.tags || []).forEach(tg => { if (!LEGACY_TAGS.includes(tg)) counts[tg] = (counts[tg] || 0) + 1; }));
+      const tagKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+      const chipHtml = k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))} · ${counts[k]}</span>`;
+      const posKeys = tagKeys.filter(k => isPos(k)), negKeys = tagKeys.filter(k => !isPos(k));
+      const tagSummary = tagKeys.length
+        ? `<div class="sect"><h4>${ic('chat')} ${esc(t_('saidTags'))}</h4>
+            ${posKeys.length ? `<div class="chips">${posKeys.map(chipHtml).join('')}</div>` : ''}
+            ${negKeys.length ? `<div class="chips">${negKeys.map(chipHtml).join('')}</div>` : ''}
+          </div>` : '';
+
+      const list = data.length ? data.slice(0, showN).map(r => {
+        const core = coreOf(r);
+        const rt = (r.tags || []).filter(k => !LEGACY_TAGS.includes(k));
+        const chip = k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))}</span>`;
+        const rtags = (rt.filter(isPos).length ? `<div class="chips">${rt.filter(isPos).map(chip).join('')}</div>` : '')
+                    + (rt.filter(k => !isPos(k)).length ? `<div class="chips">${rt.filter(k => !isPos(k)).map(chip).join('')}</div>` : '');
+        const tripBits = [];
+        if (r.trip_date) { tripBits.push(new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl())); tripBits.push(hebFromStr(r.trip_date)); }
+        if (r.time_of_day && TODS.includes(r.time_of_day)) tripBits.push(t_('tod_' + r.time_of_day));
+        const recBadge = r.recommend === true ? `<span class="yn good">${ic('up')} ${esc(t_('yes'))}</span>`
+                       : r.recommend === false ? `<span class="yn bad">${ic('down')} ${esc(t_('no'))}</span>` : '';
+        const mini = ALL_KEYS.filter(k => r[k] !== null && r[k] !== undefined)
+          .map(k => {
+            const lab = k === 'punctuality' ? punctLabel(r[k]) : null;
+            return `<span>${ic(KEY_ICON[k])} ${esc(t_(k))} <b>${esc(lab || r[k])}</b></span>`;
+          }).join('');
+        return `
+        <div class="rev">
+          <div class="rh">
+            ${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span><span class="stars">${stars(core)}</span>` : ''}
+            ${recBadge}
+            <span class="meta" style="margin:0; margin-inline-start:auto">${new Date(r.created_at).toLocaleDateString(dl())}</span>
+          </div>
+          ${(r.approved === false && r.user_id === myUid && !isAdmin) ? `<div class="note warn">${esc(t_('revPending'))}</div>` : ''}
+          ${tripBits.length ? `<div class="meta">${ic('cal')} ${esc(t_('trip'))}: ${esc(tripBits.join(' · '))}</div>` : ''}
+          ${rideHtml(r)}
+          ${rtags}
+          ${r.comment ? `<div class="cmt">${esc(r.comment)}</div>` : ''}
+          ${mini ? `<details><summary>${esc(t_('detailsWord'))}</summary><div class="mini">${mini}</div></details>` : ''}
+          ${authorHtml(r)}
+          ${delRevBtn(r)}
+        </div>`;
+      }).join('') + moreBtn(data.length) : `<p class="meta">${esc(t_('beFirst'))}</p>`;
+
+      el.innerHTML = head(`${esc(t_('allReviews'))} (${data.length})`) + `
+        <div class="sect"><h4>${esc(t_('ratingsByCat'))}</h4>${overview}</div>
+        ${tagSummary}
+        ${list}`;
+    }
+
+    document.addEventListener('input', () => { syncDraft(); });
+    document.addEventListener('change', (e) => {
+      const el = e.target;
+      if (el && el.id === 'revRound' && $('rtExtra')) $('rtExtra').classList.toggle('hidden', !el.checked);
+      if (el && el.classList && el.classList.contains('placeSel')) {
+        const txt = $(el.id + 'Txt');
+        if (txt) {
+          txt.classList.toggle('hidden', el.value !== '__other');
+          if (el.value === '__other') txt.focus();
+        }
+      }
+      syncDraft();
+    });
+
+    $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) closeCal(); });
+
+    function scrollToCard(id) {
+      const card = $('co-' + id);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if ($('calModal').style.display === 'flex') { closeCal(); return; }
+      if (!$('msgForm').classList.contains('hidden')) { closeMsg(); return; }
+      if (!$('addForm').classList.contains('hidden')) { closeAdd(); return; }
+      if (editingId) { editingId = null; renderCompanies(); return; }
+      if (openId) { const id = openId; openId = null; draft = {}; renderCompanies(); scrollToCard(id); return; }
+      if (usersOpen) { usersOpen = false; renderUsers(); }
+    });
+
+    document.addEventListener('click', async (e) => {
+      const t = e.target.closest ? (e.target.closest('button, .st, a[data-call]') || e.target) : e.target;
+      const ds = t.dataset || {};
+
+      if (ds.call) {
+        if (myUid && !isAdmin) sb.from('call_log').insert({ company_id: String(ds.call) }).then(() => {});
+        return;
+      }
+      if (ds.actfilter) { usersFilter = !usersFilter; renderUsers(); return; }
+      if (ds.usersclose) { usersOpen = false; renderUsers(); return; }
+      if (ds.reqtoggle) { reqOpen = !reqOpen; renderRequests(); return; }
+      if (ds.more) { showN += 10; paintDetail(); return; }
+
+      if (ds.reqperm) {
+        t.disabled = true;
+        const { error } = await sb.from('review_requests').insert({ user_id: myUid, phone: myPhone || null });
+        if (error && !/duplicate|unique/i.test(error.message)) { t.disabled = false; return toast(error.message, true, 6000); }
+        myReqPending = true;
+        paintDetail();
+        toast(t_('reqPermSent'), false, 4000);
+        return;
+      }
+      if (ds.permok) {
+        t.disabled = true;
+        const { error } = await sb.rpc('admin_set_reviewer', { target: ds.permok, allow: true });
+        if (error) {
+          alert(/COMPANY_ACCOUNT/.test(error.message) ? t_('companyAcct') : error.message);
+          t.disabled = false; return;
+        }
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.permno) {
+        if (!confirm(t_('confirmReject'))) return;
+        const { error } = await sb.from('review_requests').delete().eq('user_id', ds.permno);
+        if (error) { alert(error.message); return; }
+        await sb.rpc('admin_mark_seen', { target: ds.permno });
+        await loadCompanies();
+        return;
+      }
+      if (ds.seen) {
+        const { error } = await sb.rpc('admin_mark_seen', { target: ds.seen });
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
+      if (ds.apprev) {
+        t.disabled = true;
+        const res = await sb.from('reviews').update({ approved: true }).eq('id', ds.apprev).select();
+        if (res.error || !res.data || !res.data.length) { alert(res.error ? res.error.message : t_('notSaved')); t.disabled = false; return; }
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.rejrev) {
+        if (!confirm(t_('confirmReject'))) return;
+        const { error } = await sb.from('reviews').delete().eq('id', ds.rejrev);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
+      if (ds.approve) {
+        const r = reqList.find(x => x.id === ds.approve);
+        if (!r) return;
+        t.disabled = true;
+        const d = r.data || {};
+        const row = { name: d.name, city: d.city || null, description: d.description || null, phone: d.phone || null, email: d.email || null };
+        let err = null;
+        if (r.kind === 'add') err = (await sb.from('companies').insert(row)).error;
+        else err = (await sb.from('companies').update(row).eq('id', r.company_id)).error;
+        if (err) { alert(err.message); t.disabled = false; return; }
+        await sb.from('change_requests').delete().eq('id', r.id);
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.rejectreq) {
+        if (!confirm(t_('confirmReject'))) return;
+        const { error } = await sb.from('change_requests').delete().eq('id', ds.rejectreq);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+      if (ds.delmsg) {
+        const { error } = await sb.from('admin_messages').delete().eq('id', ds.delmsg);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
+      const dayEl = e.target.closest ? e.target.closest('[data-day]') : null;
+      if (dayEl && pickMode) { setTripDate(dayEl.dataset.day); closeCal(); return; }
+      if (ds.pickdate) { openPick(); return; }
+
+      if (ds.cal) {
+        if (ds.cal === 'close') { closeCal(); return; }
+        if (ds.cal === 'today') {
+          if (pickMode && $('revDate')) { setTripDate(isoOf(new Date())); closeCal(); return; }
+          calAnchor = noon(new Date());
+        }
+        if (ds.cal === 'next') { calAnchor = new Date(calLast); calAnchor.setDate(calAnchor.getDate() + 1); }
+        if (ds.cal === 'prev') { calAnchor = new Date(calFirst); calAnchor.setDate(calAnchor.getDate() - 1); }
+        renderCal();
+        return;
+      }
+
+      if (ds.sendlogo) { sugTarget = ds.sendlogo; $('sugFile').click(); return; }
+      if (ds.uselogo) {
+        const sg = sugList.find(x => x.id === ds.uselogo);
+        if (!sg) return;
+        const up = await sb.from('companies').update({ logo_url: sg.logo_url }).eq('id', sg.company_id);
+        if (up.error) { alert(up.error.message); return; }
+        await sb.from('logo_suggestions').delete().eq('id', sg.id);
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+      if (ds.dismisslogo) {
+        const { error } = await sb.from('logo_suggestions').delete().eq('id', ds.dismisslogo);
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        return;
+      }
+
+      if (ds.ban) {
+        if (!confirm(t_('confirmBan'))) return;
+        const del = confirm(t_('confirmBanDel'));
+        const { error } = await sb.rpc('admin_set_ban', { target: ds.ban, ban: true, del_reviews: del });
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        toast(t_('banned'));
+        return;
+      }
+      if (ds.unban) {
+        if (!confirm(t_('confirmUnban'))) return;
+        const { error } = await sb.rpc('admin_set_ban', { target: ds.unban, ban: false, del_reviews: false });
+        if (error) { alert(error.message); return; }
+        await loadCompanies();
+        toast(t_('saved'));
+        return;
+      }
+
+      if (ds.open || ds.prices || ds.comments || ds.write) {
+        const id = ds.open || ds.prices || ds.comments || ds.write;
+        const m = ds.open ? 'view' : (ds.prices ? 'prices' : (ds.comments ? 'comments' : 'write'));
+        if (openId === id && openMode === m) openId = null;
+        else { openId = id; openMode = m; }
+        draft = {};
+        showN = 8;
+        renderCompanies();
+        scrollToCard(id);
+        return;
+      }
+      if (ds.close) {
+        const id = ds.close;
+        openId = null;
+        draft = {};
+        renderCompanies();
+        scrollToCard(id);
+        return;
+      }
+
+      if (ds.punct) {
+        const v = Number(ds.punct);
+        draft.punctuality = (draft.punctuality === v) ? undefined : v;
+        document.querySelectorAll('.ptbtn').forEach(b => b.classList.toggle('on', Number(b.dataset.punct) === draft.punctuality));
+        return;
+      }
+
+      if (t.classList && t.classList.contains('st')) {
+        const cat = t.parentElement.dataset.cat;
+        const v = Number(t.dataset.v);
+        draft[cat] = (draft[cat] === v) ? null : v;
+        t.parentElement.querySelectorAll('.st').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= (draft[cat] || 0)));
+        return;
+      }
+
+      if (ds.rec !== undefined) {
+        const val = ds.rec === '1';
+        draft.rec = (draft.rec === val) ? undefined : val;
+        document.querySelectorAll('.recbtn').forEach(b => b.classList.toggle('on', draft.rec === (b.dataset.rec === '1')));
+        return;
+      }
+
+      if (ds.tag) {
+        draft.tags = draft.tags || [];
+        const i = draft.tags.indexOf(ds.tag);
+        if (i >= 0) draft.tags.splice(i, 1); else draft.tags.push(ds.tag);
+        t.classList.toggle('on', i < 0);
+        return;
+      }
+
+      if (ds.delrev) {
+        if (!confirm(t_('confirmDelAnyRev'))) return;
+        const { error } = await sb.from('reviews').delete().eq('id', ds.delrev);
+        if (error) { alert(error.message); return; }
+        loadCompanies();
+        return;
+      }
+
+      if (ds.delco) {
+        if (!confirm(t_('confirmDelCo'))) return;
+        const { error } = await sb.from('companies').delete().eq('id', ds.delco);
+        if (error) { alert(error.message); return; }
+        if (openId === ds.delco) openId = null;
+        loadCompanies();
+        return;
+      }
+
+      if (ds.edco) { editingId = ds.edco; renderCompanies(); return; }
+      if (ds.canceledit) { editingId = null; renderCompanies(); return; }
+
+      if (ds.saveedit) {
+        const name = $('eName').value.trim();
+        if (!name) return showMsg($('editMsg'), t_('nameRequired'), false, 4000);
+        t.disabled = true;
+        try {
+          const ph = $('ePhone').value.trim();
+          const row = {
+            name,
+            city: readPlace('eCity'),
+            description: $('eDesc').value.trim() || null,
+            phone: ph ? fmtPhone(ph) : null,
+            email: $('eEmail').value.trim() || null
+          };
+          if (isAdmin) {
+            const file = $('eLogoFile') ? $('eLogoFile').files[0] : null;
+            if (file) row.logo_url = await uploadLogo(file);
+            const { error } = await sb.from('companies').update(row).eq('id', ds.saveedit);
+            if (error) throw error;
+          } else {
+            const { error } = await sb.from('change_requests').insert({ user_id: myUid, kind: 'edit', company_id: ds.saveedit, data: row });
+            if (error) throw error;
+            toast(t_('reqSent'));
+          }
+          editingId = null;
+          loadCompanies();
+        } catch (err) {
+          showMsg($('editMsg'), err.message || String(err), false);
+          t.disabled = false;
+        }
+        return;
+      }
+
+      if (t.id === 'submitReview') {
+        const msg = $('revMsg');
+        if (writeLangBlocked()) return toast(T.en.langBlock, true);
+        langAlertIfNeeded();
+        if (isBanned) return showMsg(msg, t_('bannedMsg'), false, 5000);
+        if (!isAdmin && !canReview) return showMsg(msg, t_('noPermNow'), false, 5000);
+        syncDraft();
+        if (!hasAnyAnswer()) return toast(t_('needOne'), true);
+
+        const fromV = readPlace('revFrom'), toV = readPlace('revTo');
+        const priceRaw = $('revPrice').value.trim();
+        let price_paid = null;
+        if (priceRaw !== '') {
+          price_paid = Math.round(Number(priceRaw) * 100) / 100;
+          if (!isFinite(price_paid) || price_paid <= 0 || price_paid > 99999) return showMsg(msg, t_('badPrice'), false, 5000);
+          if (!fromV || !toV) return toast(t_('priceNeedsRoute'), true, 5000);
+        }
+        const dv = $('revDate').value;
+        if (dv && dv > isoOf(new Date())) return toast(t_('pickDate'), true);
+
+        const isRound = price_paid !== null && $('revRound').checked;
+        const hourRaw = $('revHour') ? $('revHour').value.trim() : '';
+        const vals = {
+          comment: $('revComment').value.trim() || null,
+          recommend: (draft.rec === true || draft.rec === false) ? draft.rec : null,
+          tags: draft.tags || [],
+          trip_date: dv || null,
+          time_of_day: $('revTod').value || null,
+          trip_from: fromV,
+          trip_to: toV,
+          price_paid,
+          round_trip: isRound,
+          toll_included: price_paid !== null ? !!$('revToll').checked : false,
+          first_hour_free: isRound ? !!$('revFree').checked : false,
+          hourly_price: (isRound && hourRaw !== '' && isFinite(Number(hourRaw))) ? Math.round(Number(hourRaw) * 100) / 100 : null,
+          price: null,
+          updated_at: new Date().toISOString()
+        };
+        ALL_KEYS.forEach(k => vals[k] = draft[k] || null);
+        t.disabled = true;
+
+        let error = null;
+        if (myReviewId) {
+          const res = await sb.from('reviews').update(vals).eq('id', myReviewId).eq('user_id', myUid).select();
+          error = res.error;
+          if (!error && (!res.data || res.data.length === 0)) {
+            t.disabled = false;
+            return showMsg(msg, t_('notSaved'), false, 6000);
+          }
+        } else {
+          const res = await sb.from('reviews').insert({ ...vals, company_id: t.dataset.company, user_id: myUid });
+          error = res.error;
+        }
+        if (error) { t.disabled = false; return showMsg(msg, error.message, false, 6000); }
+
+        const cid = openId;
+        draft = {};
+        openId = null;
+        await loadCompanies();
+        toast(t_('saved'));
+        scrollToCard(cid);
+        return;
+      }
+
+      if (t.id === 'deleteReview') {
+        if (!confirm(t_('confirmDelRev'))) return;
+        const { error } = await sb.from('reviews').delete()
+          .eq('company_id', t.dataset.company).eq('user_id', myUid);
+        if (error) return showMsg($('revMsg'), error.message, false, 6000);
+        draft = {};
+        openId = null;
+        await loadCompanies();
+        toast(t_('deleted'));
+      }
+    });
+
+    async function render(session) {
+      if (session) {
+        myUid = session.user.id;
+        myEmail = session.user.email;
+        myPhone = (session.user.user_metadata && session.user.user_metadata.phone) || '';
+        loggedIn = true;
+        $('authView').classList.add('hidden');
+        $('mainView').classList.remove('hidden');
+        await checkAdmin();
+        await checkBanned();
+        await loadMyReq();
+        applyStaticText();
+        loadCompanies();
+      } else {
+        myUid = null; myEmail = ''; myPhone = ''; loggedIn = false; isAdmin = false; isBanned = false; canReview = false; myReqPending = false; usersOpen = false;
+        document.title = 'CarReviews';
+        $('authView').classList.remove('hidden');
+        $('mainView').classList.add('hidden');
+        applyStaticText();
+      }
+    }
+
+    applyStaticText();
+
+    setInterval(async () => {
+      if (!isAdmin || document.hidden) return;
+      await Promise.all([loadUsers(), loadPermReqs()]);
+      renderRequests();
+      renderUsers();
+    }, 60000);
+
+    let lastUid;
+    function handleSession(session) {
+      const uid = session ? session.user.id : null;
+      if (uid === lastUid) return;
+      lastUid = uid;
+      render(session);
+    }
+    sb.auth.onAuthStateChange((_event, session) => handleSession(session));
+    sb.auth.getSession().then(({ data }) => handleSession(data.session));
+  </script>
 </body>
 </html>
