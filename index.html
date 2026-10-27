@@ -1612,12 +1612,12 @@ function userRevsHtml(uid){
                 ${idle(u) ? `<span class="flag">⚠ ${esc(t_('actIdle'))}</span>` : ''}
                 ${u.can_review ? `<span class="ustat">${ic('check')}</span>` : ''}
                 ${u.is_company ? `<span class="flag">⚠ ${esc(t_('companyFlag'))}</span>` : ''}
-                ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}                 <button class="ghost small" style="margin:0 6px" data-userrevs="${u.id}">${ic('chat')} ${esc(t_('allReviews'))}</button>
+                ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}
               </div>
             </div>
-            ${u.id === myUid ? '' : (u.banned
+                        ${u.id === myUid ? '' : (u.banned
               ? `<button class="ghost small" data-unban="${u.id}">${esc(t_('unban'))}</button>`
-              : `<button class="danger small"                 ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}                 <button class="ghost small" style="margin:0 6px" data-userrevs="${u.id}">${ic('chat')} ${esc(t_('allReviews'))}</button>             ${userRevsId === u.id ? userRevsHtml(u.id) : ''}
+              : `<button class="danger small" data-ban="${u.id}">${ic('ban')} ${esc(t_('ban'))}</button>`)}
           </div>`).join('') : `<p class="meta">${esc(t_('noUsers'))}</p>`);
     }
 
@@ -2224,7 +2224,7 @@ function userRevsHtml(uid){
         return;
       }
 
-      if (ds.userrevs) { userRevsId = (userRevsId === ds.userrevs) ? null : ds.userrevs; renderUsers(); return; }
+  
       if (ds.ban) {
         if (!confirm(t_('confirmBan'))) return;
         const del = confirm(t_('confirmBanDel'));
