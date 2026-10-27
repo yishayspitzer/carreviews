@@ -24,7 +24,6 @@
     .em { unicode-bidi:isolate; direction:ltr; display:inline-block; }
     a.tel { color:var(--navy); font-weight:700; text-decoration:none; border-bottom:1px dotted var(--navy); }
 
-    /* ---------- top bar ---------- */
     .topbar { position:sticky; top:0; z-index:60; background:var(--top); color:#fff; box-shadow:0 6px 20px rgba(11,31,58,.35); }
     .topbar .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px; }
     .tbrand { display:flex; align-items:center; gap:10px; font-weight:900; font-size:20px; letter-spacing:.2px; }
@@ -38,15 +37,13 @@
     #calBtn:hover { background:rgba(255,255,255,.24); }
     #logoutBtn { background:rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.45); padding:7px 14px; }
 
-    /* ---------- hero ---------- */
-    .hero { display:flex; justify-content:center; margin:18px auto 8px; }
-    .logoCard { background:#fff; border-radius:18px; padding:8px 18px; box-shadow:var(--shadow); border:1.5px solid var(--line); border-top:5px solid var(--gold); width:100%; }
+    .hero { display:flex; justify-content:center; margin:14px auto 6px; }
+    .logoCard { background:#fff; border-radius:18px; padding:6px 18px; box-shadow:var(--shadow); border:1.5px solid var(--line); border-top:5px solid var(--gold); width:100%; }
     .logoBox { max-width:380px; margin:0 auto; }
     .logoBox img { display:block; width:100%; height:auto; mix-blend-mode:multiply; }
 
-    /* ---------- base ---------- */
     .card { background:#fff; border:1.5px solid var(--line); border-radius:16px; padding:18px; margin:14px 0; box-shadow:var(--shadow); }
-    .card.co { border-inline-start:6px solid var(--navy); padding:20px; margin:16px 0; }
+    .card.co { border-inline-start:6px solid var(--navy); padding:14px 18px; margin:14px 0; }
     .box { max-width:430px; margin:10px auto 30px; }
     input, textarea, select { width:100%; padding:11px 13px; margin:6px 0; border:1.5px solid #94a3b8; border-radius:10px; font-family:inherit; font-size:15px; background:#fff; color:var(--text); }
     input:focus, textarea:focus, select:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.18); }
@@ -100,20 +97,22 @@
     .filters select { flex:1 1 160px; font-weight:600; }
 
     /* ---------- company card ---------- */
-    .chead { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
-    .cinfo { display:flex; align-items:center; gap:14px; min-width:0; }
-    .clogo { width:64px; height:64px; object-fit:contain; border-radius:12px; border:1.5px solid var(--line2); background:#fff; flex:none; }
-    .cname { font-weight:900; color:var(--navy); font-size:22px; line-height:1.2; }
-    .meta { color:var(--muted); font-size:14px; margin-top:4px; font-weight:500; }
-    .contact { display:flex; flex-wrap:wrap; gap:8px 18px; color:var(--muted); font-size:14px; margin-top:4px; align-items:center; font-weight:500; } .card.co .pill { margin-top:4px; }
+    .chead { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
+    .cinfo { display:flex; align-items:center; gap:14px; min-width:0; flex:1 1 300px; }
+    .clogo { width:60px; height:60px; object-fit:contain; border-radius:12px; border:1.5px solid var(--line2); background:#fff; flex:none; }
+    .cname { font-weight:900; color:var(--navy); font-size:21px; line-height:1.25; }
+    .codeBadge { display:inline-block; background:#0b1f3a; color:#fbbf24; border-radius:8px; padding:2px 10px; font-size:15px; font-weight:900; margin-inline-start:10px; vertical-align:middle; letter-spacing:1px; }
+    .meta { color:var(--muted); font-size:14px; margin-top:3px; font-weight:500; }
+    .contact { display:flex; flex-wrap:wrap; gap:8px 18px; color:var(--muted); font-size:14px; margin-top:6px; align-items:center; font-weight:500; }
     .contact span { display:inline-flex; align-items:center; gap:6px; }
-    .score { text-align:center; min-width:104px; background:#fff; border:1.5px solid var(--line2); border-radius:14px; padding:10px 12px; box-shadow:0 2px 8px rgba(15,23,42,.08); }
-    .score .big { font-size:32px; font-weight:900; line-height:1; }
-    .score .cnt { font-size:12px; color:var(--muted); margin-top:3px; font-weight:600; }
+    .score { display:flex; flex-direction:row; align-items:center; gap:10px; flex:0 0 auto; background:#fff; border:1.5px solid var(--line2); border-radius:14px; padding:6px 14px; box-shadow:0 2px 8px rgba(15,23,42,.08); }
+    .score .big { font-size:28px; font-weight:900; line-height:1; }
+    .score .cnt { font-size:12px; color:var(--muted); font-weight:600; }
+    .score .scol { display:flex; flex-direction:column; align-items:flex-start; gap:1px; }
     .good { color:var(--green); } .mid { color:#b45309; } .bad { color:var(--red); }
     .bg-good { background:var(--green); } .bg-mid { background:var(--amber); } .bg-bad { background:var(--red); }
     .stars { color:var(--gold); letter-spacing:1px; font-size:16px; }
-    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:999px; font-size:13px; font-weight:700; background:#dcfce7; color:#166534; border:1px solid #86efac; margin-top:8px; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:999px; font-size:13px; font-weight:700; background:#dcfce7; color:#166534; border:1px solid #86efac; margin-top:4px; }
     .pill.low { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
 
     .callbtn { display:inline-flex; align-items:center; gap:7px; background:var(--green); color:#fff !important; text-decoration:none; font-weight:800; padding:9px 16px; border-radius:999px; direction:ltr; box-shadow:0 3px 8px rgba(22,163,74,.35); font-size:15px; }
@@ -123,7 +122,7 @@
     .ustat { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; background:#e2e8f0; color:var(--navy); border-radius:999px; padding:2px 10px; margin-inline-end:4px; }
     .ustat.warn { background:#fde68a; color:#78350f; }
 
-    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .tabs button { background:#fff; color:var(--c); border:2px solid var(--c); padding:10px 16px; box-shadow:none; font-size:15px; }
     .tabs button.on { background:var(--c); color:#fff; }
     .tabs button .n { background:rgba(0,0,0,.1); border-radius:10px; padding:1px 8px; font-size:12px; font-weight:800; }
@@ -132,7 +131,7 @@
     .tabs button[data-prices] { --c:#0e7490; }
     .tabs button[data-comments] { --c:#6d28d9; }
     .tabs button[data-write] { --c:#15803d; }
-    .more { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; padding-top:12px; border-top:1.5px solid var(--line2); }
+    .more { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1.5px solid var(--line2); }
     .more button { font-size:15px; padding:9px 16px; background:#fff; color:var(--c); border:1.5px solid var(--c); box-shadow:none; }
     .more button[data-sendlogo] { --c:#be185d; }
     .more button[data-edco] { --c:#c2410c; }
@@ -148,13 +147,19 @@
     .sect.ride { background:#eff6ff; border-color:#bfdbfe; }
     .sect.sug { background:#fef3c7; border:1.5px dashed var(--gold); }
     .cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    @media (max-width:640px) { .cols { grid-template-columns:1fr; } .chead { flex-direction:column; } }
+    @media (max-width:640px) { .cols { grid-template-columns:1fr; } }
+    .detail .sect > .cols { grid-template-columns:1fr; gap:10px; }
+    .detail .sect > .cols > div { background:#fff; border:1.5px solid var(--line2); border-radius:12px; padding:12px 14px; }
+    .detail .sect.white > .cols { grid-template-columns:1fr 1fr; gap:14px; }
+    .detail .sect.white > .cols > div { background:none; border:0; padding:0; }
+    @media (max-width:640px) { .detail .sect.white > .cols { grid-template-columns:1fr; } }
     .grp { font-weight:800; color:var(--navy); font-size:13px; text-transform:uppercase; letter-spacing:.6px; margin:0 0 8px; display:flex; align-items:center; gap:8px; }
-    .bar { display:grid; grid-template-columns:22px 1fr 120px 36px; align-items:center; gap:8px; padding:6px 0; font-size:14px; font-weight:500; }
-    .bar .track { height:10px; background:#cbd5e1; border-radius:6px; overflow:hidden; }
-    .bar .fill { height:100%; border-radius:6px; }
-    .bar .val { font-weight:800; text-align:end; }
-    @media (max-width:640px) { .bar { grid-template-columns:22px 1fr 80px 30px; } }
+    .bar { display:grid; grid-template-columns:26px minmax(110px,170px) 1fr 52px; align-items:center; gap:10px; padding:8px 0; font-size:15px; font-weight:700; }
+    .bar .track { height:14px; background:#cbd5e1; border-radius:8px; overflow:hidden; }
+    .bar .fill { height:100%; border-radius:8px; }
+    .bar .val { font-weight:900; font-size:17px; text-align:end; }
+    .bar > span:first-child svg { width:1.3em; height:1.3em; }
+    @media (max-width:640px) { .bar { grid-template-columns:24px 1fr 80px 40px; gap:6px; font-size:14px; } }
 
     .field { border:1.5px solid #cbd5e1; background:#fff; border-radius:12px; padding:12px 14px; margin:10px 0; }
     .optbox { border:2px dashed #94a3b8; border-radius:12px; padding:12px 14px; margin:12px 0; background:#fff; }
@@ -243,7 +248,6 @@
     .urow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1.5px solid var(--line2); flex-wrap:wrap; }
     .urow:last-child { border-bottom:0; }
 
-    /* ---------- welcome ---------- */
     .welcome { max-width:720px; margin:16px auto 18px; padding:0; overflow:hidden; border:0; border-radius:22px; box-shadow:0 16px 40px rgba(11,31,58,.22); }
     .wHead { background:var(--top); color:#fff; padding:28px 22px 24px; text-align:center; }
     .wHead .wlogo { font-size:40px; line-height:1; }
@@ -268,7 +272,6 @@
     #toast { position:fixed; top:80px; left:50%; transform:translateX(-50%); width:max-content; max-width:92vw; text-align:center; background:var(--green); color:#fff; padding:12px 20px; border-radius:12px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.3); display:none; z-index:80; align-items:center; gap:8px; }
     #toast.err { background:var(--red); }
 
-    /* ---------- calendar ---------- */
     #calModal { position:fixed; inset:0; background:rgba(10,20,40,.6); display:none; align-items:center; justify-content:center; z-index:70; padding:12px; }
     .calBox { direction:rtl; background:#fff; border-radius:18px; width:min(480px,100%); max-height:96vh; overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.4); }
     .calHead { display:flex; align-items:center; gap:8px; padding:14px; background:var(--top); color:#fff; }
@@ -298,16 +301,7 @@
     .cd.sel[data-day]:hover { background:var(--navy); }
     .cd.fut { opacity:.35; }
     .calFoot { display:flex; justify-content:space-between; gap:8px; padding:10px 14px 14px; }
-  .chead { align-items:center; }
-.score { display:flex; flex-direction:row; align-items:center; gap:10px; min-width:0; padding:6px 14px; }
-.score .big { font-size:26px; }
-.score .cnt { margin-top:0; }
-.card.co { padding:14px 18px; }
-.cinfo .meta { margin-top:2px; }
-.contact { margin-top:6px; }
-.tabs { margin-top:10px; }
-.more { margin-top:8px; padding-top:8px; }
-.codeBadge { display:inline-block; background:#0b1f3a; color:#fbbf24; border-radius:8px; padding:2px 10px; font-size:15px; font-weight:900; margin-inline-start:10px; vertical-align:middle; letter-spacing:1px; }</style>
+  </style>
 </head>
 <body>
   <div id="toast"></div>
@@ -412,6 +406,7 @@
     <div class="filters">
       <div class="sw"><span id="searchIc"></span><input id="search" type="text"></div>
       <select id="sort">
+        <option value="code"></option>
         <option value="rating"></option>
         <option value="count"></option>
         <option value="new"></option>
@@ -422,7 +417,7 @@
     <div id="companies"></div>
   </div>
 
-  <div id="ver">CarReviews v9.0</div>
+  <div id="ver">CarReviews v9.1</div>
   </div>
 
   <script>
@@ -520,6 +515,8 @@
     const PUNCT = [[5, 'pt_1'], [3, 'pt_2'], [2, 'pt_3'], [1, 'pt_4']];
     const normP = v => v >= 5 ? 5 : (v >= 3 ? 3 : (v === 2 ? 2 : (v === 1 ? 1 : undefined)));
     const punctLabel = v => { const p = PUNCT.find(x => x[0] === v); return p ? t_(p[1]) : null; };
+    // NOTE: ru / es contain only what is shown when browsing (reviews cannot be written in these languages).
+    // Missing keys automatically fall back to English.
     const T = {
       en: {
         login: 'Log in', signup: 'Sign up', logout: 'Log out',
@@ -559,7 +556,7 @@
         msgBtn: 'Message to admin', msgTitle: 'Send a note to the admin', msgPh: 'Write your note...', msgSend: 'Send',
         msgSent: 'Sent to the admin', msgEmpty: 'Please write something first', msgKind: 'Message', done: 'Done',
         search: 'Search companies...',
-        sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
+        sortCode: 'By code number', sortRating: 'Best rating', sortCount: 'Most reviews', sortNew: 'Newest', sortName: 'Name A–Z',
         noCompanies: 'No companies found.', noReviewsYet: 'No reviews yet',
         reviews: 'Reviews', commentsBtn: 'Written comments', commentsTitle: 'Written comments', noComments: 'No written reviews yet.',
         pricesBtn: 'Prices', pricesTitle: 'What people paid', byRoute: 'By route', avg: 'avg', reportsWord: 'reports',
@@ -648,7 +645,7 @@
         msgBtn: 'שיקט אַ הערה צום אַדמין', msgTitle: 'שיקט אַ הערה צום אַדמין', msgPh: 'שרײַבט דאָ אײַער הערה...', msgSend: 'שיקן',
         msgSent: 'געשיקט צום אַדמין', msgEmpty: 'שרײַבט ערשט עפּעס', msgKind: 'הערה', done: 'דערלעדיקט',
         search: 'זוכט קאָמפּאַניעס...',
-        sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
+        sortCode: 'לויט נומער', sortRating: 'בעסטער ראַנג', sortCount: 'מערסטע רעוויוס', sortNew: 'נײַסטע', sortName: 'נאָמען א–ת',
         noCompanies: 'קיין קאָמפּאַניעס נישט געפֿונען.', noReviewsYet: 'נאָך קיין רעוויוס נישט',
         reviews: 'רעוויוס', commentsBtn: 'געשריבענע רעוויוס', commentsTitle: 'געשריבענע רעוויוס', noComments: 'נאך נישט דא קיין געשריבענע רעוויוס.',
         pricesBtn: 'פּרײַזן', pricesTitle: 'וויפיל האט מען באצאלט', byRoute: 'לויט נסיעה', avg: 'דורכשניט', reportsWord: 'באַריכטן',
@@ -711,82 +708,38 @@
         created: 'Аккаунт создан', createdConfirm: 'Аккаунт создан. Проверьте почту для подтверждения, затем войдите.',
         companies: 'Компании', addCompany: 'Добавить компанию', addTitle: 'Добавить компанию',
         companyName: 'Название компании *', description: 'Описание', phone: 'Телефон',
-        cityPh: 'Город / район', pickPlace: 'Выберите место', pickTod: 'Выберите время суток', pickDate: 'Выберите дату поездки',
-        logoOpt: 'Логотип (необязательно):', saveCompany: 'Сохранить компанию', sendForApproval: 'Отправить на одобрение',
+        cityPh: 'Город / район', pickPlace: 'Выберите место', otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
+        sendForApproval: 'Отправить на одобрение',
         apprNote: 'Ваш запрос отправляется админу. Он появится на сайте только после одобрения.',
         reqSent: 'Отправлено админу на одобрение', suggestChange: 'Предложить изменение',
-        reqTitle: 'Одобрения и сообщения', reqAdd: 'Новая компания', reqEdit: 'Изменение', approve: 'Одобрить', reject: 'Отклонить',
-        confirmReject: 'Отклонить запрос?',
-        revKind: 'Отзыв на одобрение', pendingTag: 'Ожидает',
-        revPending: 'Ожидает одобрения админа. Пока его видите только вы.',
-        permKind: 'Разрешение писать',
-        newAcct: 'Новый аккаунт', seenBtn: 'Просмотрено', allowBtn: 'Разрешить писать', companyFlag: 'Похоже на компанию',
-        signedUp: 'Зарегистрирован', companyAcct: 'Это аккаунт компании. Его нельзя одобрить.',
-        needPermTitle: 'Нужно разрешение, чтобы писать отзывы',
-        needPermText: 'Вы можете видеть всё на сайте. Чтобы писать отзывы, админ должен сначала вас одобрить. Нажмите кнопку ниже. Админ получит уведомление и позвонит вам.',
-        reqPermBtn: 'Запросить разрешение писать',
-        reqPermSent: 'Запрос отправлен. Админ вам позвонит.',
-        reqPermWaiting: 'Ваш запрос отправлен. Админ его проверит и может вам позвонить.',
-        noPermNow: 'У вас пока нет разрешения писать отзывы.',
-        callBtn: 'Позвонить', actCalls: 'Звонки', actReviews: 'Отзывы', actLogin: 'Последний вход',
-        actIdleOnly: 'Только: звонят, но не пишут', actAll: 'Показать всех', actIdle: 'Звонит, но не пишет',
+        callBtn: 'Позвонить',
         roundTrip: 'Туда и обратно', tollIncl: 'Платная дорога включена', firstHourFree: 'Первый час бесплатно', hourlyPrice: 'Цена за каждый час',
-        langBlock: 'Отзывы можно писать только на английском или идише. Смените язык.',
-        sig_perfect: 'Все 5 звёзд + рекомендует', sig_burst: '3+ отзыва от этого пользователя за 24 ч',
-        sig_cluster: '4+ отзыва на эту компанию за 48 ч', sig_dupe: 'Тот же текст, что в другом отзыве',
         msgBtn: 'Сообщение админу', msgTitle: 'Написать админу', msgPh: 'Напишите сообщение...', msgSend: 'Отправить',
-        msgSent: 'Отправлено админу', msgEmpty: 'Сначала напишите что-нибудь', msgKind: 'Сообщение', done: 'Готово',
+        msgSent: 'Отправлено админу', msgEmpty: 'Сначала напишите что-нибудь',
         search: 'Поиск компаний...',
-        sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
+        sortCode: 'По номеру', sortRating: 'Лучший рейтинг', sortCount: 'Больше отзывов', sortNew: 'Новые', sortName: 'Название А–Я',
         noCompanies: 'Компании не найдены.', noReviewsYet: 'Пока нет отзывов',
         reviews: 'Отзывы', commentsBtn: 'Письменные отзывы', commentsTitle: 'Письменные отзывы', noComments: 'Письменных отзывов пока нет.',
         pricesBtn: 'Цены', pricesTitle: 'Сколько платили люди', byRoute: 'По маршрутам', avg: 'средн.', reportsWord: 'сообщ.',
         allPriceReports: 'Все сообщения о ценах', noPrices: 'Цен пока нет.', routeUnknown: 'Маршрут не указан',
-        showMore: 'Показать ещё', detailsWord: 'Подробнее',
-        writeBtn: 'Написать отзыв', close: 'Закрыть', edit: 'Изменить', del: 'Удалить',
-        editCompany: 'Изменить компанию', currentLogo: 'Текущий логотип:', replaceLogo: 'Заменить логотип (необязательно):',
-        save: 'Сохранить', cancel: 'Отмена', nameRequired: 'Укажите название компании',
-        logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
+        showMore: 'Показать ещё', detailsWord: 'Подробнее', close: 'Закрыть',
+        nameRequired: 'Укажите название компании', logoTooBig: 'Логотип слишком большой (макс. 2 МБ)',
         sendLogo: 'Отправить логотип админу', logoSent: 'Логотип отправлен админу',
-        logoSugTitle: 'Предложенные логотипы', useLogo: 'Использовать как логотип', dismiss: 'Отклонить',
-        confirmDelCo: 'Удалить эту компанию и ВСЕ её отзывы? Это нельзя отменить.',
-        confirmDelAnyRev: 'Удалить этот отзыв? Это нельзя отменить.',
-        ratingsByCat: 'Обзор оценок', writeReview: 'Написать отзыв', editReview: 'Изменить ваш отзыв',
-        anonymous: '(анонимно)', otherIssue: 'Что ещё вы хотите написать',
-        submit: 'Отправить отзыв', update: 'Обновить отзыв', delMine: 'Удалить мой отзыв',
-        confirmDelRev: 'Удалить ваш отзыв?',
-        optNote: 'Заполняйте только то, что хотите. Всё необязательно, но ответьте хотя бы на один пункт.',
-        needOne: 'Заполните хотя бы один пункт перед сохранением.',
-        priceNeedsRoute: 'Чтобы указать цену, заполните «Откуда» и «Куда».',
-        starsHint: 'Звёзды: 1 = самая низкая · 5 = самая высокая. Нажмите ещё раз, чтобы убрать выбор.',
-        badPrice: 'Цена должна быть числом',
-        saved: 'Сохранено', deleted: 'Отзыв удалён', notSaved: 'Не сохранено. Выйдите, войдите снова и повторите.',
-        allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов. Будьте первым!', loading: 'Загрузка...', error: 'Ошибка',
+        ratingsByCat: 'Обзор оценок', saved: 'Сохранено',
+        allReviews: 'Все отзывы', beFirst: 'Пока нет отзывов.', loading: 'Загрузка...', error: 'Ошибка',
         grpOffice: 'Офис / Диспетчер', grpDriver: 'Водитель и машина',
         punctuality: 'Пунктуальность', service: 'Сервис',
         driver_service: 'Обслуживание водителем', cleanliness: 'Чистота', driving: 'Безопасное вождение',
-        punctQ: 'Когда приехал водитель?',
         pt_1: 'Вовремя', pt_2: 'Опоздал до 15 мин', pt_3: 'Опоздал до часа', pt_4: 'Опоздал более чем на час / не приехал',
-        optional: 'необязательно',
-        recommendQ: 'Вы бы порекомендовали эту компанию?', yes: 'Да', no: 'Нет',
-        recommendWord: 'рекомендуют',
-        tagsTitle: 'Что запомнилось?', saidTags: 'Что говорят люди',
-        rideTitle: 'Ваша поездка и цена', f_date: 'Дата поездки', fromPh: 'Откуда', toPh: 'Куда', pricePh: 'Цена',
-        otherPlace: 'Другое место...', otherPlaceType: 'Введите место',
-        todPh: 'Время суток',
+        yes: 'Да', no: 'Нет', recommendWord: 'рекомендуют', saidTags: 'Что говорят люди',
         tod_morning: 'Утро', tod_afternoon: 'День', tod_evening: 'Вечер', tod_night: 'Поздняя ночь',
         trip: 'Поездка',
         tag_polite: 'Вежливый водитель', tag_clean: 'Чистая машина',
         tag_fair_price: 'Честная цена', tag_safe: 'Безопасная езда', tag_great_service: 'Отличный сервис',
         tag_rude: 'Грубый водитель', tag_dirty: 'Грязная машина',
         tag_overcharged: 'Завышенная цена', tag_unsafe: 'Опасная езда', tag_no_answer: 'Не дозвониться',
-        calToday: 'К сегодняшнему дню', calPickToday: 'Выбрать сегодня', calClose: 'Закрыть', calPick: 'Выберите дату поездки',
-        users: 'Пользователи', usersTitle: 'Все пользователи', noUsers: 'Нет пользователей',
-        ban: 'Заблокировать', unban: 'Разблокировать', banned: 'Заблокирован', by: 'Автор',
-        bannedMsg: 'Вы заблокированы и не можете писать отзывы или добавлять компании.',
-        confirmBan: 'Заблокировать пользователя?',
-        confirmBanDel: 'Удалить также ВСЕ его отзывы?\nOK = заблокировать и удалить, Отмена = только заблокировать',
-        confirmUnban: 'Разблокировать пользователя?'
+        calToday: 'К сегодняшнему дню', calClose: 'Закрыть',
+        bannedMsg: 'Вы заблокированы и не можете писать отзывы или добавлять компании.'
       },
       es: {
         login: 'Iniciar sesión', signup: 'Registrarse', logout: 'Cerrar sesión',
@@ -800,82 +753,38 @@
         created: 'Cuenta creada', createdConfirm: 'Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.',
         companies: 'Empresas', addCompany: 'Agregar empresa', addTitle: 'Agregar una empresa',
         companyName: 'Nombre de la empresa *', description: 'Descripción', phone: 'Teléfono',
-        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar', pickTod: 'Elige la hora del día', pickDate: 'Elige la fecha del viaje',
-        logoOpt: 'Logo (opcional):', saveCompany: 'Guardar empresa', sendForApproval: 'Enviar para aprobación',
+        cityPh: 'Ciudad / zona', pickPlace: 'Elige el lugar', otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
+        sendForApproval: 'Enviar para aprobación',
         apprNote: 'Tu solicitud se envía al administrador. Aparece en el sitio solo después de su aprobación.',
         reqSent: 'Enviado al administrador para aprobación', suggestChange: 'Sugerir un cambio',
-        reqTitle: 'Aprobaciones y mensajes', reqAdd: 'Nueva empresa', reqEdit: 'Cambio', approve: 'Aprobar', reject: 'Rechazar',
-        confirmReject: '¿Rechazar esta solicitud?',
-        revKind: 'Reseña por aprobar', pendingTag: 'En espera',
-        revPending: 'Esperando la aprobación del administrador. Por ahora solo tú la ves.',
-        permKind: 'Permiso para escribir',
-        newAcct: 'Cuenta nueva', seenBtn: 'Visto', allowBtn: 'Permitir escribir', companyFlag: 'Parece una empresa',
-        signedUp: 'Registrado', companyAcct: 'Esta es una cuenta de empresa. No se puede aprobar.',
-        needPermTitle: 'Necesitas permiso para escribir reseñas',
-        needPermText: 'Puedes ver todo en el sitio. Para escribir reseñas, el administrador debe aprobarte primero. Pulsa el botón de abajo. El administrador recibirá un aviso y te llamará.',
-        reqPermBtn: 'Pedir permiso para escribir',
-        reqPermSent: 'Solicitud enviada. El administrador te llamará.',
-        reqPermWaiting: 'Tu solicitud fue enviada. El administrador la revisará y puede llamarte.',
-        noPermNow: 'Aún no tienes permiso para escribir reseñas.',
-        callBtn: 'Llamar', actCalls: 'Llamadas', actReviews: 'Reseñas', actLogin: 'Último acceso',
-        actIdleOnly: 'Solo: llaman pero no escriben', actAll: 'Mostrar todos', actIdle: 'Llama pero no escribe',
+        callBtn: 'Llamar',
         roundTrip: 'Ida y vuelta', tollIncl: 'Peaje incluido', firstHourFree: 'Primera hora gratis', hourlyPrice: 'Precio por cada hora',
-        langBlock: 'Las reseñas solo se pueden escribir en inglés o yidis. Cambia el idioma.',
-        sig_perfect: 'Las 5 estrellas + recomienda', sig_burst: '3+ reseñas de este usuario en 24 h',
-        sig_cluster: '4+ reseñas de esta empresa en 48 h', sig_dupe: 'Mismo texto que otra reseña',
         msgBtn: 'Mensaje al administrador', msgTitle: 'Enviar una nota al administrador', msgPh: 'Escribe tu nota...', msgSend: 'Enviar',
-        msgSent: 'Enviado al administrador', msgEmpty: 'Escribe algo primero', msgKind: 'Mensaje', done: 'Listo',
+        msgSent: 'Enviado al administrador', msgEmpty: 'Escribe algo primero',
         search: 'Buscar empresas...',
-        sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
+        sortCode: 'Por número', sortRating: 'Mejor calificación', sortCount: 'Más reseñas', sortNew: 'Más recientes', sortName: 'Nombre A–Z',
         noCompanies: 'No se encontraron empresas.', noReviewsYet: 'Aún no hay reseñas',
         reviews: 'Reseñas', commentsBtn: 'Comentarios escritos', commentsTitle: 'Comentarios escritos', noComments: 'Aún no hay reseñas escritas.',
         pricesBtn: 'Precios', pricesTitle: 'Lo que pagó la gente', byRoute: 'Por ruta', avg: 'prom.', reportsWord: 'reportes',
         allPriceReports: 'Todos los precios reportados', noPrices: 'Aún no hay precios.', routeUnknown: 'Ruta no indicada',
-        showMore: 'Ver más', detailsWord: 'Detalles',
-        writeBtn: 'Escribir una reseña', close: 'Cerrar', edit: 'Editar', del: 'Eliminar',
-        editCompany: 'Editar empresa', currentLogo: 'Logo actual:', replaceLogo: 'Reemplazar logo (opcional):',
-        save: 'Guardar', cancel: 'Cancelar', nameRequired: 'El nombre de la empresa es obligatorio',
-        logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
+        showMore: 'Ver más', detailsWord: 'Detalles', close: 'Cerrar',
+        nameRequired: 'El nombre de la empresa es obligatorio', logoTooBig: 'El logo es demasiado grande (máx. 2 MB)',
         sendLogo: 'Enviar logo al administrador', logoSent: 'Logo enviado al administrador',
-        logoSugTitle: 'Logos sugeridos', useLogo: 'Usar como logo', dismiss: 'Descartar',
-        confirmDelCo: '¿Eliminar esta empresa y TODAS sus reseñas? No se puede deshacer.',
-        confirmDelAnyRev: '¿Eliminar esta reseña? No se puede deshacer.',
-        ratingsByCat: 'Resumen de calificaciones', writeReview: 'Escribir una reseña', editReview: 'Editar tu reseña',
-        anonymous: '(anónima)', otherIssue: 'Algo más que quieras escribir',
-        submit: 'Enviar reseña', update: 'Actualizar reseña', delMine: 'Eliminar mi reseña',
-        confirmDelRev: '¿Eliminar tu reseña?',
-        optNote: 'Completa solo lo que quieras. Todo es opcional, pero responde al menos una cosa.',
-        needOne: 'Completa al menos una cosa antes de guardar.',
-        priceNeedsRoute: 'Para agregar un precio, completa "Desde dónde" y "Hacia dónde".',
-        starsHint: 'Estrellas: 1 = la más baja · 5 = la más alta. Haz clic otra vez para quitar la elección.',
-        badPrice: 'El precio debe ser un número válido',
-        saved: 'Guardado', deleted: 'Reseña eliminada', notSaved: 'No se guardó. Cierra sesión, vuelve a entrar e inténtalo de nuevo.',
-        allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas. ¡Sé el primero!', loading: 'Cargando...', error: 'Error',
+        ratingsByCat: 'Resumen de calificaciones', saved: 'Guardado',
+        allReviews: 'Todas las reseñas', beFirst: 'Aún no hay reseñas.', loading: 'Cargando...', error: 'Error',
         grpOffice: 'Oficina / Despacho', grpDriver: 'Conductor y auto',
         punctuality: 'Puntualidad', service: 'Servicio',
         driver_service: 'Trato del conductor', cleanliness: 'Limpieza', driving: 'Conducción segura',
-        punctQ: '¿Cuándo llegó el conductor?',
         pt_1: 'A tiempo', pt_2: 'Hasta 15 min tarde', pt_3: 'Hasta una hora tarde', pt_4: 'Más de una hora tarde / nunca llegó',
-        optional: 'opcional',
-        recommendQ: '¿Recomendarías esta empresa?', yes: 'Sí', no: 'No',
-        recommendWord: 'recomiendan',
-        tagsTitle: '¿Qué destacó?', saidTags: 'Lo que dice la gente',
-        rideTitle: 'Tu viaje y precio', f_date: 'Fecha del viaje', fromPh: 'Desde dónde', toPh: 'Hacia dónde', pricePh: 'Precio',
-        otherPlace: 'Otro lugar...', otherPlaceType: 'Escribe el lugar',
-        todPh: 'Hora del día',
+        yes: 'Sí', no: 'No', recommendWord: 'recomiendan', saidTags: 'Lo que dice la gente',
         tod_morning: 'Mañana', tod_afternoon: 'Tarde', tod_evening: 'Noche', tod_night: 'Madrugada',
         trip: 'Viaje',
         tag_polite: 'Conductor amable', tag_clean: 'Auto limpio',
         tag_fair_price: 'Precio justo', tag_safe: 'Conducción segura', tag_great_service: 'Gran servicio',
         tag_rude: 'Conductor grosero', tag_dirty: 'Auto sucio',
         tag_overcharged: 'Cobro excesivo', tag_unsafe: 'Conducción peligrosa', tag_no_answer: 'Difícil de contactar',
-        calToday: 'Volver a hoy', calPickToday: 'Elegir hoy', calClose: 'Cerrar', calPick: 'Elige la fecha del viaje',
-        users: 'Usuarios', usersTitle: 'Todos los usuarios', noUsers: 'Sin usuarios',
-        ban: 'Bloquear', unban: 'Desbloquear', banned: 'Bloqueado', by: 'Por',
-        bannedMsg: 'Estás bloqueado y no puedes escribir reseñas ni agregar empresas.',
-        confirmBan: '¿Bloquear a este usuario?',
-        confirmBanDel: '¿Eliminar también TODAS sus reseñas?\nOK = bloquear y eliminar, Cancelar = solo bloquear',
-        confirmUnban: '¿Desbloquear a este usuario?'
+        calToday: 'Volver a hoy', calClose: 'Cerrar',
+        bannedMsg: 'Estás bloqueado y no puedes escribir reseñas ni agregar empresas.'
       }
     };
     function detectLang() {
@@ -1016,7 +925,7 @@
         steps: [
           '<b>Создайте аккаунт:</b> это ничего не стоит, это полностью бесплатно.',
           '<b>Загляните:</b> смотрите, что пишут другие в отзывах, ценах и комментариях. Позвонить в компанию можно одним нажатием.',
-          '<b>После каждой поездки:</b> оставьте отзыв. Это займёт всего минуту, и вы заполняете только то, что хотите.'
+          '<b>После каждой поездки:</b> оставьте отзыв (на английском или идише). Это займёт всего минуту.'
         ],
         priv: '<b>Ваша конфиденциальность:</b> отзывы анонимны. Никто не видит, кто их написал.',
         ask1: 'Горячая просьба ко всем',
@@ -1038,7 +947,7 @@
         steps: [
           '<b>Abre una cuenta:</b> no cuesta nada, es totalmente gratis.',
           '<b>Echa un vistazo:</b> mira lo que otros escriben en las reseñas, los precios y los comentarios. Puedes llamar a una empresa con solo un toque.',
-          '<b>Después de cada viaje:</b> deja una reseña. Toma solo un minuto y completas solo lo que quieras.'
+          '<b>Después de cada viaje:</b> deja una reseña (en inglés o yidis). Toma solo un minuto.'
         ],
         priv: '<b>Tu privacidad:</b> las reseñas son anónimas. Nadie ve quién las escribió.',
         ask1: 'Una petición importante a todos',
@@ -1294,10 +1203,11 @@
       $('search').placeholder = t_('search');
       $('searchIc').innerHTML = ic('search');
       const opts = $('sort').options;
-      opts[0].textContent = t_('sortRating');
-      opts[1].textContent = t_('sortCount');
-      opts[2].textContent = t_('sortNew');
-      opts[3].textContent = t_('sortName');
+      opts[0].textContent = t_('sortCode');
+      opts[1].textContent = t_('sortRating');
+      opts[2].textContent = t_('sortCount');
+      opts[3].textContent = t_('sortNew');
+      opts[4].textContent = t_('sortName');
       if (loggedIn) {
         $('userinfo').innerHTML = `<span class="em" dir="ltr">${esc(myEmail)}</span> <button id="logoutBtn">${esc(t_('logout'))}</button>`;
         $('logoutBtn').onclick = logout;
@@ -1310,6 +1220,7 @@
       syncDraft();
       lang = $('langSel').value;
       localStorage.setItem('lang', lang);
+      if (writeLangBlocked() && openMode === 'write') { openId = null; draft = {}; }
       applyStaticText();
       if ($('calModal').style.display === 'flex') renderCal();
       if (loggedIn) { renderCompanies(); renderUsers(); renderRequests(); }
@@ -1553,6 +1464,17 @@
       </div>`;
     }
 
+    function rideHtml(r) {
+      const bits = [];
+      if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
+      if (hasPrice(r)) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
+      if (hasPrice(r) && r.toll_included) bits.push(`<span class="rtbadge">${esc(t_('tollIncl'))}</span>`);
+      if (hasPrice(r) && r.round_trip) bits.push(rtBadge(r));
+      if (hasPrice(r) && r.round_trip && r.first_hour_free) bits.push(`<span class="rtbadge">${esc(t_('firstHourFree'))}</span>`);
+      if (hasPrice(r) && r.round_trip && r.hourly_price != null) bits.push(`<span class="rtbadge">${esc(t_('hourlyPrice'))}: ${esc(money(r.hourly_price))}</span>`);
+      return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
+    }
+
     function renderRequests() {
       const box = $('reqPanel');
       const newUsers = isAdmin ? newUsersList() : [];
@@ -1683,7 +1605,8 @@
           </div>`).join('') : `<p class="meta">${esc(t_('noUsers'))}</p>`);
     }
 
-    async function loadCompanies() {
+    // ===== END PART 1 =====
+        async function loadCompanies() {
       const box = $('companies');
       const [cRes, sRes, rRes, xRes] = await Promise.all([
         sb.from('companies').select('*').order('created_at', { ascending: false }),
@@ -1714,16 +1637,20 @@
       const mode = $('sort').value;
       const ov = c => (stats[c.id] && stats[c.id].overall != null) ? Number(stats[c.id].overall) : 0;
       const cnt = c => stats[c.id] ? stats[c.id].review_count : 0;
+      const qNum = q.replace(/^#/, '');
 
       let list = allCompanies.filter(c =>
         !q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) ||
         (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q) ||
-        (c.phone || '').includes(q));
+        (c.phone || '').includes(q) || (/^\d+$/.test(qNum) && String(c.phone_code || '') === String(Number(qNum))));
 
-      if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
+      if (mode === 'code') list.sort((a, b) => (a.phone_code ?? 99999) - (b.phone_code ?? 99999));
+      else if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
       else if (mode === 'count') list.sort((a, b) => cnt(b) - cnt(a));
       else if (mode === 'name') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       else list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      const canWrite = !isBanned && !writeLangBlocked();
 
       box.innerHTML = list.length ? list.map(c => {
         if (editingId === c.id) {
@@ -1751,7 +1678,7 @@
         const recPill = rc && rc.rec_votes > 0
           ? `<div class="pill ${Number(rc.rec_pct) < 50 ? 'low' : ''}">${ic(Number(rc.rec_pct) < 50 ? 'down' : 'up')} ${Number(rc.rec_pct)}% ${esc(t_('recommendWord'))} (${rc.rec_votes})</div>` : '';
         const scoreBox = (s && s.overall != null)
-          ? `<div class="score"><div class="big ${tone(overall)}">${overall.toFixed(1)}</div><div class="stars">${stars(overall)}</div><div class="cnt">${s.review_count} ${esc(t_('reviews'))}</div></div>`
+          ? `<div class="score"><div class="big ${tone(overall)}">${overall.toFixed(1)}</div><div class="scol"><div class="stars">${stars(overall)}</div><div class="cnt">${s.review_count} ${esc(t_('reviews'))}</div></div></div>`
           : `<div class="score"><div class="meta" style="margin:0">${esc(t_('noReviewsYet'))}</div></div>`;
         const on = m => openId === c.id && openMode === m ? 'on' : '';
         const nb = n => n ? `<span class="n">${n}</span>` : '';
@@ -1773,13 +1700,15 @@
             }).join('')}
           </div>` : '';
 
+        const codeB = c.phone_code ? ` <span class="codeBadge ltr" title="Phone code">#${esc(String(c.phone_code).padStart(2,'0'))}</span>` : '';
+
         return `
           <div class="card co" id="co-${c.id}" style="${coStyle(c.id)}">
             <div class="chead">
               <div class="cinfo">
                 ${c.logo_url ? `<img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
                 <div>
-                  <div class="cname">${esc(c.name)}${c.phone_code ? ` <span class="codeBadge ltr" title="Phone code">#${esc(String(c.phone_code).padStart(2,'0'))}</span>` : ''}</div>
+                  <div class="cname">${esc(c.name)}${codeB}</div>
                   ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
                   ${recPill}
                 </div>
@@ -1796,7 +1725,7 @@
               <button class="${on('view')}" data-open="${c.id}">${esc(t_('reviews'))}${nb(s ? s.review_count : 0)}</button>
               <button class="${on('prices')}" data-prices="${c.id}">${ic('dollar')} ${esc(t_('pricesBtn'))}${nb(cc.p)}</button>
               <button class="${on('comments')}" data-comments="${c.id}">${ic('chat')} ${esc(t_('commentsBtn'))}${nb(cc.c)}</button>
-              ${isBanned ? '' : `<button class="${on('write')}" data-write="${c.id}">${ic('edit')} ${esc(t_('writeBtn'))}</button>`}
+              ${canWrite ? `<button class="${on('write')}" data-write="${c.id}">${ic('edit')} ${esc(t_('writeBtn'))}</button>` : ''}
             </div>
             <div class="more">
               ${(!isAdmin && !isBanned) ? `<button data-sendlogo="${c.id}">${ic('upload')} ${esc(t_('sendLogo'))}</button>` : ''}
@@ -1816,17 +1745,6 @@
       return `<div class="bar"><span class="${has ? tone(a) : ''}">${ic(KEY_ICON[k])}</span><span>${esc(t_(k))}</span>
         <span class="track"><span class="fill bg-${has ? tone(a) : 'mid'}" style="display:block;width:${w}%"></span></span>
         <span class="val ${has ? tone(a) : ''}">${has ? a.toFixed(1) : '-'}</span></div>`;
-    }
-
-    function rideHtml(r) {
-      const bits = [];
-      if (r.trip_from || r.trip_to) bits.push(`<span>${ic('pin')} ${esc(r.trip_from ? placeLabel(r.trip_from) : '?')} → ${esc(r.trip_to ? placeLabel(r.trip_to) : '?')}</span>`);
-      if (hasPrice(r)) bits.push(`<span class="price">${esc(money(r.price_paid))}</span>`);
-      if (hasPrice(r) && r.toll_included) bits.push(`<span class="rtbadge">${esc(t_('tollIncl'))}</span>`);
-      if (hasPrice(r) && r.round_trip) bits.push(rtBadge(r));
-      if (hasPrice(r) && r.round_trip && r.first_hour_free) bits.push(`<span class="rtbadge">${esc(t_('firstHourFree'))}</span>`);
-      if (hasPrice(r) && r.round_trip && r.hourly_price != null) bits.push(`<span class="rtbadge">${esc(t_('hourlyPrice'))}: ${esc(money(r.hourly_price))}</span>`);
-      return bits.length ? `<div class="ridebox">${bits.join('')}</div>` : '';
     }
 
     function authorHtml(r) {
@@ -1930,7 +1848,7 @@
 
       if (openMode === 'write') {
         if (isBanned) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('bannedMsg'))}</div>`; return; }
-        if (writeLangBlocked()) { el.innerHTML = head(esc(t_('writeReview'))) + `<div class="banner">${esc(t_('langBlock'))}</div>`; return; }
+        if (writeLangBlocked()) { el.innerHTML = head('') + `<div class="banner">${esc(T.en.langBlock)}</div>`; return; }
         langAlertIfNeeded();
 
         if (!isAdmin && !canReview) {
@@ -2081,8 +1999,7 @@
 
       const counts = {};
       pub.forEach(r => (r.tags || []).forEach(tg => { if (!LEGACY_TAGS.includes(tg)) counts[tg] = (counts[tg] || 0) + 1; }));
-      const tagKeys
-            = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+      const tagKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
       const chipHtml = k => `<span class="chip static ${isPos(k) ? 'pos on' : 'neg on'}">${esc(t_('tag_' + k))} · ${counts[k]}</span>`;
       const posKeys = tagKeys.filter(k => isPos(k)), negKeys = tagKeys.filter(k => !isPos(k));
       const tagSummary = tagKeys.length
@@ -2411,7 +2328,7 @@
 
       if (t.id === 'submitReview') {
         const msg = $('revMsg');
-        if (writeLangBlocked()) return toast(t_('langBlock'), true);
+        if (writeLangBlocked()) return toast(T.en.langBlock, true);
         langAlertIfNeeded();
         if (isBanned) return showMsg(msg, t_('bannedMsg'), false, 5000);
         if (!isAdmin && !canReview) return showMsg(msg, t_('noPermNow'), false, 5000);
