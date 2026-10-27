@@ -298,7 +298,16 @@
     .cd.sel[data-day]:hover { background:var(--navy); }
     .cd.fut { opacity:.35; }
     .calFoot { display:flex; justify-content:space-between; gap:8px; padding:10px 14px 14px; }
-  </style>
+  .chead { align-items:center; }
+.score { display:flex; flex-direction:row; align-items:center; gap:10px; min-width:0; padding:6px 14px; }
+.score .big { font-size:26px; }
+.score .cnt { margin-top:0; }
+.card.co { padding:14px 18px; }
+.cinfo .meta { margin-top:2px; }
+.contact { margin-top:6px; }
+.tabs { margin-top:10px; }
+.more { margin-top:8px; padding-top:8px; }
+.codeBadge { display:inline-block; background:#0b1f3a; color:#fbbf24; border-radius:8px; padding:2px 10px; font-size:15px; font-weight:900; margin-inline-start:10px; vertical-align:middle; letter-spacing:1px; }</style>
 </head>
 <body>
   <div id="toast"></div>
@@ -1770,7 +1779,7 @@
               <div class="cinfo">
                 ${c.logo_url ? `<img class="clogo" src="${esc(c.logo_url)}" alt="">` : ''}
                 <div>
-                  <div class="cname">${esc(c.name)}</div>
+                  <div class="cname">${esc(c.name)}${c.phone_code ? ` <span class="codeBadge ltr" title="Phone code">#${esc(String(c.phone_code).padStart(2,'0'))}</span>` : ''}</div>
                   ${c.description ? `<div class="meta">${esc(c.description)}</div>` : ''}
                   ${recPill}
                 </div>
