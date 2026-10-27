@@ -301,6 +301,12 @@
     .cd.sel[data-day]:hover { background:var(--navy); }
     .cd.fut { opacity:.35; }
     .calFoot { display:flex; justify-content:space-between; gap:8px; padding:10px 14px 14px; }
+  .scoreCol { display:flex; flex-direction:column; align-items:stretch; gap:8px; flex:0 0 auto; }
+.scoreCol .score { justify-content:center; }
+.scoreCol .callbtn { justify-content:center; }
+.chead .contact { display:none; }
+.contactMini { display:flex; flex-wrap:wrap; gap:8px 18px; color:var(--muted); font-size:14px; margin-top:6px; align-items:center; font-weight:500; }
+.contactMini span { display:inline-flex; align-items:center; gap:6px; }
   </style>
 </head>
 <body>
@@ -1713,11 +1719,13 @@
                   ${recPill}
                 </div>
               </div>
-              ${scoreBox}
+              <div class="scoreCol">
+                ${scoreBox}
+                ${c.phone ? `<a class="callbtn" href="${esc(telHref(c.phone))}" data-call="${c.id}">${ic('phone')} ${esc(t_('callBtn'))} <span class="em">${esc(fmtPhone(c.phone))}</span></a>` : ''}
+              </div>
             </div>
-            <div class="contact">
+            <div class="contactMini">
               ${c.city ? `<span>${ic('pin')}${esc(placeLabel((c.city || '').trim()))}</span>` : ''}
-              ${c.phone ? `<a class="callbtn" href="${esc(telHref(c.phone))}" data-call="${c.id}">${ic('phone')} ${esc(t_('callBtn'))} <span class="em">${esc(fmtPhone(c.phone))}</span></a>` : ''}
               ${c.email ? `<span class="em">${ic('mail')}${esc(c.email)}</span>` : ''}
             </div>
             ${sugHtml}
