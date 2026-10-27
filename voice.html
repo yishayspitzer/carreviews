@@ -215,7 +215,7 @@ const fmtDate = d => { if(!d) return '—'; try{ return new Date(d).toLocaleStri
 const fmtPhone = p => { let d=String(p||'').replace(/\D/g,''); if(d.length===11&&d[0]==='1') d=d.slice(1); return d.length===10 ? d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6) : String(p||''); };
 const normPhone = p => { const d=String(p||'').replace(/\D/g,''); if(d.length===10) return '+1'+d; if(d.length===11&&d[0]==='1') return '+'+d; return d?'+'+d:''; };
 const isToday = d => d && new Date(d).toDateString()===new Date().toDateString();
-const STATUS = { new:['נייע','p-blue'], typed:['אפגעשריבן','p-purple'], approved:['באשטעטיגט','p-green'], rejected:['אפגעווארפן','p-red'] };
+const STATUS = { new:['נייע','p-blue'], typed:['אפגעשריבן','p-purple'], published:['פובליצירט','p-green'], discarded:['אפגעווארפן','p-red'], approved:['באשטעטיגט','p-green'], rejected:['אפגעווארפן','p-red'] };
 const TAGN = { polite:'העפלעך',clean:'ריין',fair_price:'ריכטיגער פרייז',safe:'זיכער',great_service:'גוטער סערוויס',rude:'גראב',dirty:'שמוציג',overcharged:'צו טייער',unsafe:'נישט זיכער',no_answer:'שווער צו דערגרייכן' };
 function errMsg(e){
   const m=(e&&e.message)||'';
