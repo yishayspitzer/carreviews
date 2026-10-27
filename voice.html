@@ -496,7 +496,7 @@ function messagesHtml(){
     <label class="f">אפגעשריבענער טעקסט</label><textarea id="mt${m.id}" class="in" rows="3">${esc(m.typed_text||'')}</textarea>
     <label class="f">נאטיצן</label><input id="mo${m.id}" class="in" value="${esc(m.admin_notes||'')}">
         <label class="f">קאמפאני (פאר פובליצירן)</label>
-    <select id="mc${m.id}" class="in"><option value="">— קלויב קאמפאני —</option>${companies.map(c=>`<option value="${c.id}">${c.phone_code?'#'+String(c.phone_code).padStart(2,'0')+' · ':''}${esc(c.name)}</option>`).join('')}</select>
+    <select id="mc${m.id}" class="in"><option value="">— קלויב קאמפאני —</option>${companies.map(c=>`<option value="${c.id}" ${m.company_id===c.id?'selected':''}>${c.phone_code?'#'+String(c.phone_code).padStart(2,'0')+' · ':''}${esc(c.name)}</option>`).join('')}</select>
     ${m.published_review_id?'<div class="pill p-green" style="margin-top:8px">✔ שוין פובליצירט אויפן וועבסייט</div>':''}
     <div class="actions"><button class="btn" onclick="publishMsg('${m.id}')">פובליצירן אלס רעוויו</button><button class="btn green" onclick="saveMsg('${m.id}')">${ic('save')} שפייכערן</button><button class="btn ghost danger" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">${ic('trash')} מעק אויס</button></div>
   </div>`; }).join('')+'</div>';
