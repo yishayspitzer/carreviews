@@ -413,15 +413,20 @@ async function addPhone(){
 }
 
 /* reviews */
+let revPh='', msgPh='';
+function phOpts(arr,cur){
+  const m={}; arr.forEach(x=>{const p=fmtPhone(x); if(p) m[p]=(m[p]||0)+1;});
+  return '<option value="">כל הנומערן</option>'+Object.keys(m).sort().map(p=>`<option value="${esc(p)}" ${cur===p?'selected':''}>${esc(p)} (${m[p]})</option>`).join('');
+}
 function renderReviews(){
   head('טעלעפאן רעוויוס',`${reviews.length} רעוויוס · ${pendRev()} ווארטן אויף באשטעטיגונג`,
-    searchBox('זוך קאמפאני אדער נומער...')+`<select class="in" onchange="revF=this.value;renderList()">
+    searchBox('זוך קאמפאני אדער נומער...')+`<select class="in" onchange="revPh=this.value;renderList()">${phOpts(reviews.map(r=>r.phone),revPh)}</select><select class="in" onchange="revF=this.value;renderList()">
       <option value="all" ${revF==='all'?'selected':''}>אלע</option><option value="pending" ${revF==='pending'?'selected':''}>ווארטן</option><option value="approved" ${revF==='approved'?'selected':''}>אויפן זייטל</option></select>`+refreshBtn);
   $('content').innerHTML = `<div id="listBox">${reviewsHtml()}</div>`;
 }
 function reviewsHtml(){
   const s=q.trim().toLowerCase();
-  const list = reviews.filter(r => (revF==='all'||(revF==='pending'&&!r.approved)||(revF==='approved'&&r.approved)) &&
+  const list = reviews.filter(r => (!revPh||fmtPhone(r.phone)===revPh) && (revF==='all'||(revF==='pending'&&!r.approved)||(revF==='approved'&&r.approved)) &&
     (!s || (r.company||'').toLowerCase().includes(s) || String(r.phone||'').replace(/\D/g,'').includes(s.replace(/\D/g,'')||'§')));
   if(!list.length) return empty('קיין רעוויוס נישטא','⭐');
   return '<div class="g2">'+list.map(r=>{
@@ -468,7 +473,7 @@ async function playVoice(boxId, path){
 /* messages */
 function renderMessages(){
   head('הודעות',`${messages.length} הודעות · ${newMsg()} נייע`,
-    searchBox('זוך נומער, נאמען אדער טעקסט...')+`<select class="in" onchange="msgF=this.value;renderList()">
+    searchBox('זוך נומער, נאמען אדער טעקסט...')+`<select class="in" onchange="msgPh=this.value;renderList()">${phOpts(messages.map(m=>m.from_number),msgPh)}</select><select class="in" onchange="msgF=this.value;renderList()">
       <option value="" ${msgF===''?'selected':''}>אלע סטאטוסן</option>${Object.keys(STATUS).map(k=>`<option value="${k}" ${msgF===k?'selected':''}>${STATUS[k][0]}</option>`).join('')}</select>`+refreshBtn);
   $('content').innerHTML = `<div id="listBox">${messagesHtml()}</div>`;
 }
