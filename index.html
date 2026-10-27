@@ -828,6 +828,16 @@
     let reqList = [], msgList = [], reqOpen = true;
     let pendRevs = [], adminRevs = [], flagMap = {};
     let detailData = [], showN = 8;
+    let userRevsId = null;
+function userRevsHtml(uid){
+  const l = adminRevs.filter(r => r.user_id === uid).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  if (!l.length) return '<div class="meta" style="width:100%">—</div>';
+  return '<div style="width:100%">' + l.map(r => {
+    const co = allCompanies.find(c => c.id === r.company_id) || {};
+    const core = coreOf(r);
+    return `<div class="rev"><div class="rh"><b>${esc(co.name || '?')}</b>${core > 0 ? `<span class="badge bg-${tone(core)}">${core.toFixed(1)}</span>` : ''}<span class="meta" style="margin:0;margin-inline-start:auto">${new Date(r.created_at).toLocaleDateString(dl())}</span></div>${r.comment ? `<div class="cmt">${esc(r.comment)}</div>` : ''}</div>`;
+  }).join('') + '</div>';
+}
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1602,12 +1612,12 @@
                 ${idle(u) ? `<span class="flag">⚠ ${esc(t_('actIdle'))}</span>` : ''}
                 ${u.can_review ? `<span class="ustat">${ic('check')}</span>` : ''}
                 ${u.is_company ? `<span class="flag">⚠ ${esc(t_('companyFlag'))}</span>` : ''}
-                ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}
+                ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}                 <button class="ghost small" style="margin:0 6px" data-userrevs="${u.id}">${ic('chat')} ${esc(t_('allReviews'))}</button>
               </div>
             </div>
             ${u.id === myUid ? '' : (u.banned
               ? `<button class="ghost small" data-unban="${u.id}">${esc(t_('unban'))}</button>`
-              : `<button class="danger small" data-ban="${u.id}">${ic('ban')} ${esc(t_('ban'))}</button>`)}
+              : `<button class="danger small"                 ${u.banned ? `<span class="tagban">${esc(t_('banned'))}</span>` : ''}                 <button class="ghost small" style="margin:0 6px" data-userrevs="${u.id}">${ic('chat')} ${esc(t_('allReviews'))}</button>             ${userRevsId === u.id ? userRevsHtml(u.id) : ''}
           </div>`).join('') : `<p class="meta">${esc(t_('noUsers'))}</p>`);
     }
 
@@ -2214,6 +2224,7 @@
         return;
       }
 
+      if (ds.userrevs) { userRevsId = (userRevsId === ds.userrevs) ? null : ds.userrevs; renderUsers(); return; }
       if (ds.ban) {
         if (!confirm(t_('confirmBan'))) return;
         const del = confirm(t_('confirmBanDel'));
