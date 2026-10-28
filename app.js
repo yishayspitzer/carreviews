@@ -469,6 +469,7 @@ function userRevsHtml(uid){
       } else {
         $('userinfo').innerHTML = '';
       }
+      if (typeof v15Static === 'function') v15Static();
     }
 
     $('langSel').onchange = () => {
@@ -570,7 +571,9 @@ function userRevsHtml(uid){
         const full_name = $('fullName').value.trim();
         const digits = $('signPhone').value.replace(/\D/g, '');
         if (digits.length < 10) return showMsg($('msg'), t_('phoneBad'), false, 6000);
-        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name, phone: fmtPhone(digits) } } });
+        if (v15NeedCaptcha()) return showMsg($('msg'), t5('robotFirst'), false, 6000);
+        const { data, error } = await sb.auth.signUp({ email, password, options: { captchaToken: v15Token(), data: { full_name, phone: fmtPhone(digits) } } });
+        v15ResetCaptcha();
         if (error) {
           if (/database error/i.test(error.message)) return showMsg($('msg'), t_('signupBlocked'), false, 9000);
           return showMsg($('msg'), error.message, false);
@@ -578,7 +581,9 @@ function userRevsHtml(uid){
         if (data.session) showMsg($('msg'), t_('created'), true);
         else { showMsg($('msg'), t_('createdConfirm'), true); setMode(false); }
       } else {
-        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (v15NeedCaptcha()) return showMsg($('msg'), t5('robotFirst'), false, 6000);
+        const { error } = await sb.auth.signInWithPassword({ email, password, options: { captchaToken: v15Token() } });
+        v15ResetCaptcha();
         if (error) return showMsg($('msg'), error.message, false);
       }
     };
@@ -1616,6 +1621,7 @@ function userRevsHtml(uid){
         if (openId === id && openMode === m) { closeCard(id); return; }
         const fresh = openId !== id;
         openId = id; openMode = m;
+        if (fresh && typeof v15LogView === 'function') v15LogView(id);
         draft = {};
         showN = 8;
         rerenderKeep(id);
