@@ -228,7 +228,7 @@ let toastT;
 function toast(m, bad){ const t=$('toast'); t.className=bad?'bad':'ok'; t.innerHTML=ic(bad?'x':'check')+' '+esc(m); t.style.display='flex'; clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',3200); }
 
 let companies=[];
-let page='dash', phones=[], reviews=[], messages=[], settings={}, editIdx=null, q='', revF='all', msgF='';
+let page='dash', phones=[], reviews=[], messages=[], settings={}, editIdx=null, q='', revF='all', msgF='', problems=[];
 
 function togglePw(){
   const p=$('pass'); const show = p.type==='password';
@@ -262,8 +262,9 @@ async function loadSettingsData(){ const {data,error}=await sb.rpc('admin_phone_
 async function loadPhonesData(){ const {data,error}=await sb.rpc('admin_phone_users_list'); if(error){toast(error.message,true);return;} phones=data||[]; }
 async function loadReviewsData(){ const {data,error}=await sb.rpc('admin_phone_reviews_list'); if(error){toast(error.message,true);return;} reviews=data||[]; }
 async function loadMessagesData(){ const {data,error}=await sb.from('voice_messages').select('*').order('created_at',{ascending:false}).limit(300); if(error){toast(error.message,true);return;} messages=data||[]; }
+async function loadProblemsData(){ try{ const {data,error}=await sb.from('admin_messages').select('*').ilike('body','⚠ טעלעפאן%').order('created_at',{ascending:false}).limit(10); problems=error?[]:(data||[]); }catch(e){ problems=[]; } }
 async function loadCompaniesData(){ const {data}=await sb.from('companies').select('id,name,phone_code').order('name'); companies=data||[]; }
-async function loadAll(){ await Promise.all([loadSettingsData(),loadPhonesData(),loadReviewsData(),loadMessagesData(),loadCompaniesData()]); renderNav(); }
+async function loadAll(){ await Promise.all([loadSettingsData(),loadPhonesData(),loadReviewsData(),loadMessagesData(),loadCompaniesData(),loadProblemsData()]); renderNav(); }
 async function refresh(){ await loadAll(); render(); toast('אפדעיטעד'); }
 
 const pendRev = () => reviews.filter(r=>!r.approved).length;
@@ -325,7 +326,10 @@ function renderDash(){
         <div class="sep"></div>
         <button class="btn ghost sm" onclick="go('settings')">${ic('edit')} ענדערן</button>
       </div>
-    </div>`;
+    </div>
+    ${problems.length?`<div class="card" style="border-color:#fca5a5"><div class="h3" style="color:var(--red)">⚠ טעלעפאן פראבלעמען (לעצטע ${problems.length})</div>
+      ${problems.map(x=>`<div class="row between"><div>${esc(String(x.body||'').replace('⚠ טעלעפאן: ',''))}</div><span class="muted">${ic('clock')} ${esc(fmtDate(x.created_at))}</span></div>`).join('<div class="sep"></div>')}
+    </div>`:''}`;
 }
 
 /* settings */
@@ -497,7 +501,10 @@ function messagesHtml(){
     <label class="f">נאטיצן</label><input id="mo${m.id}" class="in" value="${esc(m.admin_notes||'')}">
         <label class="f">קאמפאני (פאר פובליצירן)</label>
     <select id="mc${m.id}" class="in"><option value="">— קלויב קאמפאני —</option>${companies.map(c=>`<option value="${c.id}" ${m.company_id===c.id?'selected':''}>${c.phone_code?'#'+String(c.phone_code).padStart(2,'0')+' · ':''}${esc(c.name)}</option>`).join('')}</select>
-    ${m.published_review_id?'<div class="pill p-green" style="margin-top:8px">✔ שוין פובליצירט אויפן וועבסייט</div>':''}
+    <div class="row" style="margin-top:8px;gap:6px">
+      ${m.published_review_id?'<span class="pill p-green">✔ שוין פובליצירט אויפן וועבסייט</span>':''}
+      ${m.status==='published'?'<span class="pill p-green">🔊 מען הערט עס אויפן טעלעפאן</span>':'<span class="pill p-gray">🔇 מען הערט עס נישט אויפן טעלעפאן ביז פובליצירן</span>'}
+    </div>
     <div class="actions"><button class="btn" onclick="publishMsg('${m.id}')">פובליצירן אלס רעוויו</button><button class="btn green" onclick="saveMsg('${m.id}')">${ic('save')} שפייכערן</button><button class="btn ghost danger" onclick="delMsg('${m.id}','${esc(m.storage_path||'')}')">${ic('trash')} מעק אויס</button></div>
   </div>`; }).join('')+'</div>';
 }
@@ -516,10 +523,12 @@ async function publishMsg(id){
   toast('פובליצירט אויפן וועבסייט'); await Promise.all([loadMessagesData(),loadReviewsData()]); renderNav(); renderList();
 }
 async function delMsg(id,path){
-  if(!confirm('זיכער אויסמעקן די הודעה?')) return;
-  if(path) await sb.storage.from('voice-messages').remove([path]);
+  const m = messages.find(x=>x.id===id);
+  const warn = m&&m.published_review_id ? '\n(דער רעוויו בלייבט אויפן וועבסייט, נאר אן דער הודעה)' : '';
+  if(!confirm('זיכער אויסמעקן די הודעה?'+warn)) return;
   const { error } = await sb.from('voice_messages').delete().eq('id',id);
   if(error){ toast(error.message,true); return; }
+  if(path) await sb.storage.from('voice-messages').remove([path]);
   toast('אויסגעמעקט'); await loadMessagesData(); renderNav(); render();
 }
 
