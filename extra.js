@@ -356,9 +356,22 @@ function v15ResetCaptcha() {
     v15Site = (data && data.turnstile_site_key) || '';
   } catch (e) { v15Site = ''; }
   if (!v15Site) return;
+  const TS_NOTE = { yi: 'ביטע קליקט אויפן קעסטל אונטן, צו באשטעטיגן אז איר זענט נישט קיין ראבאט.',
+    en: 'Please click the box below to confirm you are not a robot.', ru: 'Пожалуйста, отметьте поле ниже.', es: 'Por favor, marque la casilla de abajo.' };
+  const tsBox = $('tsBox');
+  if (tsBox && !$('tsNote')) {
+    tsBox.style.flexDirection = 'column'; tsBox.style.alignItems = 'center';
+    const n = document.createElement('div');
+    n.id = 'tsNote'; n.className = 'note'; n.style.display = 'none';
+    n.textContent = TS_NOTE[lang] || TS_NOTE.en;
+    tsBox.parentNode.insertBefore(n, tsBox);
+  }
   window.v15TsReady = () => {
     v15Wid = turnstile.render('#tsBox', {
-      sitekey: v15Site, language: lang === 'yi' ? 'he' : lang,
+      sitekey: v15Site, language: (lang === 'ru' || lang === 'es') ? lang : 'en',
+      appearance: 'interaction-only',   // hidden; shows up only when Cloudflare needs the person to click
+      'before-interactive-callback': () => { const n = $('tsNote'); if (n) n.style.display = 'block'; },
+      'after-interactive-callback': () => { const n = $('tsNote'); if (n) n.style.display = 'none'; },
       callback: t => { v15Tok = t; }, 'expired-callback': () => { v15Tok = ''; }, 'error-callback': () => { v15Tok = ''; },
     });
   };
