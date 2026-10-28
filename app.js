@@ -1288,6 +1288,7 @@ function userRevsHtml(uid){
         const rows = priced.slice(0, showN).map(r => {
           const bits = [];
           bits.push(r.trip_date ? new Date(r.trip_date + 'T12:00:00').toLocaleDateString(dl()) : new Date(r.created_at).toLocaleDateString(dl()));
+          if (r.trip_date) bits.push(hebFromStr(r.trip_date));   // v14: weekday + Hebrew date
           if (r.time_of_day && TODS.includes(r.time_of_day)) bits.push(t_('tod_' + r.time_of_day));
           return `<div class="prow">
             <div><div class="pr-route">${esc(routeName(r))} ${rtBadge(r)}</div><div class="pr-meta">${esc(bits.join(' · '))}</div></div>
