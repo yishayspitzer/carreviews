@@ -144,6 +144,7 @@
     let reqList = [], msgList = [], reqOpen = true;
     let pendRevs = [], adminRevs = [], flagMap = {};
     let detailData = [], showN = 8;
+    let myCos = new Set(), pricedAll = [];
     let userRevsId = null;
 function userRevsHtml(uid){
   const l = adminRevs.filter(r => r.user_id === uid).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
@@ -455,6 +456,8 @@ function userRevsHtml(uid){
       $('search').placeholder = t_('search');
       $('searchIc').innerHTML = ic('search');
       const opts = $('sort').options;
+      $('mineBtn').textContent = '★ ' + t_('myCos');
+      $('mineBtn').classList.toggle('on', mineOnly);
       opts[0].textContent = t_('sortCode');
       opts[1].textContent = t_('sortRating');
       opts[2].textContent = t_('sortCount');
@@ -636,6 +639,14 @@ function userRevsHtml(uid){
 
     $('search').oninput = () => renderCompanies();
     $('sort').onchange = () => renderCompanies();
+    // v11: show only companies I reviewed
+    let mineOnly = false;
+    $('mineBtn').onclick = () => {
+      mineOnly = !mineOnly;
+      $('mineBtn').classList.toggle('on', mineOnly);
+      openId = null; draft = {};
+      renderCompanies();
+    };
 
     async function loadUsers() {
       userMap = {};
@@ -865,7 +876,7 @@ function userRevsHtml(uid){
         sb.from('companies').select('*').order('created_at', { ascending: false }),
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
-        sb.from('reviews_public').select('company_id,price_paid,comment,trip_from,trip_to,approved'),
+        sb.from('reviews_public').select('company_id,price_paid,comment,trip_from,trip_to,approved,round_trip,is_mine'),
         loadUsers(), loadSuggestions(), loadRequests(), loadMessages(), loadPermReqs(), loadReviewAdmin(), loadRecentPlaces()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
@@ -873,6 +884,8 @@ function userRevsHtml(uid){
       stats = {}; (sRes.data || []).forEach(s => stats[s.company_id] = s);
       recStats = {}; (rRes.data || []).forEach(s => recStats[s.company_id] = s);
       cnts = {};
+      myCos = new Set((xRes.data || []).filter(r => r.is_mine).map(r => r.company_id));
+      pricedAll = (xRes.data || []).filter(r => r.approved !== false && hasPrice(r) && Number(r.price_paid) > 0);
       (xRes.data || []).forEach(r => {
         if (r.approved === false) return;
         const o = cnts[r.company_id] = cnts[r.company_id] || { p: 0, c: 0 };
@@ -896,6 +909,7 @@ function userRevsHtml(uid){
         !q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q) ||
         (c.city || '').toLowerCase().includes(q) || placeLabel((c.city || '').trim()).toLowerCase().includes(q) ||
         (c.phone || '').includes(q) || (/^\d+$/.test(qNum) && String(c.phone_code || '') === String(Number(qNum))));
+      if (mineOnly) list = list.filter(c => myCos.has(c.id));
 
       if (mode === 'code') list.sort((a, b) => (a.phone_code ?? 99999) - (b.phone_code ?? 99999));
       else if (mode === 'rating') list.sort((a, b) => ov(b) - ov(a) || cnt(b) - cnt(a));
@@ -1039,6 +1053,27 @@ function userRevsHtml(uid){
       </div></div>`;
     }
 
+    // v11: usual price on the chosen route (median of other reviews)
+    const median = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+    const money$ = v => '$' + (Math.round(v * 100) / 100).toLocaleString('en-US');
+    function updateRouteHint() {
+      const el = $('routeHint');
+      if (!el || !$('revFrom')) return;
+      const f = readPlace('revFrom'), to = readPlace('revTo');
+      const round = $('revRound') ? $('revRound').checked : false;
+      if (!f || !to) { el.classList.add('hidden'); return; }
+      const same = pricedAll.filter(r => r.trip_from === f && r.trip_to === to && !!r.round_trip === round);
+      const here = same.filter(r => r.company_id === openId).map(r => Number(r.price_paid));
+      const all = same.map(r => Number(r.price_paid));
+      if (!all.length) { el.classList.add('hidden'); return; }
+      const n = k => t_('fromN').replace('{n}', k);
+      let h = `💲 <b>${esc(t_('usualPrice'))}:</b><br>`;
+      if (here.length) h += `${esc(t_('atThisCo'))}: <b>${money$(median(here))}</b> (${esc(n(here.length))})<br>`;
+      h += `${esc(t_('allCos'))}: <b>${money$(median(all))}</b> (${esc(n(all.length))})`;
+      el.innerHTML = h;
+      el.classList.remove('hidden');
+    }
+
     function syncDraft() {
       if (openMode !== 'write' || !$('revDate') || !$('revFrom')) return;
       draft.trip_date = $('revDate').value;
@@ -1098,6 +1133,7 @@ function userRevsHtml(uid){
     }
 
     function paintDetail() {
+      setTimeout(updateRouteHint, 0);
       const el = $('detail');
       if (!el || !openId) return;
       const companyId = openId;
@@ -1163,6 +1199,7 @@ function userRevsHtml(uid){
             <div class="field" data-field="price">
               <label class="plabel" for="revPrice">${esc(t_('pricePh'))}</label>
               <div class="pricewrap"><span class="dol">$</span><input id="revPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${esc(draft.price || '')}"></div>
+              <div id="routeHint" class="routeHint hidden"></div>
               <label class="rtcheck"><input type="checkbox" id="revToll" ${draft.toll ? 'checked' : ''}> <span>${esc(t_('tollIncl'))}</span></label>
               <label class="rtcheck"><input type="checkbox" id="revRound" ${draft.round ? 'checked' : ''}> <span>${esc(t_('roundTrip'))}</span></label>
               <div id="rtExtra" class="${draft.round ? '' : 'hidden'}">
@@ -1336,6 +1373,7 @@ function userRevsHtml(uid){
         }
       }
       syncDraft();
+      updateRouteHint();
     });
 
     $('calModal').addEventListener('click', (e) => { if (e.target === $('calModal')) closeCal(); });
