@@ -41,22 +41,26 @@ const L15 = {
 };
 // texts for "forgot password" (all 4 languages)
 const L15F = {
-  en: { forgot: 'Forgot password?', fEmail: 'Write your email above first', fSent: 'If this email is registered, we sent you a link to choose a new password. Check also Spam.',
+  en: { npCancel: 'Cancel and log out', fExpired: 'This link has expired or was already used. Click "Forgot password?" again to get a new one.', forgot: 'Forgot password?', fEmail: 'Write your email above first', fSent: 'If this email is registered, we sent you a link to choose a new password. Check also Spam.',
         newPwTitle: 'Choose a new password', newPw: 'New password (at least 6 characters)', newPw2: 'Write it again', newPwSave: 'Save the new password',
         pwShort: 'The password must have at least 6 characters', pwDiff: 'The two passwords are not the same', pwDone: 'The new password is saved' },
-  yi: { forgot: 'פאסווארט פארגעסן?', fEmail: 'שרייבט ערשט אייער אימעיל אויבן', fSent: 'אויב דער אימעיל איז איינגעשריבן, האבן מיר אייך געשיקט א לינק צו קלייבן א נייעם פאסווארט. קוקט אויך אין Spam.',
+  yi: { npCancel: 'זאגט אפ און לאגירט ארויס', fExpired: 'דער לינק איז שוין אויסגעגאנגען אדער שוין גענוצט. קליקט נאכאמאל "פאסווארט פארגעסן?" צו באקומען א נייעם.', forgot: 'פאסווארט פארגעסן?', fEmail: 'שרייבט ערשט אייער אימעיל אויבן', fSent: 'אויב דער אימעיל איז איינגעשריבן, האבן מיר אייך געשיקט א לינק צו קלייבן א נייעם פאסווארט. קוקט אויך אין Spam.',
         newPwTitle: 'קלייבט א נייעם פאסווארט', newPw: 'נייער פאסווארט (כאטש 6 אותיות)', newPw2: 'שרייבט אים נאכאמאל', newPwSave: 'היט אפ דעם נייעם פאסווארט',
         pwShort: 'דער פאסווארט דארף האבן כאטש 6 אותיות', pwDiff: 'די צוויי פאסווארטן זענען נישט די זעלבע', pwDone: 'דער נייער פאסווארט איז אפגעהיטן' },
-  ru: { forgot: 'Забыли пароль?', fEmail: 'Сначала введите ваш email выше', fSent: 'Если этот email зарегистрирован, мы отправили ссылку для нового пароля. Проверьте также папку Спам.',
+  ru: { npCancel: 'Отмена и выход', fExpired: 'Ссылка устарела или уже использована. Нажмите «Забыли пароль?» ещё раз.', forgot: 'Забыли пароль?', fEmail: 'Сначала введите ваш email выше', fSent: 'Если этот email зарегистрирован, мы отправили ссылку для нового пароля. Проверьте также папку Спам.',
         newPwTitle: 'Выберите новый пароль', newPw: 'Новый пароль (минимум 6 символов)', newPw2: 'Повторите пароль', newPwSave: 'Сохранить новый пароль',
         pwShort: 'Пароль должен быть не менее 6 символов', pwDiff: 'Пароли не совпадают', pwDone: 'Новый пароль сохранён' },
-  es: { forgot: '¿Olvidó su contraseña?', fEmail: 'Primero escriba su email arriba', fSent: 'Si este email está registrado, le enviamos un enlace para elegir una nueva contraseña. Revise también Spam.',
+  es: { npCancel: 'Cancelar y salir', fExpired: 'El enlace expiró o ya fue usado. Haga clic en «¿Olvidó su contraseña?» otra vez.', forgot: '¿Olvidó su contraseña?', fEmail: 'Primero escriba su email arriba', fSent: 'Si este email está registrado, le enviamos un enlace para elegir una nueva contraseña. Revise también Spam.',
         newPwTitle: 'Elija una nueva contraseña', newPw: 'Nueva contraseña (mínimo 6 caracteres)', newPw2: 'Escríbala otra vez', newPwSave: 'Guardar la nueva contraseña',
         pwShort: 'La contraseña debe tener al menos 6 caracteres', pwDiff: 'Las dos contraseñas no son iguales', pwDone: 'La nueva contraseña está guardada' },
 };
 const tF = k => { const v = (L15F[lang] && L15F[lang][k]) || L15F.en[k] || k; return lang === 'yi' ? cleanYi(v) : v; };
-// did the user arrive from a "reset password" email? (read before supabase cleans the address)
-const v15Recovery = /type=recovery/.test(location.hash + location.search);
+// "reset password" state: kept in localStorage so a refresh does NOT skip the new-password window
+// (index.html also sets it in <head>, before supabase cleans the address bar)
+const V15RK = 'cr_pw_recovery', V15R_MAX = 24 * 3600 * 1000;
+if (/type=recovery/.test(location.hash + location.search)) localStorage.setItem(V15RK, String(Date.now()));
+const v15RecPending = () => { const t = +localStorage.getItem(V15RK) || 0; if (t && Date.now() - t > V15R_MAX) { localStorage.removeItem(V15RK); return false; } return !!t; };
+const v15LinkExpired = /error_code=otp_expired|error_code=access_denied/.test(location.hash + location.search);
 const t5 = k => { const v = (L15[lang] && L15[lang][k]) || L15.en[k] || k; return lang === 'yi' ? cleanYi(v) : v; };
 const v15 = { prices: false, stats: false, voice: false, pq: '', pOpen: null, ev: null, files: null, set: {}, filter: 'missing', grp: 'main', rec: null };
 
@@ -247,7 +251,8 @@ function v15ResetCaptcha() {
     <h3 id="npTitle" style="margin-top:0"></h3><div id="npMsg" class="msg"></div>
     <input id="np1" type="password" autocomplete="new-password" style="width:100%">
     <input id="np2" type="password" autocomplete="new-password" style="width:100%;margin-top:8px">
-    <button id="npSave" type="button" style="width:100%;justify-content:center;margin-top:10px;padding:13px"></button></div>`;
+    <button id="npSave" type="button" style="width:100%;justify-content:center;margin-top:10px;padding:13px"></button>
+    <p style="text-align:center;margin:8px 0 0"><button id="npCancel" type="button" class="link"></button></p></div>`;
   document.body.appendChild(box);
 })();
 function v15ForgotStatic() {
@@ -257,6 +262,7 @@ function v15ForgotStatic() {
   $('npTitle').textContent = tF('newPwTitle');
   $('np1').placeholder = tF('newPw'); $('np2').placeholder = tF('newPw2');
   $('npSave').textContent = tF('newPwSave');
+  $('npCancel').textContent = tF('npCancel');
 }
 $('forgotBtn').onclick = async () => {
   const email = $('email').value.trim();
@@ -272,8 +278,17 @@ $('forgotBtn').onclick = async () => {
   showMsg($('msg'), tF('fSent'), true);
 };
 function v15ShowNewPw() { v15ForgotStatic(); $('newPwBox').classList.remove('hidden'); setTimeout(() => $('np1').focus(), 50); }
-if (v15Recovery) v15ShowNewPw();
-sb.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') v15ShowNewPw(); });
+function v15HideNewPw() { $('newPwBox').classList.add('hidden'); $('np1').value = $('np2').value = ''; $('npMsg').style.display = 'none'; }
+// show the window whenever a reset is pending AND the user is logged in by the link – also after a refresh
+function v15CheckRec(session) { if (session && v15RecPending()) v15ShowNewPw(); }
+sb.auth.onAuthStateChange((ev, session) => {
+  if (ev === 'PASSWORD_RECOVERY') localStorage.setItem(V15RK, String(Date.now()));
+  if (ev === 'SIGNED_OUT') { localStorage.removeItem(V15RK); v15HideNewPw(); return; }
+  v15CheckRec(session);
+});
+sb.auth.getSession().then(({ data }) => v15CheckRec(data && data.session));
+if (v15LinkExpired) { localStorage.removeItem(V15RK); setTimeout(() => showMsg($('msg'), tF('fExpired'), false), 300); history.replaceState(null, '', location.pathname); }
+$('npCancel').onclick = async () => { localStorage.removeItem(V15RK); v15HideNewPw(); await sb.auth.signOut(); };
 $('npSave').onclick = async () => {
   const a = $('np1').value, b = $('np2').value;
   if (a.length < 6) return showMsg($('npMsg'), tF('pwShort'), false);
@@ -282,7 +297,7 @@ $('npSave').onclick = async () => {
   const { error } = await sb.auth.updateUser({ password: a });
   $('npSave').disabled = false;
   if (error) return showMsg($('npMsg'), error.message, false);
-  $('newPwBox').classList.add('hidden'); $('np1').value = $('np2').value = '';
+  localStorage.removeItem(V15RK); v15HideNewPw();
   history.replaceState(null, '', location.pathname);
   if (typeof toast === 'function') toast(tF('pwDone')); else alert(tF('pwDone'));
 };
