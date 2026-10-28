@@ -1,4 +1,4 @@
-// CarReviews v15 – price table, statistics, robot check (the hotline recordings are in voice.html)
+// CarReviews v15 – price table, statistics, robot check, forgot password (the hotline recordings are in voice.html)
 // (loaded after app.js; uses its helpers: $, esc, ic, sb, t_, lang, cleanYi, toast, placeLabel, pricedAll, allCompanies, median, money$)
 
 const L15 = {
@@ -39,11 +39,30 @@ const L15 = {
     voiceHelp: 'דרוקט "נעם אויף", רעדט, דרוקט "שטעל אפ" – עס ווערט גלייך אפגעהיטן. ביז אלע הקלטות פון א זאץ זענען דא, זאגט דער טעלעפאן יענעם זאץ אויף ענגליש. ענדערונגען קומען אן צום טעלעפאן אין א מינוט ארום.',
   },
 };
+// texts for "forgot password" (all 4 languages)
+const L15F = {
+  en: { forgot: 'Forgot password?', fEmail: 'Write your email above first', fSent: 'If this email is registered, we sent you a link to choose a new password. Check also Spam.',
+        newPwTitle: 'Choose a new password', newPw: 'New password (at least 6 characters)', newPw2: 'Write it again', newPwSave: 'Save the new password',
+        pwShort: 'The password must have at least 6 characters', pwDiff: 'The two passwords are not the same', pwDone: 'The new password is saved' },
+  yi: { forgot: 'פאסווארט פארגעסן?', fEmail: 'שרייבט ערשט אייער אימעיל אויבן', fSent: 'אויב דער אימעיל איז איינגעשריבן, האבן מיר אייך געשיקט א לינק צו קלייבן א נייעם פאסווארט. קוקט אויך אין Spam.',
+        newPwTitle: 'קלייבט א נייעם פאסווארט', newPw: 'נייער פאסווארט (כאטש 6 אותיות)', newPw2: 'שרייבט אים נאכאמאל', newPwSave: 'היט אפ דעם נייעם פאסווארט',
+        pwShort: 'דער פאסווארט דארף האבן כאטש 6 אותיות', pwDiff: 'די צוויי פאסווארטן זענען נישט די זעלבע', pwDone: 'דער נייער פאסווארט איז אפגעהיטן' },
+  ru: { forgot: 'Забыли пароль?', fEmail: 'Сначала введите ваш email выше', fSent: 'Если этот email зарегистрирован, мы отправили ссылку для нового пароля. Проверьте также папку Спам.',
+        newPwTitle: 'Выберите новый пароль', newPw: 'Новый пароль (минимум 6 символов)', newPw2: 'Повторите пароль', newPwSave: 'Сохранить новый пароль',
+        pwShort: 'Пароль должен быть не менее 6 символов', pwDiff: 'Пароли не совпадают', pwDone: 'Новый пароль сохранён' },
+  es: { forgot: '¿Olvidó su contraseña?', fEmail: 'Primero escriba su email arriba', fSent: 'Si este email está registrado, le enviamos un enlace para elegir una nueva contraseña. Revise también Spam.',
+        newPwTitle: 'Elija una nueva contraseña', newPw: 'Nueva contraseña (mínimo 6 caracteres)', newPw2: 'Escríbala otra vez', newPwSave: 'Guardar la nueva contraseña',
+        pwShort: 'La contraseña debe tener al menos 6 caracteres', pwDiff: 'Las dos contraseñas no son iguales', pwDone: 'La nueva contraseña está guardada' },
+};
+const tF = k => { const v = (L15F[lang] && L15F[lang][k]) || L15F.en[k] || k; return lang === 'yi' ? cleanYi(v) : v; };
+// did the user arrive from a "reset password" email? (read before supabase cleans the address)
+const v15Recovery = /type=recovery/.test(location.hash + location.search);
 const t5 = k => { const v = (L15[lang] && L15[lang][k]) || L15.en[k] || k; return lang === 'yi' ? cleanYi(v) : v; };
 const v15 = { prices: false, stats: false, voice: false, pq: '', pOpen: null, ev: null, files: null, set: {}, filter: 'missing', grp: 'main', rec: null };
 
 // ---------- toolbar buttons ----------
 function v15Static() {
+  v15ForgotStatic();
   if (!$('pricesToggle')) return;
   $('pricesToggle').innerHTML = ic('dollar') + ' ' + esc(t5('prices'));
   $('statsToggle').innerHTML = ic('users') + ' ' + esc(t5('stats'));
@@ -214,5 +233,58 @@ function v15ResetCaptcha() {
   sc.async = true;
   document.head.appendChild(sc);
 })();
+
+// ---------- 5) forgot password ----------
+(function () {
+  const p = document.createElement('p');
+  p.id = 'forgotWrap'; p.style.cssText = 'text-align:center;margin:2px 0 0';
+  p.innerHTML = '<button id="forgotBtn" type="button" class="link"></button>';
+  $('authBtn').insertAdjacentElement('afterend', p);
+  const box = document.createElement('div');
+  box.id = 'newPwBox'; box.className = 'hidden';
+  box.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+  box.innerHTML = `<div class="card" style="width:min(420px,100%);margin:0">
+    <h3 id="npTitle" style="margin-top:0"></h3><div id="npMsg" class="msg"></div>
+    <input id="np1" type="password" autocomplete="new-password" style="width:100%">
+    <input id="np2" type="password" autocomplete="new-password" style="width:100%;margin-top:8px">
+    <button id="npSave" type="button" style="width:100%;justify-content:center;margin-top:10px;padding:13px"></button></div>`;
+  document.body.appendChild(box);
+})();
+function v15ForgotStatic() {
+  if (!$('forgotBtn')) return;
+  $('forgotBtn').textContent = tF('forgot');
+  $('forgotWrap').classList.toggle('hidden', !!isSignup);
+  $('npTitle').textContent = tF('newPwTitle');
+  $('np1').placeholder = tF('newPw'); $('np2').placeholder = tF('newPw2');
+  $('npSave').textContent = tF('newPwSave');
+}
+$('forgotBtn').onclick = async () => {
+  const email = $('email').value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(email)) { $('email').focus(); return showMsg($('msg'), tF('fEmail'), false, 6000); }
+  if (v15NeedCaptcha()) return showMsg($('msg'), t5('robotFirst'), false, 6000);
+  $('forgotBtn').disabled = true;
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: location.origin + location.pathname, captchaToken: v15Token(),
+  });
+  v15ResetCaptcha();
+  $('forgotBtn').disabled = false;
+  if (error) return showMsg($('msg'), error.message, false);
+  showMsg($('msg'), tF('fSent'), true);
+};
+function v15ShowNewPw() { v15ForgotStatic(); $('newPwBox').classList.remove('hidden'); setTimeout(() => $('np1').focus(), 50); }
+if (v15Recovery) v15ShowNewPw();
+sb.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') v15ShowNewPw(); });
+$('npSave').onclick = async () => {
+  const a = $('np1').value, b = $('np2').value;
+  if (a.length < 6) return showMsg($('npMsg'), tF('pwShort'), false);
+  if (a !== b) return showMsg($('npMsg'), tF('pwDiff'), false);
+  $('npSave').disabled = true;
+  const { error } = await sb.auth.updateUser({ password: a });
+  $('npSave').disabled = false;
+  if (error) return showMsg($('npMsg'), error.message, false);
+  $('newPwBox').classList.add('hidden'); $('np1').value = $('np2').value = '';
+  history.replaceState(null, '', location.pathname);
+  if (typeof toast === 'function') toast(tF('pwDone')); else alert(tF('pwDone'));
+};
 
 v15Static();
