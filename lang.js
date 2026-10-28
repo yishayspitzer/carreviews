@@ -75,7 +75,7 @@
         recommendWord: 'recommend',
         tagsTitle: 'What stood out?', saidTags: 'What people say',
         rideTitle: 'Your ride & price', f_date: 'Trip date', fromPh: 'From where', toPh: 'To where', pricePh: 'Price',
-        otherPlace: 'Other place...', otherPlaceType: 'Type the place',
+        otherPlace: 'Other place...', otherPlaceType: 'Type the place', recentPlaces: 'Your recent places', allPlaces: 'All places',
         todPh: 'Time of day',
         tod_morning: 'Morning', tod_afternoon: 'Afternoon', tod_evening: 'Evening', tod_night: 'Late night',
         trip: 'Trip',
@@ -164,7 +164,7 @@
         recommendWord: 'רעקאָמענדירן',
         tagsTitle: 'וואָס איז אײַך אויפֿגעפֿאַלן?', saidTags: 'וואָס מענטשן זאָגן',
         rideTitle: 'אײַער נסיעה און פּרײַז', f_date: 'דאַטום פֿון דער נסיעה', fromPh: 'פֿון וואו', toPh: 'צו וואו', pricePh: 'פרייז',
-        otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ',
+        otherPlace: 'אַן אַנדער פּלאַץ...', otherPlaceType: 'שרײַבט דעם פּלאַץ', recentPlaces: 'אייערע לעצטע פלעצער', allPlaces: 'אלע פלעצער',
         todPh: 'צײַט פֿון טאָג',
         tod_morning: 'אין דער פֿרי', tod_afternoon: 'נאָכמיטאָג', tod_evening: 'אָוונט', tod_night: 'שפּעט בײַ נאַכט',
         trip: 'נסיעה',
@@ -293,7 +293,7 @@
           'שרייבט נאר זאכן וואס איר האט באמת אליין מיטגעלעבט.',
           'מיר ווילן האלטן די סיסטעם ערליך, דעריבער רעזערווירן מיר זיך דאס רעכט אראפצונעמען אקאונטס אדער רעוויוס וואס זענען נישט אמת.'
         ],
-        foot: 'האט איר שאלות? שיקט א מעסעדזש דורך <b>"שיקט א הערה צום אדמין"</b>.<br>א גרויסן יישר כח פארן ארויסהעלפן אויפבויען א בעסערע סיסטעם פאר די ציבור!'
+        foot: 'האט איר שאלות אדער הערות? שיקט א מעסעדזש דורך <b>"שיקט א הערה צום אדמין"</b>.<br>א גרויסן יישר כח פארן ארויסהעלפן אויפבויען א בעסערע סיסטעם פאר די ציבור!'
       },
       en: {
         title: 'Welcome to CarReviews',
@@ -315,7 +315,7 @@
           'Write only things you really experienced yourself.',
           'We want to keep the system honest, so we reserve the right to remove accounts or reviews that are not true.'
         ],
-        foot: 'Questions? Send a message through <b>"Message to admin"</b>.<br>A big thank you for helping to build a better system for the community!'
+        foot: 'Questions or comments? Send a message through <b>"Message to admin"</b>.<br>A big thank you for helping to build a better system for the community!'
       },
       ru: {
         title: 'Добро пожаловать в CarReviews',
@@ -337,7 +337,7 @@
           'Пишите только то, что вы действительно пережили сами.',
           'Мы хотим сохранить честность системы, поэтому оставляем за собой право удалять аккаунты или отзывы, не соответствующие действительности.'
         ],
-        foot: 'Есть вопросы? Напишите через <b>«Сообщение админу»</b>.<br>Большое спасибо за помощь в создании лучшей системы для общины!'
+        foot: 'Есть вопросы или замечания? Напишите через <b>«Сообщение админу»</b>.<br>Большое спасибо за помощь в создании лучшей системы для общины!'
       },
       es: {
         title: 'Bienvenido a CarReviews',
@@ -359,7 +359,7 @@
           'Escribe solo cosas que realmente viviste tú mismo.',
           'Queremos mantener el sistema honesto, por eso nos reservamos el derecho de eliminar cuentas o reseñas que no sean verdaderas.'
         ],
-        foot: '¿Preguntas? Envía un mensaje con <b>«Mensaje al administrador»</b>.<br>¡Muchas gracias por ayudar a construir un mejor sistema para la comunidad!'
+        foot: '¿Preguntas o comentarios? Envía un mensaje con <b>«Mensaje al administrador»</b>.<br>¡Muchas gracias por ayudar a construir un mejor sistema para la comunidad!'
       }
     };
 

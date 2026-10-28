@@ -66,15 +66,32 @@
     const sortedPlaces = () => [...PLACES].sort((a, b) =>
       lang === 'yi' ? cleanYi(a[1]).localeCompare(cleanYi(b[1]), 'he') : a[0].localeCompare(b[0]));
 
+    // v11: the last 5 places this user travelled from/to (shown on top of the list)
+    let recentPlaces = [];
+    async function loadRecentPlaces() {
+      recentPlaces = [];
+      if (!myUid) return;
+      const { data } = await sb.from('reviews').select('trip_from,trip_to,created_at')
+        .eq('user_id', myUid).order('created_at', { ascending: false }).limit(40);
+      const out = [];
+      (data || []).forEach(r => [r.trip_from, r.trip_to].forEach(p => {
+        if (p && !out.includes(p) && out.length < 5) out.push(p);
+      }));
+      recentPlaces = out;
+    }
+
     function placeSelect(id, val, label) {
       const inList = PLACES.some(p => p[0] === val);
       const sel = val ? (inList ? val : '__other') : '';
+      const rec = (id === 'revFrom' || id === 'revTo') ? recentPlaces : [];
       return `<div class="placebox">
         <label class="plabel" for="${id}">${esc(label)}</label>
         <select id="${id}" class="placeSel" required>
           <option value="" disabled hidden ${sel ? '' : 'selected'}>${esc(t_('pickPlace'))}</option>
+          ${rec.length ? `<optgroup label="★ ${esc(t_('recentPlaces'))}">${rec.map(p => `<option value="${esc(p)}">${esc(placeLabel(p))}</option>`).join('')}</optgroup><optgroup label="${esc(t_('allPlaces'))}">` : ''}
           ${sortedPlaces().map(p => `<option value="${esc(p[0])}" ${sel === p[0] ? 'selected' : ''}>${esc(placeLabel(p[0]))}</option>`).join('')}
           <option value="__other" ${sel === '__other' ? 'selected' : ''}>${esc(t_('otherPlace'))}</option>
+          ${rec.length ? '</optgroup>' : ''}
         </select>
         <input id="${id}Txt" type="text" maxlength="120" placeholder="${esc(t_('otherPlaceType'))}" value="${esc(sel === '__other' ? val : '')}" class="${sel === '__other' ? '' : 'hidden'}">
       </div>`;
@@ -192,14 +209,14 @@ function userRevsHtml(uid){
       const w = WELCOME[lang] || WELCOME.en;
       const f = s => lang === 'yi' ? cleanYi(s) : s;
       box.innerHTML = `
-        <div class="wHead"><div class="wlogo">🚗</div><h3>${f(w.title)}</h3></div>
+        <div class="wHead"><h3>${f(w.title)}</h3></div>
         <div class="wBody">
           <div class="wBlock"><h5>${f(w.what)}</h5><p>${f(w.whatT)}</p></div>
           <div class="wBlock"><h5>${f(w.goal)}</h5><p>${f(w.goalT)}</p></div>
           <div class="wBlock"><h5>${f(w.how)}</h5><ol class="wSteps">${w.steps.map(s => `<li><div>${f(s)}</div></li>`).join('')}</ol></div>
           <div class="wPriv"><span>🔒</span><div>${f(w.priv)}</div></div>
-          ${w.phone ? `<div class="wPriv"><span>📞</span><div>${f(w.phone)}</div></div>` : ''}
-          <div class="wAsk"><div class="t1">⭐ ${f(w.ask1)} ⭐</div><div class="t2">${f(w.ask2)}</div></div>
+          ${w.phone ? `<div class="wPriv wPhone"><span>📞</span><div>${f(w.phone)}</div></div>` : ''}
+          <div class="wAsk"><div class="t1">${f(w.ask1)}</div><div class="t2">${f(w.ask2)}</div></div>
           <div class="wBlock"><h5>${f(w.rules)}</h5><ul class="wRules">${w.rulesL.map(s => `<li>${f(s)}</li>`).join('')}</ul></div>
           <div class="wFoot">${f(w.foot)}</div>
         </div>`;
@@ -849,7 +866,7 @@ function userRevsHtml(uid){
         sb.from('company_stats').select('*'),
         sb.from('company_recommend').select('*'),
         sb.from('reviews_public').select('company_id,price_paid,comment,trip_from,trip_to,approved'),
-        loadUsers(), loadSuggestions(), loadRequests(), loadMessages(), loadPermReqs(), loadReviewAdmin()
+        loadUsers(), loadSuggestions(), loadRequests(), loadMessages(), loadPermReqs(), loadReviewAdmin(), loadRecentPlaces()
       ]);
       if (cRes.error) { box.innerHTML = '<div class="card">' + esc(t_('error')) + ': ' + esc(cRes.error.message) + '</div>'; return; }
       allCompanies = cRes.data;
@@ -1328,13 +1345,52 @@ function userRevsHtml(uid){
       if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // v11: calm open / close – the list does not jump
+    const reduceMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const topbarH = () => { const tb = document.querySelector('.topbar'); return tb ? tb.offsetHeight : 0; };
+    const cardTop = id => { const c = $('co-' + id); return c ? c.getBoundingClientRect().top : null; };
+    function keepCard(id, oldTop) {
+      const card = $('co-' + id);
+      if (!card) return;
+      if (oldTop !== null && oldTop !== undefined) window.scrollBy(0, card.getBoundingClientRect().top - oldTop);
+      const top = card.getBoundingClientRect().top, minTop = topbarH() + 10;
+      if (top < minTop || top > window.innerHeight * 0.55) {
+        window.scrollTo({ top: Math.max(0, window.scrollY + top - minTop), behavior: reduceMotion() ? 'auto' : 'smooth' });
+      }
+    }
+    function rerenderKeep(id) {
+      const oldTop = cardTop(id);
+      renderCompanies();
+      keepCard(id, oldTop);
+    }
+    function animIn() {
+      const el = $('detail');
+      if (el && !reduceMotion()) el.classList.add('dIn');
+    }
+    function collapseDetail(cb) {
+      const el = $('detail');
+      if (!el || reduceMotion() || !el.animate) { cb(); return; }
+      let done = false;
+      const fin = () => { if (done) return; done = true; cb(); };
+      el.style.overflow = 'hidden';
+      const a = el.animate([
+        { height: el.offsetHeight + 'px', opacity: 1 },
+        { height: '0px', opacity: 0, marginTop: '0px', paddingTop: '0px' }
+      ], { duration: 220, easing: 'ease-in', fill: 'forwards' });
+      a.onfinish = fin;
+      setTimeout(fin, 320);
+    }
+    function closeCard(id) {
+      collapseDetail(() => { openId = null; draft = {}; rerenderKeep(id); });
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if ($('calModal').style.display === 'flex') { closeCal(); return; }
       if (!$('msgForm').classList.contains('hidden')) { closeMsg(); return; }
       if (!$('addForm').classList.contains('hidden')) { closeAdd(); return; }
       if (editingId) { editingId = null; renderCompanies(); return; }
-      if (openId) { const id = openId; openId = null; draft = {}; renderCompanies(); scrollToCard(id); return; }
+      if (openId) { closeCard(openId); return; }
       if (usersOpen) { usersOpen = false; renderUsers(); }
     });
 
@@ -1503,20 +1559,17 @@ function userRevsHtml(uid){
       if (ds.open || ds.prices || ds.comments || ds.write) {
         const id = ds.open || ds.prices || ds.comments || ds.write;
         const m = ds.open ? 'view' : (ds.prices ? 'prices' : (ds.comments ? 'comments' : 'write'));
-        if (openId === id && openMode === m) openId = null;
-        else { openId = id; openMode = m; }
+        if (openId === id && openMode === m) { closeCard(id); return; }
+        const fresh = openId !== id;
+        openId = id; openMode = m;
         draft = {};
         showN = 8;
-        renderCompanies();
-        scrollToCard(id);
+        rerenderKeep(id);
+        if (fresh) animIn();
         return;
       }
       if (ds.close) {
-        const id = ds.close;
-        openId = null;
-        draft = {};
-        renderCompanies();
-        scrollToCard(id);
+        closeCard(ds.close);
         return;
       }
 
@@ -1659,11 +1712,13 @@ function userRevsHtml(uid){
 
         myReviewId = null;
         const cid = openId;
+        await new Promise(res => collapseDetail(res));
         draft = {};
         openId = null;
+        const oldTop = cardTop(cid);
         await loadCompanies();
         toast(t_('saved'));
-        scrollToCard(cid);
+        keepCard(cid, oldTop);
         return;
       }
 
