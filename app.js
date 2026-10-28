@@ -823,13 +823,23 @@ function userRevsHtml(uid){
         return `<div class="reqitem">
           <div><span class="tagkind" style="background:#6d28d9">${esc(t_('msgKind'))}</span>
             <span class="meta">${u ? esc(u.full_name || u.email) : ''} · ${esc(new Date(m.created_at).toLocaleDateString(dl()))}</span></div>
-          <div class="cmt">${esc(m.body)}</div>
+          ${msgBodyHtml(m.body)}
           <div class="row" style="justify-content:flex-start">
             <button class="green small" style="margin:6px 0 0" data-delmsg="${m.id}">${ic('check')} ${esc(t_('done'))}</button>
           </div>
         </div>`;
       }).join('');
       box.innerHTML = head + permHtml + newHtml + revHtml + reqHtml + msgHtml;
+    }
+
+    // v12: voice messages from the hotline come with "[audio]<link>" -> show a player
+    function msgBodyHtml(body) {
+      const s = String(body || '');
+      const m = s.match(/\[audio\](https:\/\/[^\s]+)/);
+      const okUrl = m && /\/storage\/v1\/object\/sign\/voice-messages\//.test(m[1]);
+      const txt = s.replace(/\s*\[audio\]\S+/, '').trim();
+      return `<div class="cmt">${esc(txt)}</div>` +
+        (okUrl ? `<audio class="msgAudio" controls preload="none" src="${esc(m[1])}"></audio>` : '');
     }
 
     function renderUsers() {
