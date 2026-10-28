@@ -133,6 +133,24 @@ audio{width:100%;margin:8px 0 2px}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:13px 22px;border-radius:12px;display:none;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.35);font-weight:700;align-items:center;gap:8px}
 #toast.ok{background:var(--green)} #toast.bad{background:var(--red)}
 
+/* v15: recordings */
+.rbar{position:relative;height:28px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:4px 0 14px}
+.rbar div{position:absolute;inset-block:0;inset-inline-start:0;background:var(--green)}
+.rbar span{position:relative;display:block;text-align:center;line-height:28px;font-weight:800;font-size:13px}
+.rtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.rtabs .cnt2{font-size:11px;opacity:.75;font-weight:600}
+.clip{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1.5px solid var(--line2)}
+.clip:last-child{border-bottom:0}
+.clip.has{background:#f0fdf4;margin:0 -18px;padding:12px 18px}
+.clip .yi{font-size:18px;font-weight:800;color:var(--navy)}
+.clip .en{font-size:14px;color:#334155;direction:ltr;text-align:left}
+.clip .txt{flex:1;min-width:240px}
+.clip .btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn.rec{background:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.6}}
+input[type=range]{width:100%;accent-color:var(--blue)}
+#tsBox{display:flex;justify-content:center;margin-top:16px;min-height:65px}
+
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   aside{position:static;height:auto;padding:14px}
@@ -159,6 +177,7 @@ audio{width:100%;margin:8px 0 2px}
       <input id="pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
       <button type="button" class="eye" id="eyeBtn" title="ווײַזן / באַהאַלטן" onclick="togglePw()"><svg class="ic" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
+    <div id="tsBox"></div>
     <button class="btn full" onclick="login()">אריינלאגין</button>
     <div id="loginMsg" class="err"></div>
   </div>
@@ -181,6 +200,7 @@ audio{width:100%;margin:8px 0 2px}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="clips.js?v=15"></script>
 <script>
 const SB_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
@@ -206,7 +226,10 @@ const I = {
   up:'<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
   down:'<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>',
   save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
-  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  rec:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>'
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24">${I[n]}</svg>`;
 const $ = id => document.getElementById(id);
@@ -240,7 +263,9 @@ function togglePw(){
 async function login(){
   const email=$('email').value.trim(), pass=$('pass').value;
   $('loginMsg').textContent='';
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if(tsSite && !tsTok){ $('loginMsg').textContent='ביטע ווארט ביז דאס קעסטל ווערט ✅ גרין'; return; }
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass, options: { captchaToken: tsTok || undefined } });
+  tsReset();
   if(error){ $('loginMsg').textContent='טעות: '+error.message; return; }
   init();
 }
@@ -278,6 +303,7 @@ const PAGES = [
   ['phones','phone','טעלעפאן נומערן',waitPh],
   ['reviews','star','טעלעפאן רעוויוס',pendRev],
   ['messages','mic','הודעות',newMsg],
+  ['recs','rec','הקלטות',()=>0],
 ];
 function renderNav(){
   $('nav').innerHTML = PAGES.map(([k,i,l,c])=>{ const n=c(); return `<button class="${page===k?'on':''}" onclick="go('${k}')">${ic(i)} ${l}${n?`<span class="cnt ${k==='reviews'?'red':''}">${n}</span>`:''}</button>`; }).join('');
@@ -297,6 +323,7 @@ function render(){
   if(page==='phones') return renderPhones();
   if(page==='reviews') return renderReviews();
   if(page==='messages') return renderMessages();
+  if(page==='recs') return renderRecs();
 }
 function renderList(){ if(page==='phones') $('listBox').innerHTML=phonesHtml(); if(page==='reviews') $('listBox').innerHTML=reviewsHtml(); if(page==='messages') $('listBox').innerHTML=messagesHtml(); }
 
@@ -530,6 +557,145 @@ async function delMsg(id,path){
   if(error){ toast(error.message,true); return; }
   if(path) await sb.storage.from('voice-messages').remove([path]);
   toast('אויסגעמעקט'); await loadMessagesData(); renderNav(); render();
+}
+
+
+/* ---------- v15: robot check (Cloudflare Turnstile) on the login ---------- */
+let tsSite='', tsTok='', tsWid=null;
+function tsReset(){ tsTok=''; try{ if(tsWid!==null && window.turnstile) turnstile.reset(tsWid); }catch(e){} }
+(async()=>{
+  try{ const { data } = await sb.rpc('cr_public_config'); tsSite=(data&&data.turnstile_site_key)||''; }catch(e){ tsSite=''; }
+  if(!tsSite) return;
+  window.tsReady=()=>{ tsWid=turnstile.render('#tsBox',{ sitekey:tsSite, language:'en', appearance:'always',
+    callback:t=>{ tsTok=t; }, 'expired-callback':()=>{ tsTok=''; }, 'error-callback':()=>{ tsTok=''; } }); };
+  const sc=document.createElement('script');
+  sc.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=tsReady'; sc.async=true;
+  document.head.appendChild(sc);
+})();
+
+/* ---------- v15: hotline recordings ---------- */
+const CLIP_BUCKET='ivr-audio';
+const RG={ main:'הויפט אנזאגן', piece:'שטיקלעך זאצן', words:'ווערטער', dates:'טעג און חדשים', numbers:'נומערן', areas:'געגנטן', places:'ערטער', companies:'נעמען פון קאמפאניס' };
+let rFiles=null, rSet={}, rGrp='main', rFilter='missing', rRec=null, rUpKey=null;
+async function loadRecs(){
+  const m={};
+  for(let off=0; off<10000; off+=1000){
+    const { data, error } = await sb.storage.from(CLIP_BUCKET).list('',{ limit:1000, offset:off, sortBy:{ column:'name', order:'asc' } });
+    if(error){ toast(error.message,true); break; }
+    (data||[]).forEach(f=>{ const mm=/^(.+)\.(wav|mp3)$/i.exec(f.name); if(mm) m[mm[1]]=f.name; });
+    if(!data || data.length<1000) break;
+  }
+  rFiles=m;
+  const { data } = await sb.rpc('cr_get_settings');
+  rSet={}; (data||[]).forEach(x=>rSet[x.key]=x.value);
+}
+function allClips(){
+  const cos=companies.filter(c=>c.phone_code).sort((a,b)=>a.phone_code-b.phone_code)
+    .map(c=>({ k:'co_'+c.phone_code, g:'companies', en:`company code ${c.phone_code}`, yi:c.name, note:'' }));
+  return (typeof IVR_CLIPS!=='undefined' ? IVR_CLIPS : []).concat(cos);
+}
+async function renderRecs(){
+  head('הקלטות','אידישע הקלטות פארן טעלעפאן', `<button class="btn ghost" onclick="rFiles=null;renderRecs()">${ic('refresh')} אפדעיטן</button>`);
+  if(!rFiles){ $('content').innerHTML='<div class="card empty">…</div>'; await loadRecs(); if(page!=='recs') return; }
+  const clips=allClips(), f=rFiles, done=clips.filter(c=>f[c.k]).length;
+  const yiOn=rSet.ivr_yiddish!=='false', sp=parseInt(rSet.ivr_speed,10)||112;
+  const gAll=g=>clips.filter(c=>c.g===g).length, gDone=g=>clips.filter(c=>c.g===g&&f[c.k]).length;
+  const groups=[...new Set(clips.map(c=>c.g))];
+  $('pageSub').textContent=`${done} פון ${clips.length} אויפגענומען`;
+  $('content').innerHTML=`
+    <div class="card"><div class="h3">${ic('sw')} איינשטעלונגען</div>
+      <div class="sw" style="margin-bottom:14px"><label class="toggle"><input type="checkbox" id="rYi" ${yiOn?'checked':''}><span></span></label>
+        <div><b>שפיל די אידישע הקלטות</b><div class="muted"><b>אן</b> = וואו עס איז דא הקלטות, הערט מען אידיש<br><b>אויס</b> = אלעס אויף ענגליש, ווי פריער</div></div></div>
+      <label class="f">גיכקייט פונעם ענגלישן קול: <span id="rSpV">${sp}%</span> <span class="muted">(100% = נארמאל)</span></label>
+      <input type="range" id="rSp" min="80" max="150" step="1" value="${sp}" oninput="$('rSpV').textContent=this.value+'%'">
+      <label class="f">ראבאט-שוץ – Cloudflare Turnstile "Site Key"</label>
+      <input id="rTs" class="in ltr" value="${esc(rSet.turnstile_site_key||'')}" placeholder="0x4AAAAAAA…">
+      <div class="actions"><button class="btn green" onclick="saveRecSet()">${ic('save')} שפייכערן</button></div>
+    </div>
+    <div class="card">
+      <div class="muted" style="margin-bottom:10px;line-height:1.7">דרוקט <b>"נעם אויף"</b>, רעדט, דרוקט <b>"שטעל אפ"</b> – עס ווערט גלייך געשפייכערט. ביז <b>אלע</b> הקלטות פון א זאץ זענען דא, זאגט דער טעלעפאן יענעם זאץ אויף ענגליש. ענדערונגען קומען אן צום טעלעפאן אין א מינוט ארום.</div>
+      <div class="rbar"><div style="width:${clips.length?done/clips.length*100:0}%"></div><span>${done} / ${clips.length} אויפגענומען</span></div>
+      <div class="rtabs">${groups.map(g=>`<button class="btn sm ${g===rGrp?'':'ghost'}" onclick="rGrp='${g}';renderRecs()">${esc(RG[g]||g)} <span class="cnt2">${gDone(g)}/${gAll(g)}</span></button>`).join('')}</div>
+      <div class="rtabs"><button class="btn sm ${rFilter==='missing'?'':'ghost'}" onclick="rFilter='missing';renderRecs()">נאר וואס פעלט</button>
+        <button class="btn sm ${rFilter==='all'?'':'ghost'}" onclick="rFilter='all';renderRecs()">אלע</button></div>
+      <div id="rList">${recList(clips)}</div>
+    </div>`;
+}
+function recList(clips){
+  let list=clips.filter(c=>c.g===rGrp);
+  if(rFilter==='missing') list=list.filter(c=>!rFiles[c.k]);
+  if(!list.length) return '<div class="empty"><div class="big">✅</div>אלעס איז אויפגענומען</div>';
+  return list.map(c=>{ const has=!!rFiles[c.k], on=rRec&&rRec.key===c.k; return `<div class="clip ${has?'has':''}">
+    <div class="txt">${c.yi?`<div class="yi">${esc(c.yi)}</div>`:''}<div class="en">${esc(c.en)}</div>
+      ${c.note?`<div class="muted">${esc(c.note)}</div>`:''}<div class="muted ltr">${esc(c.k)}.wav ${has?'✅':''}</div></div>
+    <div class="btns">
+      <button class="btn sm ${on?'rec':'orange'}" onclick="recToggle('${c.k}')">${ic(on?'stop':'rec')} ${on?'שטעל אפ':'נעם אויף'}</button>
+      <button class="btn sm ghost" onclick="rUpKey='${c.k}';rFileIn.click()">${ic('upload')} פייל</button>
+      ${has?`<button class="btn sm ghost" onclick="recPlay('${c.k}')">${ic('play')} הער</button>
+      <button class="btn sm ghost danger" onclick="recDel('${c.k}')">${ic('trash')}</button>`:''}
+    </div></div>`; }).join('');
+}
+async function saveRecSet(){
+  const pairs=[['ivr_yiddish',$('rYi').checked?'true':'false'],['ivr_speed',$('rSp').value],['turnstile_site_key',$('rTs').value.trim()]];
+  for(const [k,val] of pairs){
+    const { error } = await sb.rpc('cr_set_setting',{ k, v:val });
+    if(error){ toast(error.message,true); return; }
+    rSet[k]=val;
+  }
+  toast('געשפייכערט');
+}
+const rFileIn=document.createElement('input'); rFileIn.type='file'; rFileIn.accept='audio/*'; rFileIn.className='hidden';
+document.body.appendChild(rFileIn);
+rFileIn.onchange=async()=>{ const f=rFileIn.files[0]; rFileIn.value=''; if(f&&rUpKey) await recSave(rUpKey,f); };
+function recPlay(k){ new Audio(sb.storage.from(CLIP_BUCKET).getPublicUrl(rFiles[k]).data.publicUrl+'?t='+Date.now()).play(); }
+async function recDel(k){
+  if(!confirm('אויסמעקן די הקלטה?')) return;
+  const { error } = await sb.storage.from(CLIP_BUCKET).remove([rFiles[k]]);
+  if(error){ toast(error.message,true); return; }
+  delete rFiles[k]; toast('אויסגעמעקט'); renderRecs();
+}
+async function recToggle(k){
+  if(rRec){ const r=rRec; rRec=null; r.mr.stop(); r.stream.getTracks().forEach(t=>t.stop()); if(r.key!==k) renderRecs(); return; }
+  let stream;
+  try{ stream=await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true } }); }
+  catch(e){ toast('דער מיקראפאן איז נישט צוטריטלעך',true); return; }
+  const mr=new MediaRecorder(stream), chunks=[];
+  mr.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  mr.onstop=()=>recSave(k,new Blob(chunks,{ type:mr.mimeType||'audio/webm' }));
+  mr.start(); rRec={ key:k, mr, stream }; renderRecs();
+}
+// any recording/file -> 8 kHz mono 16-bit WAV (what the phone plays); silence cut, volume evened
+async function toWav(blob){
+  const AC=window.AudioContext||window.webkitAudioContext, ac=new AC();
+  const buf=await ac.decodeAudioData(await blob.arrayBuffer()); ac.close();
+  const RATE=8000, len=Math.max(1,Math.ceil(buf.duration*RATE));
+  const off=new OfflineAudioContext(1,len,RATE), src=off.createBufferSource();
+  src.buffer=buf; src.connect(off.destination); src.start();
+  let d=(await off.startRendering()).getChannelData(0);
+  let peak=0; for(let i=0;i<d.length;i++) peak=Math.max(peak,Math.abs(d[i]));
+  const th=Math.max(0.015,peak*0.05); let a=0, b=d.length-1;
+  while(a<b && Math.abs(d[a])<th) a++;
+  while(b>a && Math.abs(d[b])<th) b--;
+  d=d.subarray(Math.max(0,a-(RATE*0.06|0)),Math.min(d.length,b+(RATE*0.12|0)));
+  const gain=peak>0?Math.min(6,0.9/peak):1, dv=new DataView(new ArrayBuffer(44+d.length*2));
+  const w=(o,s)=>{ for(let i=0;i<s.length;i++) dv.setUint8(o+i,s.charCodeAt(i)); };
+  w(0,'RIFF'); dv.setUint32(4,36+d.length*2,true); w(8,'WAVE'); w(12,'fmt ');
+  dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+  dv.setUint32(24,RATE,true); dv.setUint32(28,RATE*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true);
+  w(36,'data'); dv.setUint32(40,d.length*2,true);
+  for(let i=0;i<d.length;i++) dv.setInt16(44+i*2,Math.max(-1,Math.min(1,d[i]*gain))*0x7fff,true);
+  return new Blob([dv],{ type:'audio/wav' });
+}
+async function recSave(k,blob){
+  toast('שפייכערט…');
+  try{
+    const wav=await toWav(blob), old=rFiles[k];
+    if(old && old!==k+'.wav') await sb.storage.from(CLIP_BUCKET).remove([old]);
+    const { error } = await sb.storage.from(CLIP_BUCKET).upload(k+'.wav',wav,{ contentType:'audio/wav', upsert:true });
+    if(error) throw error;
+    rFiles[k]=k+'.wav'; toast('געשפייכערט');
+  }catch(e){ toast(e.message||String(e),true); }
+  if(page==='recs') renderRecs();
 }
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&editIdx!==null){ editIdx=null; renderList(); } });
