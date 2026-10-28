@@ -835,9 +835,14 @@ function userRevsHtml(uid){
     // v12: voice messages from the hotline come with "[audio]<link>" -> show a player
     function msgBodyHtml(body) {
       const s = String(body || '');
+      // v13: "[audiopath]admin/x.mp3" -> a play button that makes a fresh link each time (never expires)
+      const p = s.match(/\[audiopath\](admin\/[\w.\-]+\.mp3)/);
       const m = s.match(/\[audio\](https:\/\/[^\s]+)/);
       const okUrl = m && /\/storage\/v1\/object\/sign\/voice-messages\//.test(m[1]);
-      const txt = s.replace(/\s*\[audio\]\S+/, '').trim();
+      const txt = s.replace(/\s*\[audio(path)?\]\S+/, '').trim();
+      if (p) return `<div class="cmt">${esc(txt)}</div>` +
+        `<button type="button" class="ghost small" data-playmsg="${esc(p[1])}">▶ ${esc(t_('listen'))}</button>` +
+        `<audio class="msgAudio hidden" controls preload="none"></audio>`;
       return `<div class="cmt">${esc(txt)}</div>` +
         (okUrl ? `<audio class="msgAudio" controls preload="none" src="${esc(m[1])}"></audio>` : '');
     }
@@ -1043,7 +1048,7 @@ function userRevsHtml(uid){
         ${flagHtml(r.id)}
       </div>`;
     }
-    const delRevBtn = r => (isAdmin && r.user_id !== myUid) ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '';
+    const delRevBtn = r => isAdmin ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '';
     const moreBtn = total => total > showN
       ? `<div class="showmore"><button class="ghost" data-more="1">${esc(t_('showMore'))} (${total - showN})</button></div>` : '';
     const routeName = r => (r.trip_from || r.trip_to)
@@ -1648,6 +1653,18 @@ function userRevsHtml(uid){
         const i = draft.tags.indexOf(ds.tag);
         if (i >= 0) draft.tags.splice(i, 1); else draft.tags.push(ds.tag);
         t.classList.toggle('on', i < 0);
+        return;
+      }
+
+      if (ds.playmsg) {
+        const btn = t;
+        const au = btn && btn.nextElementSibling;
+        btn.disabled = true;
+        const { data, error } = await sb.storage.from('voice-messages').createSignedUrl(ds.playmsg, 3600);
+        btn.disabled = false;
+        if (error || !data?.signedUrl) { alert(t_('audioErr')); return; }
+        btn.classList.add('hidden');
+        au.src = data.signedUrl; au.classList.remove('hidden'); au.play().catch(() => {});
         return;
       }
 
