@@ -200,7 +200,7 @@ input[type=range]{width:100%;accent-color:var(--blue)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="clips.js?v=15"></script>
+<script src="clips.js?v=16"></script>
 <script>
 const SB_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
@@ -371,7 +371,16 @@ function renderSettings(){
       'יעדער נייער נומער קען גלייך רעוויוען (עס ווערט אויטאמאטיש געמאכט אן אקאונט). בלאקירטע נומערן קענען אלעמאל נישט.') +
     sw('swAuto','phone_reviews_auto_approve',auto,'טעלעפאן רעוויוס גיין גלייך אויפן זייטל',
       'יעדער רעוויו פון טעלעפאן ווערט גלייך געוויזן אויפן זייטל.',
-      'דער רעוויו בלייבט באהאלטן ביז דו באשטעטיגסט אים אין "טעלעפאן רעוויוס".');
+      'דער רעוויו בלייבט באהאלטן ביז דו באשטעטיגסט אים אין "טעלעפאן רעוויוס".') +
+    `<div class="card"><b>📧 אימעילס צום אדמין</b><div class="muted">יעדע נייע מעסעדזש קומט אן אין אימעיל, און יעדן זונטאג אינדערפרי קומט א באריכט פון דער וואך.</div>
+      <div class="actions"><button class="btn" id="testMailBtn" onclick="testEmail()">שיק א פראבע־אימעיל</button></div></div>`;
+}
+async function testEmail(){
+  const b=$('testMailBtn'); b.disabled=true;
+  const { error } = await sb.rpc('cr_test_email');
+  b.disabled=false;
+  if(error){ toast(errMsg(error),true); return; }
+  toast('געשיקט. קוק אין דיין אימעיל (אויך אין Spam) אין א מינוט ארום.');
 }
 async function onSwitch(key, el){
   const { error } = await sb.rpc('admin_set_setting',{ p_key:key, p_value: el.checked?'true':'false' });

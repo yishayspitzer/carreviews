@@ -1,4 +1,4 @@
-// CarReviews v15 – list of all hotline recordings (generated)
+// CarReviews v16 – list of all hotline recordings (generated)
 const IVR_CLIPS = [
 {
 "k": "welcome",
@@ -309,11 +309,32 @@ const IVR_CLIPS = [
 "note": ""
 },
 {
+"k": "best3",
+"g": "main",
+"en": "For the best companies of the last month, press 3.",
+"yi": "פאר די בעסטע קאמפאניס פונעם לעצטן חודש, דרוקט 3.",
+"note": "v16 – נייע"
+},
+{
 "k": "bestRated",
 "g": "main",
 "en": "The best rated companies.",
 "yi": "",
 "note": ""
+},
+{
+"k": "bestMonth",
+"g": "main",
+"en": "The best companies of the last 30 days.",
+"yi": "די בעסטע קאמפאניס פון די לעצטע 30 טעג.",
+"note": "v16 – נייע"
+},
+{
+"k": "noMonth",
+"g": "main",
+"en": "There are not enough reviews from the last 30 days yet.",
+"yi": "עס זענען נאך נישט דא גענוג רעוויוס פון די לעצטע 30 טעג.",
+"note": "v16 – נייע"
 },
 {
 "k": "noRated",

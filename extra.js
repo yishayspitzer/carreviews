@@ -1,4 +1,4 @@
-// CarReviews v15 – price table, statistics, robot check, forgot password (the hotline recordings are in voice.html)
+// CarReviews v16 – best of the month box; v15 – price table, statistics, robot check, forgot password (the hotline recordings are in voice.html)
 // (loaded after app.js; uses its helpers: $, esc, ic, sb, t_, lang, cleanYi, toast, placeLabel, pricedAll, allCompanies, median, money$)
 
 const L15 = {
@@ -67,6 +67,7 @@ const v15 = { prices: false, stats: false, voice: false, pq: '', pOpen: null, ev
 // ---------- toolbar buttons ----------
 function v15Static() {
   v15ForgotStatic();
+  v16Best();
   if (!$('pricesToggle')) return;
   $('pricesToggle').innerHTML = ic('dollar') + ' ' + esc(t5('prices'));
   $('statsToggle').innerHTML = ic('users') + ' ' + esc(t5('stats'));
@@ -303,3 +304,44 @@ $('npSave').onclick = async () => {
 };
 
 v15Static();
+
+
+// ---------- v16: the 3 best companies of the last 30 days (everyone who is logged in) ----------
+const L16 = {
+  en: { t: 'The best of the month', sub: 'Last 30 days · at least 3 reviews', rv: 'reviews', none: 'Not enough reviews from the last 30 days yet' },
+  yi: { t: 'די בעסטע פונעם חודש', sub: 'די לעצטע 30 טעג · כאטש 3 רעוויוס', rv: 'רעוויוס', none: 'נאך נישט גענוג רעוויוס פון די לעצטע 30 טעג' },
+  ru: { t: 'Лучшие за месяц', sub: 'Последние 30 дней · минимум 3 отзыва', rv: 'отзывов', none: 'Пока недостаточно отзывов за последние 30 дней' },
+  es: { t: 'Los mejores del mes', sub: 'Últimos 30 días · mínimo 3 reseñas', rv: 'reseñas', none: 'Todavía no hay suficientes reseñas de los últimos 30 días' },
+};
+const t16 = k => { const v = (L16[lang] && L16[lang][k]) || L16.en[k]; return lang === 'yi' ? cleanYi(v) : v; };
+const v16b = { list: null, at: 0, busy: false };
+async function v16Best() {
+  const box = $('bestBox');
+  if (!box) return;
+  if (!loggedIn) { box.classList.add('hidden'); v16b.list = null; return; }
+  if (!v16b.busy && (!v16b.list || Date.now() - v16b.at > 10 * 60 * 1000)) {
+    v16b.busy = true;
+    try {
+      const { data, error } = await sb.rpc('cr_best_recent', { p_days: 30, p_min: 3, p_lim: 3 });
+      v16b.list = error ? [] : (data || []); v16b.at = Date.now();
+      if (error) console.warn('best of month', error.message);
+    } finally { v16b.busy = false; }
+  }
+  const l = v16b.list || [];
+  const medal = ['🥇', '🥈', '🥉'];
+  box.classList.remove('hidden');
+  box.innerHTML = `<div class="row" style="margin-bottom:6px"><h3 style="margin:0">🏆 ${esc(t16('t'))}</h3><span class="meta" style="margin:0">${esc(t16('sub'))}</span></div>` +
+    (l.length ? `<div style="display:flex;flex-wrap:wrap;gap:10px">` + l.map((c, i) =>
+      `<button type="button" class="ghost" data-v16co="${esc(c.phone_code ? '#' + c.phone_code : c.name)}" style="flex:1 1 180px;justify-content:flex-start;margin:0;text-align:start">
+        <span style="font-size:22px">${medal[i] || ''}</span>
+        <span><b>${esc(c.name)}</b>${c.phone_code ? ` <span class="meta" style="margin:0">#${esc(c.phone_code)}</span>` : ''}<br>
+        <span class="meta" style="margin:0">⭐ ${Number(c.avg_rating).toFixed(1)} · ${esc(c.review_count)} ${esc(t16('rv'))}</span></span></button>`).join('') + `</div>`
+      : `<div class="meta">${esc(t16('none'))}</div>`);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-v16co]');
+  if (!b) return;
+  $('search').value = b.dataset.v16co;
+  renderCompanies();
+  $('companies').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
