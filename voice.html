@@ -654,7 +654,7 @@ async function recPlay(k){
     // download through the logged-in session -> works whether the bucket is public or private
     const { data, error } = await sb.storage.from(CLIP_BUCKET).download(rFiles[k]);
     if(error) throw new Error('דער פייל קען נישט ווערן אראפגענומען: '+(error.message||error));
-    if(!data || data.size<=44) throw new Error('די הקלטה איז ליידיג – נעמט עס נאכאמאל אויף');
+    if(!data || data.size<16000*0.3) throw new Error('די הקלטה איז ליידיג אדער צו קורץ – מעקט עס אויס (🗑) און נעמט עס נאכאמאל אויף');
     rAudio=new Audio(URL.createObjectURL(data)); rAudio.volume=1;
     await rAudio.play();
     toast('שפילט… ('+(data.size/16000).toFixed(1)+' סעקונדעס)');
@@ -686,10 +686,13 @@ async function toWav(blob){
   let d=(await off.startRendering()).getChannelData(0);
   let peak=0; for(let i=0;i<d.length;i++) peak=Math.max(peak,Math.abs(d[i]));
   if(peak<0.01) throw new Error('עס איז נישט אויפגענומען געווארן קיין קול – קאנטראלירט דעם מיקראפאן (זעט אונטן)');
-  const th=Math.max(0.015,peak*0.05); let a=0, b=d.length-1;
+  // gentle silence trim; never cut the recording down to nothing
+  const full=d, th=Math.max(0.004,peak*0.02); let a=0, b=d.length-1;
   while(a<b && Math.abs(d[a])<th) a++;
   while(b>a && Math.abs(d[b])<th) b--;
-  d=d.subarray(Math.max(0,a-(RATE*0.06|0)),Math.min(d.length,b+(RATE*0.12|0)));
+  d=d.subarray(Math.max(0,a-(RATE*0.15|0)),Math.min(d.length,b+(RATE*0.25|0)));
+  if(d.length<RATE*0.4) d=full;
+  if(d.length<RATE*0.3) throw new Error('די הקלטה איז צו קורץ ('+(d.length/RATE).toFixed(1)+' סעק.) – נעמט עס נאכאמאל אויף, און רעדט לענגער');
   const gain=peak>0?Math.min(6,0.9/peak):1, dv=new DataView(new ArrayBuffer(44+d.length*2));
   const w=(o,s)=>{ for(let i=0;i<s.length;i++) dv.setUint8(o+i,s.charCodeAt(i)); };
   w(0,'RIFF'); dv.setUint32(4,36+d.length*2,true); w(8,'WAVE'); w(12,'fmt ');
@@ -706,7 +709,7 @@ async function recSave(k,blob){
     if(old && old!==k+'.wav') await sb.storage.from(CLIP_BUCKET).remove([old]);
     const { error } = await sb.storage.from(CLIP_BUCKET).upload(k+'.wav',wav,{ contentType:'audio/wav', upsert:true });
     if(error) throw error;
-    rFiles[k]=k+'.wav'; toast('געשפייכערט');
+    rFiles[k]=k+'.wav'; toast('געשפייכערט ('+((wav.size-44)/16000).toFixed(1)+' סעקונדעס)');
   }catch(e){ toast(e.message||String(e),true); }
   if(page==='recs') renderRecs();
 }
