@@ -647,7 +647,19 @@ async function saveRecSet(){
 const rFileIn=document.createElement('input'); rFileIn.type='file'; rFileIn.accept='audio/*'; rFileIn.className='hidden';
 document.body.appendChild(rFileIn);
 rFileIn.onchange=async()=>{ const f=rFileIn.files[0]; rFileIn.value=''; if(f&&rUpKey) await recSave(rUpKey,f); };
-function recPlay(k){ new Audio(sb.storage.from(CLIP_BUCKET).getPublicUrl(rFiles[k]).data.publicUrl+'?t='+Date.now()).play(); }
+let rAudio=null;
+async function recPlay(k){
+  try{
+    if(rAudio){ rAudio.pause(); URL.revokeObjectURL(rAudio.src); rAudio=null; }
+    // download through the logged-in session -> works whether the bucket is public or private
+    const { data, error } = await sb.storage.from(CLIP_BUCKET).download(rFiles[k]);
+    if(error) throw new Error('דער פייל קען נישט ווערן אראפגענומען: '+(error.message||error));
+    if(!data || data.size<=44) throw new Error('די הקלטה איז ליידיג – נעמט עס נאכאמאל אויף');
+    rAudio=new Audio(URL.createObjectURL(data)); rAudio.volume=1;
+    await rAudio.play();
+    toast('שפילט… ('+(data.size/16000).toFixed(1)+' סעקונדעס)');
+  }catch(e){ toast(e.message||String(e),true); console.error(e); }
+}
 async function recDel(k){
   if(!confirm('אויסמעקן די הקלטה?')) return;
   const { error } = await sb.storage.from(CLIP_BUCKET).remove([rFiles[k]]);
@@ -655,14 +667,14 @@ async function recDel(k){
   delete rFiles[k]; toast('אויסגעמעקט'); renderRecs();
 }
 async function recToggle(k){
-  if(rRec){ const r=rRec; rRec=null; r.mr.stop(); r.stream.getTracks().forEach(t=>t.stop()); if(r.key!==k) renderRecs(); return; }
+  if(rRec){ const r=rRec; rRec=null; if(Date.now()-r.t0<700){ toast('צו קורץ – האלט אן "נעם אויף", רעדט, און דערנאך "שטעל אפ"',true); } r.mr.stop(); r.stream.getTracks().forEach(t=>t.stop()); if(r.key!==k) renderRecs(); return; }
   let stream;
   try{ stream=await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true } }); }
   catch(e){ toast('דער מיקראפאן איז נישט צוטריטלעך',true); return; }
   const mr=new MediaRecorder(stream), chunks=[];
   mr.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   mr.onstop=()=>recSave(k,new Blob(chunks,{ type:mr.mimeType||'audio/webm' }));
-  mr.start(); rRec={ key:k, mr, stream }; renderRecs();
+  mr.start(250); rRec={ key:k, mr, stream, t0:Date.now() }; renderRecs();
 }
 // any recording/file -> 8 kHz mono 16-bit WAV (what the phone plays); silence cut, volume evened
 async function toWav(blob){
@@ -673,6 +685,7 @@ async function toWav(blob){
   src.buffer=buf; src.connect(off.destination); src.start();
   let d=(await off.startRendering()).getChannelData(0);
   let peak=0; for(let i=0;i<d.length;i++) peak=Math.max(peak,Math.abs(d[i]));
+  if(peak<0.01) throw new Error('עס איז נישט אויפגענומען געווארן קיין קול – קאנטראלירט דעם מיקראפאן (זעט אונטן)');
   const th=Math.max(0.015,peak*0.05); let a=0, b=d.length-1;
   while(a<b && Math.abs(d[a])<th) a++;
   while(b>a && Math.abs(d[b])<th) b--;
