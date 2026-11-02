@@ -432,6 +432,7 @@ function userRevsHtml(uid){
       $('addToggle').classList.toggle('hidden', isBanned);
       $('usersToggle').innerHTML = ic('users') + esc(t_('users'));
       $('usersToggle').classList.toggle('hidden', !isAdmin);
+      if ($('voiceLink')) $('voiceLink').classList.toggle('hidden', !isAdmin);   // v18: straight to the phone admin (same login)
       $('msgToggle').innerHTML = ic('mail') + ' ' + esc(t_('msgBtn'));
       $('msgToggle').classList.toggle('hidden', isAdmin || isBanned || !loggedIn);
       $('msgTitle').textContent = t_('msgTitle');
