@@ -1,0 +1,47 @@
+/* CarReviews v17 – look of the legal pages (terms / privacy / content policy / report) */
+:root { --navy:#0b1f3a; --blue:#2563eb; --teal:#0891b2; --gold:#f59e0b; --red:#dc2626; --green:#16a34a;
+        --bg:#e6ebf3; --line:#b9c4d4; --line2:#dde3ec; --soft:#f1f5f9; --text:#0f172a; --muted:#475569;
+        --shadow:0 4px 18px rgba(15,23,42,.12); --top:linear-gradient(90deg,#0b1f3a,#1e3a8a 55%,#0e7490); }
+* { box-sizing:border-box; }
+html { scroll-padding-top:84px; }
+body { font-family:Rubik,-apple-system,"Segoe UI",Arial,sans-serif; margin:0; color:var(--text); background:var(--bg); font-size:15px; line-height:1.6; }
+.wrap { max-width:900px; margin:0 auto; padding:0 16px; }
+a { color:var(--blue); }
+.topbar { position:sticky; top:0; z-index:60; background:var(--top); color:#fff; box-shadow:0 6px 20px rgba(11,31,58,.35); }
+.topbar .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px; }
+.tbrand { color:#fff; text-decoration:none; font-weight:900; font-size:20px; }
+.tbrand b { color:#fbbf24; }
+.tnav { display:flex; gap:6px; flex-wrap:wrap; }
+.tnav a { color:#fff; text-decoration:none; font-weight:600; font-size:14px; padding:6px 10px; border-radius:9px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.3); }
+.tnav a.on, .tnav a:hover { background:rgba(255,255,255,.28); }
+.draft { background:#fef3c7; border:2px solid var(--gold); color:#78350f; font-weight:800; text-align:center; padding:10px 14px; border-radius:12px; margin:16px 0 0; }
+.card { background:#fff; border:1px solid var(--line2); border-radius:16px; box-shadow:var(--shadow); padding:22px 24px; margin:16px 0; }
+h1 { margin:0 0 4px; font-size:28px; color:var(--navy); }
+h2 { margin:26px 0 8px; font-size:19px; color:var(--navy); border-bottom:2px solid var(--line2); padding-bottom:4px; }
+h3 { margin:16px 0 6px; font-size:16px; }
+.meta { color:var(--muted); font-size:13px; margin-bottom:10px; }
+.sum { border:1px solid var(--line); border-radius:12px; margin:8px 0; background:var(--soft); }
+.sum summary { cursor:pointer; padding:10px 14px; font-weight:700; }
+.sum .in { padding:0 18px 12px; }
+.sum[dir=rtl] .in { padding:0 18px 12px; }
+.note { font-size:12px; color:var(--muted); font-weight:600; }
+.toc { columns:2; font-size:14px; padding-left:18px; }
+@media (max-width:640px) { .toc { columns:1; } .card { padding:16px; } h1 { font-size:23px; } }
+.box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 14px; margin:10px 0; }
+table.t { border-collapse:collapse; width:100%; font-size:14px; margin:8px 0; }
+table.t th, table.t td { border:1px solid var(--line2); padding:7px 9px; text-align:left; vertical-align:top; }
+table.t th { background:var(--soft); }
+.ltr { direction:ltr; unicode-bidi:isolate; }
+.legalfoot { text-align:center; color:var(--muted); font-size:13px; padding:20px 16px 40px; }
+.legalfoot a { margin:0 6px; }
+.legalfoot .ver { margin-top:8px; font-size:12px; opacity:.8; }
+/* report form */
+label.f { display:block; font-weight:700; margin:12px 0 4px; }
+.in, select.in, textarea.in { width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; font:inherit; background:#fff; }
+textarea.in { resize:vertical; min-height:110px; }
+.btn { background:var(--navy); color:#fff; border:0; border-radius:10px; padding:11px 18px; font:inherit; font-weight:700; cursor:pointer; margin-top:14px; }
+.btn:disabled { opacity:.5; cursor:default; }
+.msg { margin-top:12px; padding:10px 14px; border-radius:10px; font-weight:600; }
+.msg.ok { background:#dcfce7; color:#14532d; }
+.msg.err { background:#fee2e2; color:#7f1d1d; }
+.hidden { display:none !important; }
