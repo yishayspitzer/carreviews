@@ -1053,7 +1053,7 @@ function userRevsHtml(uid){
         ${flagHtml(r.id)}
       </div>`;
     }
-    const delRevBtn = r => isAdmin ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '';
+        const delRevBtn = r => `<div style="text-align:end;font-size:12px;margin-top:6px"><a href="report.html?r=${r.id}" target="_blank" rel="noopener" style="color:var(--muted)">⚑ ${esc(({ yi: 'מעלדן', ru: 'Пожаловаться', es: 'Reportar' })[lang] || 'Report')}</a></div>` + (isAdmin ? `<button class="danger small" data-delrev="${r.id}">${esc(t_('del'))}</button>` : '');
     const moreBtn = total => total > showN
       ? `<div class="showmore"><button class="ghost" data-more="1">${esc(t_('showMore'))} (${total - showN})</button></div>` : '';
     const routeName = r => (r.trip_from || r.trip_to)
