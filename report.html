@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a review / company request – CarReviews</title>
+  <link rel="stylesheet" href="legal.css?v=17">
+  <script src="legal.js?v=17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<main class="wrap" data-draft="no">
+<div class="card" id="box">
+  <h1 id="h1"></h1>
+  <p id="intro" class="meta" style="font-size:14px"></p>
+  <div id="revNote" class="box hidden"></div>
+
+  <label class="f" for="kind" id="lKind"></label>
+  <select id="kind" class="in"></select>
+
+  <div id="coFields" class="hidden">
+    <label class="f" for="coName" id="lCo"></label>
+    <input id="coName" class="in" maxlength="200">
+    <label class="f" for="role" id="lRole"></label>
+    <input id="role" class="in" maxlength="120">
+  </div>
+
+  <label class="f" for="reason" id="lReason"></label>
+  <select id="reason" class="in"></select>
+
+  <label class="f" for="name" id="lName"></label>
+  <input id="name" class="in" maxlength="120">
+
+  <label class="f" for="email" id="lEmail"></label>
+  <input id="email" class="in ltr" type="email" maxlength="200" dir="ltr">
+
+  <label class="f" for="message" id="lMsg"></label>
+  <textarea id="message" class="in" maxlength="3000"></textarea>
+
+  <label class="f" for="evidence" id="lEv"></label>
+  <input id="evidence" class="in ltr" maxlength="500" dir="ltr" placeholder="https://">
+
+  <p class="note" id="privNote" style="margin-top:12px"></p>
+  <button class="btn" id="send" type="button"></button>
+  <div id="out" class="msg hidden"></div>
+</div>
+</main>
+<script>
+(function () {
+  const SUPABASE_URL = 'https://qejwhjngfyjdghlfbddv.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlandoam5nZnlqZGdobGZiZGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDEyNjEsImV4cCI6MjEwNjk3NzI2MX0.xXrBu4iZnjCCCixzuRJTKBHgDFCSlF0sr-E_UZa7hTo';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const T = {
+    en: {
+      h1: 'Report a review / company request',
+      intro: 'Use this form to report a review that breaks our rules, or (if you represent a company) to send a request about your company. We do not remove reviews because they are positive or negative.',
+      revNote: 'You are reporting review #', kind: 'What is this about?',
+      k_report: 'Report this review', k_company: 'I represent a company (correction, response or removal request)',
+      co: 'Company name', role: 'Your role in the company (owner, manager…)',
+      reason: 'Reason', name: 'Your name (optional)', email: 'Your e-mail (required, so we can answer you)',
+      msg: 'Explain what is wrong (required)', ev: 'Link to evidence (optional)',
+      priv: 'We use these details only to handle your request. We do not give your details to the person who wrote the review. See the Privacy Policy.',
+      send: 'Send', sending: 'Sending…',
+      ok: 'Thank you. We received your request and will answer by e-mail.',
+      eEmail: 'Please enter a valid e-mail address.', eMsg: 'Please explain (at least 5 characters).',
+      eCo: 'Please enter the company name.', eRate: 'Too many reports in a short time. Please try again in an hour.',
+      eGen: 'Sending failed. Please try again or write to us by e-mail.', eNoRev: 'To report a review, press "Report" next to that review on the website.',
+      r_spam: 'Spam / advertising', r_abuse: 'Threats, hate or harassment', r_fake: 'Fake review (not a real experience)',
+      r_conflict_of_interest: 'Conflict of interest (owner, employee, competitor, paid)', r_privacy: 'Private information about a person',
+      r_legal: 'Legal (court order, copyright, trademark)', r_other: 'Other'
+    },
+    yi: {
+      h1: 'מעלדן א רעוויו / בקשה פון א קאמפאני',
+      intro: 'דא קענט איר מעלדן א רעוויו וואס ברעכט די כללים, אדער (אויב איר פארטרעט א קאמפאני) שיקן א בקשה וועגן אייער קאמפאני. מיר מעקן נישט אויס א רעוויו ווייל ער איז גוט אדער שלעכט.',
+      revNote: 'איר מעלדט רעוויו #', kind: 'וועגן וואס גייט עס?',
+      k_report: 'מעלדן די רעוויו', k_company: 'איך פארטרעט א קאמפאני (פאררעכטן, ענטפערן אדער אויסמעקן)',
+      co: 'נאמען פון דער קאמפאני', role: 'אייער ראלע אין דער קאמפאני (בעל הבית, מענעדזשער…)',
+      reason: 'סיבה', name: 'אייער נאמען (נישט מוז)', email: 'אייער אימעיל (מוז, כדי מיר זאלן קענען ענטפערן)',
+      msg: 'שרייבט וואס איז נישט ריכטיג (מוז)', ev: 'א לינק צו א ראיה (נישט מוז)',
+      priv: 'מיר נוצן די פרטים נאר צו באהאנדלען אייער בקשה. מיר גיבן נישט אייערע פרטים פאר דעם וואס האט געשריבן די רעוויו. זעט די Privacy Policy.',
+      send: 'שיקן', sending: 'שיקט…',
+      ok: 'א דאנק. מיר האבן באקומען אייער בקשה און מיר וועלן ענטפערן אין אימעיל.',
+      eEmail: 'ביטע שרייבט א ריכטיגן אימעיל.', eMsg: 'ביטע ערקלערט (כאטש 5 אותיות).',
+      eCo: 'ביטע שרייבט דעם נאמען פון דער קאמפאני.', eRate: 'צופיל מעלדונגען אין א קורצע צייט. ביטע פרובירט נאכאמאל אין א שעה.',
+      eGen: 'עס איז נישט אוועקגעשיקט געווארן. ביטע פרובירט נאכאמאל אדער שרייבט אונז אן אימעיל.', eNoRev: 'צו מעלדן א רעוויו, דריקט "מעלדן" לעבן יענער רעוויו אויפן וועבזייטל.',
+      r_spam: 'ספאם / רעקלאמע', r_abuse: 'סטראשען, האס אדער באליידיגן', r_fake: 'פאלשע רעוויו (נישט אמת מיטגעמאכט)',
+      r_conflict_of_interest: 'שייכות צו א קאמפאני (בעל הבית, ארבעטער, קאנקורענט, באצאלט)', r_privacy: 'פריוואטע פרטים פון א מענטש',
+      r_legal: 'געזעץ (בית משפט, קאפירייט, טרעידמארק)', r_other: 'אנדערש'
+    },
+    ru: {
+      h1: 'Пожаловаться на отзыв / запрос компании',
+      intro: 'С помощью этой формы можно пожаловаться на отзыв, нарушающий правила, или (если вы представляете компанию) отправить запрос о вашей компании. Мы не удаляем отзывы из-за того, что они положительные или отрицательные.',
+      revNote: 'Вы жалуетесь на отзыв #', kind: 'О чём запрос?',
+      k_report: 'Пожаловаться на этот отзыв', k_company: 'Я представляю компанию (исправление, ответ или удаление)',
+      co: 'Название компании', role: 'Ваша роль в компании (владелец, менеджер…)',
+      reason: 'Причина', name: 'Ваше имя (необязательно)', email: 'Ваш e-mail (обязательно, чтобы мы могли ответить)',
+      msg: 'Опишите проблему (обязательно)', ev: 'Ссылка на доказательства (необязательно)',
+      priv: 'Мы используем эти данные только для рассмотрения запроса и не передаём их автору отзыва. См. Privacy Policy.',
+      send: 'Отправить', sending: 'Отправка…',
+      ok: 'Спасибо. Мы получили ваш запрос и ответим по e-mail.',
+      eEmail: 'Введите правильный e-mail.', eMsg: 'Опишите проблему (минимум 5 символов).',
+      eCo: 'Введите название компании.', eRate: 'Слишком много жалоб за короткое время. Попробуйте через час.',
+      eGen: 'Не удалось отправить. Попробуйте ещё раз или напишите нам по e-mail.', eNoRev: 'Чтобы пожаловаться на отзыв, нажмите «Пожаловаться» рядом с ним на сайте.',
+      r_spam: 'Спам / реклама', r_abuse: 'Угрозы, ненависть или оскорбления', r_fake: 'Фальшивый отзыв',
+      r_conflict_of_interest: 'Конфликт интересов (владелец, сотрудник, конкурент, оплачено)', r_privacy: 'Личные данные человека',
+      r_legal: 'Юридическая причина (суд, авторское право, товарный знак)', r_other: 'Другое'
+    },
+    es: {
+      h1: 'Reportar una reseña / solicitud de compañía',
+      intro: 'Use este formulario para reportar una reseña que viola nuestras reglas o (si representa a una compañía) enviar una solicitud sobre su compañía. No eliminamos reseñas por ser positivas o negativas.',
+      revNote: 'Está reportando la reseña #', kind: '¿De qué se trata?',
+      k_report: 'Reportar esta reseña', k_company: 'Represento a una compañía (corrección, respuesta o eliminación)',
+      co: 'Nombre de la compañía', role: 'Su cargo en la compañía (dueño, gerente…)',
+      reason: 'Motivo', name: 'Su nombre (opcional)', email: 'Su e-mail (obligatorio, para poder responderle)',
+      msg: 'Explique el problema (obligatorio)', ev: 'Enlace a pruebas (opcional)',
+      priv: 'Usamos estos datos solo para atender su solicitud y no los damos a quien escribió la reseña. Vea la Privacy Policy.',
+      send: 'Enviar', sending: 'Enviando…',
+      ok: 'Gracias. Recibimos su solicitud y le responderemos por e-mail.',
+      eEmail: 'Escriba un e-mail válido.', eMsg: 'Explique el problema (al menos 5 caracteres).',
+      eCo: 'Escriba el nombre de la compañía.', eRate: 'Demasiados reportes en poco tiempo. Intente de nuevo en una hora.',
+      eGen: 'No se pudo enviar. Intente de nuevo o escríbanos por e-mail.', eNoRev: 'Para reportar una reseña, presione «Reportar» junto a ella en el sitio.',
+      r_spam: 'Spam / publicidad', r_abuse: 'Amenazas, odio o acoso', r_fake: 'Reseña falsa',
+      r_conflict_of_interest: 'Conflicto de interés (dueño, empleado, competidor, pagado)', r_privacy: 'Datos privados de una persona',
+      r_legal: 'Legal (orden judicial, derechos de autor, marca)', r_other: 'Otro'
+    }
+  };
+  const REASONS = ['spam', 'abuse', 'fake', 'conflict_of_interest', 'privacy', 'legal', 'other'];
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  let lang = 'en';
+  try { lang = localStorage.getItem('lang') || 'en'; } catch (e) {}
+  if (!T[lang]) lang = 'en';
+  const t = (k) => T[lang][k] || T.en[k] || k;
+  const $ = (id) => document.getElementById(id);
+
+  const q = new URLSearchParams(location.search);
+  const revId = UUID.test(q.get('r') || '') ? q.get('r') : null;
+
+  const box = $('box');
+  if (lang === 'yi') { box.dir = 'rtl'; box.lang = 'yi'; }
+
+  $('h1').textContent = t('h1'); $('intro').textContent = t('intro');
+  $('lKind').textContent = t('kind'); $('lCo').textContent = t('co'); $('lRole').textContent = t('role');
+  $('lReason').textContent = t('reason'); $('lName').textContent = t('name'); $('lEmail').textContent = t('email');
+  $('lMsg').textContent = t('msg'); $('lEv').textContent = t('ev'); $('privNote').textContent = t('priv');
+  $('send').textContent = t('send');
+
+  const kinds = revId ? ['report', 'company'] : ['company'];
+  $('kind').innerHTML = kinds.map((k) => `<option value="${k}">${t('k_' + k)}</option>`).join('');
+  $('reason').innerHTML = REASONS.map((r) => `<option value="${r}">${t('r_' + r)}</option>`).join('');
+  if (revId) { $('revNote').textContent = t('revNote') + revId.slice(0, 8); $('revNote').classList.remove('hidden'); }
+  else { $('revNote').textContent = t('eNoRev'); $('revNote').classList.remove('hidden'); }
+  if (q.get('kind') === 'company') $('kind').value = 'company';
+
+  const syncKind = () => $('coFields').classList.toggle('hidden', $('kind').value !== 'company');
+  $('kind').onchange = syncKind; syncKind();
+
+  function show(text, ok) {
+    const o = $('out'); o.textContent = text; o.className = 'msg ' + (ok ? 'ok' : 'err');
+  }
+
+  $('send').onclick = async () => {
+    const kind = $('kind').value;
+    const email = $('email').value.trim();
+    const message = $('message').value.trim();
+    const coName = $('coName').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return show(t('eEmail'), false);
+    if (message.length < 5) return show(t('eMsg'), false);
+    if (kind === 'company' && !coName) return show(t('eCo'), false);
+
+    const btn = $('send'); btn.disabled = true; btn.textContent = t('sending');
+    const row = {
+      kind,
+      review_id: revId,
+      reason: $('reason').value,
+      name: $('name').value.trim() || null,
+      email,
+      company_name: kind === 'company' ? coName : null,
+      role: kind === 'company' ? ($('role').value.trim() || null) : null,
+      message,
+      evidence_url: $('evidence').value.trim() || null,
+      lang
+    };
+    const { error } = await sb.from('review_reports').insert(row);
+    if (error) {
+      btn.disabled = false; btn.textContent = t('send');
+      return show(/RATE_LIMIT/.test(error.message) ? t('eRate') : t('eGen'), false);
+    }
+    document.querySelectorAll('#box .in, #box label.f, #send, #privNote, #revNote').forEach((el) => el.classList.add('hidden'));
+    show(t('ok'), true);
+  };
+})();
+</script>
+</body>
+</html>
